@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -39,10 +39,10 @@ export function SyncProvider({ children }) {
         });
 
         return () => subscription.unsubscribe();
-    }, []);
+    }, [checkUser]);
 
     // Проверка текущего пользователя
-    const checkUser = async () => {
+    const checkUser = useCallback(async () => {
         try {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) {
@@ -52,7 +52,7 @@ export function SyncProvider({ children }) {
         } catch (error) {
             console.error('Error checking user:', error);
         }
-    };
+    }, []);
 
     // Обновление времени последнего визита
     const updateLastSeen = async (email) => {

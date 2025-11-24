@@ -6,22 +6,22 @@ import dynamicPrices from '@/data/prices.json';
 
 const EstimateContext = createContext();
 
+const defaultSelection = {
+    material: null,
+    dimensions: null,
+    bowl: null,
+    filtration: null,
+    heating: null,
+    parts: null,
+    additional: [],
+    clientInfo: {
+        name: '',
+        phone: '',
+        email: ''
+    }
+};
+
 export function EstimateProvider({ children }) {
-    // Load from localStorage on mount
-    const defaultSelection = {
-        material: null,
-        dimensions: null,
-        bowl: null,
-        filtration: null,
-        heating: null,
-        parts: null,
-        additional: [],
-        clientInfo: {
-            name: '',
-            phone: '',
-            email: ''
-        }
-    };
 
     const [selection, setSelection] = useState(defaultSelection);
     const [isInitialized, setIsInitialized] = useState(false);

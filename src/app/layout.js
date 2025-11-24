@@ -1,12 +1,10 @@
 import VersionChecker from '@/components/VersionChecker';
-
-// В body перед {children}:
-<VersionChecker />
 import "./globals.css";
 import { EstimateProvider } from "../context/EstimateContext";
 import { TemplateProvider } from "../context/TemplateContext";
 import { HistoryProvider } from "../context/HistoryContext";
 import { CatalogProvider } from "../context/CatalogContext";
+import { EquipmentCatalogProvider } from "../context/EquipmentCatalogContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import { BackupProvider } from "../context/BackupContext";
 import { SyncProvider } from "../context/SyncContext";
@@ -56,13 +54,16 @@ export default function RootLayout({ children }) {
                                     <TemplateProvider>
                                         <HistoryProvider>
                                             <CatalogProvider>
-                                                <div className="flex min-h-screen">
-                                                    <Sidebar />
-                                                    <main className="flex-1 md:pl-72 pt-16 md:pt-0 min-w-0 transition-all duration-300">
-                                                        {children}
-                                                    </main>
-                                                </div>
-                                                <Toaster position="top-right" richColors theme="dark" />
+                                                <EquipmentCatalogProvider>
+                                                    <div className="flex min-h-screen">
+                                                        <Sidebar />
+                                                        <main className="flex-1 md:pl-72 pt-16 md:pt-0 min-w-0 transition-all duration-300">
+                                                            <VersionChecker />
+                                                            {children}
+                                                        </main>
+                                                    </div>
+                                                    <Toaster position="top-right" richColors theme="dark" />
+                                                </EquipmentCatalogProvider>
                                             </CatalogProvider>
                                         </HistoryProvider>
                                     </TemplateProvider>

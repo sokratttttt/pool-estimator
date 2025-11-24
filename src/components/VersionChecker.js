@@ -16,6 +16,48 @@ export default function VersionChecker() {
     const [updateProgress, setUpdateProgress] = useState(null);
 
     useEffect(() => {
+        const compareVersions = (v1, v2) => {
+            const parts1 = v1.split('.').map(Number);
+            const parts2 = v2.split('.').map(Number);
+
+            for (let i = 0; i < 3; i++) {
+                if (parts1[i] > parts2[i]) return 1;
+                if (parts1[i] < parts2[i]) return -1;
+            }
+            return 0;
+        };
+
+        const checkVersion = async () => {
+            try {
+                // Check version from Supabase
+                const { data, error } = await supabase
+                    .from('app_version')
+                    .select('version, release_notes, force_update')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (error) {
+                    console.error('Version check error:', error);
+                    return;
+                }
+
+                if (data && compareVersions(data.version, CURRENT_VERSION) > 0) {
+                    setLatestVersion(data.version);
+                    setReleaseNotes(data.release_notes || 'Доступна новая версия');
+                    setUpdateAvailable(true);
+                    setShowModal(true);
+
+                    // If running in Electron, trigger auto-update check
+                    if (typeof window !== 'undefined' && window.electron && window.electron.checkForUpdates) {
+                        window.electron.checkForUpdates();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to check version:', error);
+            }
+        };
+
         // Check if running in Electron
         const inElectron = typeof window !== 'undefined' && window.electron;
         setIsElectron(inElectron);
@@ -44,48 +86,6 @@ export default function VersionChecker() {
 
         return () => clearInterval(interval);
     }, []);
-
-    const checkVersion = async () => {
-        try {
-            // Check version from Supabase
-            const { data, error } = await supabase
-                .from('app_version')
-                .select('version, release_notes, force_update')
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .single();
-
-            if (error) {
-                console.error('Version check error:', error);
-                return;
-            }
-
-            if (data && compareVersions(data.version, CURRENT_VERSION) > 0) {
-                setLatestVersion(data.version);
-                setReleaseNotes(data.release_notes || 'Доступна новая версия');
-                setUpdateAvailable(true);
-                setShowModal(true);
-
-                // If running in Electron, trigger auto-update check
-                if (isElectron && window.electron.checkForUpdates) {
-                    window.electron.checkForUpdates();
-                }
-            }
-        } catch (error) {
-            console.error('Failed to check version:', error);
-        }
-    };
-
-    const compareVersions = (v1, v2) => {
-        const parts1 = v1.split('.').map(Number);
-        const parts2 = v2.split('.').map(Number);
-
-        for (let i = 0; i < 3; i++) {
-            if (parts1[i] > parts2[i]) return 1;
-            if (parts1[i] < parts2[i]) return -1;
-        }
-        return 0;
-    };
 
     const handleUpdate = () => {
         if (isElectron && window.electron.downloadUpdate) {
