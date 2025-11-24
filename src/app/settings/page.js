@@ -1,6 +1,7 @@
 'use client';
 import { Settings as SettingsIcon, LogIn, LogOut, User } from 'lucide-react';
 import PDFSettings from '@/components/PDFSettings';
+import UpdateChecker from '@/components/UpdateChecker';
 import AppleCard from '@/components/apple/AppleCard';
 import AppleButton from '@/components/apple/AppleButton';
 import { motion } from 'framer-motion';
@@ -78,11 +79,32 @@ export default function SettingsPage() {
                 </AppleCard>
             </motion.div>
 
-            {/* PDF Settings */}
+            {/* Updates Section */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
+                className="mb-6"
+            >
+                <AppleCard variant="flat">
+                    <h2 className="apple-heading-2 mb-4">Обновления приложения</h2>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-white font-medium mb-1">Проверка обновлений</p>
+                            <p className="text-sm text-apple-text-secondary">
+                                Убедитесь, что используете последнюю версию приложения
+                            </p>
+                        </div>
+                        <UpdateChecker />
+                    </div>
+                </AppleCard>
+            </motion.div>
+
+            {/* PDF Settings */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
             >
                 <PDFSettings />
             </motion.div>
