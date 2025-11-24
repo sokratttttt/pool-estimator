@@ -8,7 +8,10 @@ const isDev = process.env.NODE_ENV === 'development';
 
 // Configure logging
 log.transports.file.level = 'info';
+// Configure autoUpdater
 autoUpdater.logger = log;
+autoUpdater.autoDownload = false; // Let user decide when to download
+autoUpdater.allowPrerelease = false;
 
 // Store reference to main window
 let mainWindow;
@@ -38,13 +41,6 @@ function createWindow() {
         mainWindow.webContents.openDevTools();
     } else {
         mainWindow.loadURL('app://./index.html');
-
-        // Check for updates after window is ready
-        mainWindow.webContents.on('did-finish-load', () => {
-            setTimeout(() => {
-                autoUpdater.checkForUpdates();
-            }, 3000);
-        });
     }
 
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -78,6 +74,13 @@ app.whenReady().then(() => {
 
     createWindow();
 
+    // Check for updates shortly after startup
+    if (!isDev) {
+        setTimeout(() => {
+            autoUpdater.checkForUpdates();
+        }, 3000);
+    }
+
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
@@ -94,57 +97,56 @@ app.on('window-all-closed', () => {
 // AutoUpdater event handlers
 autoUpdater.on('checking-for-update', () => {
     log.info('Checking for updates...');
-    sendStatusToWindow('Проверка обновлений...');
+    sendStatusToWindow('checking-for-update');
 });
 
 autoUpdater.on('update-available', (info) => {
     log.info('Update available:', info);
-    sendStatusToWindow('Найдено обновление! Загрузка...');
+    sendStatusToWindow('update-available', info);
 });
 
 autoUpdater.on('update-not-available', (info) => {
     log.info('Update not available:', info);
-    sendStatusToWindow('Вы используете последнюю версию');
+    sendStatusToWindow('update-not-available', info);
 });
 
 autoUpdater.on('error', (err) => {
     log.error('Error in auto-updater:', err);
-    sendStatusToWindow('Ошибка при проверке обновлений');
+    sendStatusToWindow('error', err.message);
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
-    let message = `Загрузка: ${Math.round(progressObj.percent)}%`;
-    log.info(message);
-    sendStatusToWindow(message, progressObj.percent);
+    log.info(`Download progress: ${progressObj.percent}%`);
+    sendStatusToWindow('download-progress', progressObj);
 });
 
 autoUpdater.on('update-downloaded', (info) => {
     log.info('Update downloaded:', info);
-    sendStatusToWindow('Обновление загружено. Перезапустите приложение для установки.');
+    sendStatusToWindow('update-downloaded', info);
 });
 
-function sendStatusToWindow(text, percent = null) {
+function sendStatusToWindow(type, data = null) {
     if (mainWindow) {
-        mainWindow.webContents.send('update-status', { text, percent });
+        mainWindow.webContents.send('update-status', { type, data });
     }
 }
 
-// IPC handlers for manual update check
+// IPC handlers
 ipcMain.handle('check-for-updates', async () => {
     if (isDev) {
-        return { available: false, message: 'Dev mode - updates disabled' };
+        return { available: false, message: 'Dev mode' };
     }
-
     try {
         const result = await autoUpdater.checkForUpdates();
-        return {
-            available: result?.updateInfo?.version !== app.getVersion(),
-            version: result?.updateInfo?.version
-        };
+        return { success: true, result };
     } catch (error) {
-        log.error('Manual update check failed:', error);
-        return { available: false, error: error.message };
+        log.error('Check for updates failed:', error);
+        return { success: false, error: error.message };
     }
+});
+
+ipcMain.handle('download-update', () => {
+    autoUpdater.downloadUpdate();
 });
 
 ipcMain.handle('install-update', () => {

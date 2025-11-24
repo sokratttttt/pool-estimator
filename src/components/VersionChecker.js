@@ -67,20 +67,27 @@ export default function VersionChecker() {
         const interval = setInterval(checkVersion, 5 * 60 * 1000); // Check every 5 minutes
 
         // Listen for Electron updater events
-        if (inElectron && window.electron.onUpdateAvailable) {
-            window.electron.onUpdateAvailable((info) => {
-                setLatestVersion(info.version);
-                setReleaseNotes(info.releaseNotes || 'Доступна новая версия приложения');
-                setUpdateAvailable(true);
-                setShowModal(true);
-            });
+        if (inElectron && window.electron.onUpdateStatus) {
+            window.electron.onUpdateStatus(({ type, data }) => {
+                console.log('Update status:', type, data);
 
-            window.electron.onUpdateDownloadProgress((progress) => {
-                setUpdateProgress(progress.percent);
-            });
-
-            window.electron.onUpdateDownloaded(() => {
-                setUpdateProgress(100);
+                switch (type) {
+                    case 'update-available':
+                        setLatestVersion(data.version);
+                        setReleaseNotes(data.releaseNotes || 'Доступна новая версия приложения');
+                        setUpdateAvailable(true);
+                        setShowModal(true);
+                        break;
+                    case 'download-progress':
+                        setUpdateProgress(data.percent);
+                        break;
+                    case 'update-downloaded':
+                        setUpdateProgress(100);
+                        break;
+                    case 'error':
+                        console.error('Update error:', data);
+                        break;
+                }
             });
         }
 
