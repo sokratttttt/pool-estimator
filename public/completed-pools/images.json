@@ -1,0 +1,226 @@
+{
+  "iqpools": [
+    {
+      "originalName": "АЛЛЕГРО",
+      "fileName": "allegro.jpg",
+      "path": "/completed-pools/iqpools/allegro.jpg"
+    },
+    {
+      "originalName": "ВИВО",
+      "fileName": "vivo.jpg",
+      "path": "/completed-pools/iqpools/vivo.jpg"
+    },
+    {
+      "originalName": "ГАММА",
+      "fileName": "gamma.jpg",
+      "path": "/completed-pools/iqpools/gamma.jpg"
+    },
+    {
+      "originalName": "КВАДРО",
+      "fileName": "kvadro.jpg",
+      "path": "/completed-pools/iqpools/kvadro.jpg"
+    },
+    {
+      "originalName": "КВАРТЕТ",
+      "fileName": "kvartet.jpg",
+      "path": "/completed-pools/iqpools/kvartet.jpg"
+    },
+    {
+      "originalName": "ЛЕГАТО",
+      "fileName": "legato.jpg",
+      "path": "/completed-pools/iqpools/legato.jpg"
+    },
+    {
+      "originalName": "МАРШ",
+      "fileName": "marsh.jpg",
+      "path": "/completed-pools/iqpools/marsh.jpg"
+    },
+    {
+      "originalName": "ОКЕАНИК",
+      "fileName": "okeanik.jpg",
+      "path": "/completed-pools/iqpools/okeanik.jpg"
+    },
+    {
+      "originalName": "РИМ",
+      "fileName": "rim.jpg",
+      "path": "/completed-pools/iqpools/rim.jpg"
+    },
+    {
+      "originalName": "РОЙАЛ",
+      "fileName": "royal.jpg",
+      "path": "/completed-pools/iqpools/royal.jpg"
+    },
+    {
+      "originalName": "РОНДО",
+      "fileName": "rondo.jpg",
+      "path": "/completed-pools/iqpools/rondo.jpg"
+    },
+    {
+      "originalName": "СКАНДИ",
+      "fileName": "skandi.jpg",
+      "path": "/completed-pools/iqpools/skandi.jpg"
+    },
+    {
+      "originalName": "ТЕМП",
+      "fileName": "temp.jpg",
+      "path": "/completed-pools/iqpools/temp.jpg"
+    },
+    {
+      "originalName": "ТЕРЦИЯ",
+      "fileName": "tertsiya.jpg",
+      "path": "/completed-pools/iqpools/tertsiya.jpg"
+    },
+    {
+      "originalName": "ФОРТЕ",
+      "fileName": "forte.jpg",
+      "path": "/completed-pools/iqpools/forte.jpg"
+    }
+  ],
+  "sanjuan": [
+    {
+      "originalName": "CLASSIC 8537",
+      "fileName": "classic-8537.jpg",
+      "path": "/completed-pools/sanjuan/classic-8537.jpg"
+    },
+    {
+      "originalName": "IPOOL 12037",
+      "fileName": "ipool-12037.jpg",
+      "path": "/completed-pools/sanjuan/ipool-12037.jpg"
+    },
+    {
+      "originalName": "LUXOR 10537",
+      "fileName": "luxor-10537.jpg",
+      "path": "/completed-pools/sanjuan/luxor-10537.jpg"
+    },
+    {
+      "originalName": "LUXOR 6536",
+      "fileName": "luxor-6536.jpg",
+      "path": "/completed-pools/sanjuan/luxor-6536.jpg"
+    },
+    {
+      "originalName": "LUXOR 7537",
+      "fileName": "luxor-7537.jpg",
+      "path": "/completed-pools/sanjuan/luxor-7537.jpg"
+    },
+    {
+      "originalName": "LUXOR 8537",
+      "fileName": "luxor-8537.jpg",
+      "path": "/completed-pools/sanjuan/luxor-8537.jpg"
+    },
+    {
+      "originalName": "LUXOR 9537",
+      "fileName": "luxor-9537.jpg",
+      "path": "/completed-pools/sanjuan/luxor-9537.jpg"
+    },
+    {
+      "originalName": "MARATHON 10037",
+      "fileName": "marathon-10037.jpg",
+      "path": "/completed-pools/sanjuan/marathon-10037.jpg"
+    },
+    {
+      "originalName": "MARATHON 12037",
+      "fileName": "marathon-12037.jpg",
+      "path": "/completed-pools/sanjuan/marathon-12037.jpg"
+    },
+    {
+      "originalName": "MINIPOOL 4025",
+      "fileName": "minipool-4025.jpg",
+      "path": "/completed-pools/sanjuan/minipool-4025.jpg"
+    },
+    {
+      "originalName": "MINIPOOL 4530",
+      "fileName": "minipool-4530.jpg",
+      "path": "/completed-pools/sanjuan/minipool-4530.jpg"
+    },
+    {
+      "originalName": "MINIPOOL 5530",
+      "fileName": "minipool-5530.jpg",
+      "path": "/completed-pools/sanjuan/minipool-5530.jpg"
+    },
+    {
+      "originalName": "MINIPOOL 6330",
+      "fileName": "minipool-6330.jpg",
+      "path": "/completed-pools/sanjuan/minipool-6330.jpg"
+    },
+    {
+      "originalName": "QUICK 5025",
+      "fileName": "quick-5025.jpg",
+      "path": "/completed-pools/sanjuan/quick-5025.jpg"
+    },
+    {
+      "originalName": "QUICK 6025",
+      "fileName": "quick-6025.jpg",
+      "path": "/completed-pools/sanjuan/quick-6025.jpg"
+    },
+    {
+      "originalName": "QUICK 7025",
+      "fileName": "quick-7025.jpg",
+      "path": "/completed-pools/sanjuan/quick-7025.jpg"
+    },
+    {
+      "originalName": "RIO 7737",
+      "fileName": "rio-7737.jpg",
+      "path": "/completed-pools/sanjuan/rio-7737.jpg"
+    },
+    {
+      "originalName": "RIO 8737",
+      "fileName": "rio-8737.jpg",
+      "path": "/completed-pools/sanjuan/rio-8737.jpg"
+    },
+    {
+      "originalName": "RIO 9737",
+      "fileName": "rio-9737.jpg",
+      "path": "/completed-pools/sanjuan/rio-9737.jpg"
+    },
+    {
+      "originalName": "SPA 2424",
+      "fileName": "spa-2424.jpg",
+      "path": "/completed-pools/sanjuan/spa-2424.jpg"
+    },
+    {
+      "originalName": "SPA 4025",
+      "fileName": "spa-4025.jpg",
+      "path": "/completed-pools/sanjuan/spa-4025.jpg"
+    },
+    {
+      "originalName": "SPA 4525",
+      "fileName": "spa-4525.jpg",
+      "path": "/completed-pools/sanjuan/spa-4525.jpg"
+    },
+    {
+      "originalName": "SPA 5030",
+      "fileName": "spa-5030.jpg",
+      "path": "/completed-pools/sanjuan/spa-5030.jpg"
+    },
+    {
+      "originalName": "SPLASH 1818",
+      "fileName": "splash-1818.jpg",
+      "path": "/completed-pools/sanjuan/splash-1818.jpg"
+    },
+    {
+      "originalName": "SPLASH 1922",
+      "fileName": "splash-1922.jpg",
+      "path": "/completed-pools/sanjuan/splash-1922.jpg"
+    },
+    {
+      "originalName": "SPLASH 3020",
+      "fileName": "splash-3020.jpg",
+      "path": "/completed-pools/sanjuan/splash-3020.jpg"
+    },
+    {
+      "originalName": "SPLASH 3418",
+      "fileName": "splash-3418.jpg",
+      "path": "/completed-pools/sanjuan/splash-3418.jpg"
+    },
+    {
+      "originalName": "SUPERMINI 2515",
+      "fileName": "supermini-2515.jpg",
+      "path": "/completed-pools/sanjuan/supermini-2515.jpg"
+    },
+    {
+      "originalName": "TECH ROOM 1824",
+      "fileName": "tech-room-1824.jpg",
+      "path": "/completed-pools/sanjuan/tech-room-1824.jpg"
+    }
+  ]
+}

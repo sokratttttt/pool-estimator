@@ -1,0 +1,193 @@
+'use client';
+import { useEstimate } from '../../context/EstimateContext';
+import StepLayout from '../../components/StepLayout';
+import { filtrationEquipment, standardWorks, constructionWorks, constructionMaterials } from '../../data/works';
+import { useEffect, useState } from 'react';
+
+export default function SummaryPage() {
+    const { selection } = useEstimate();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
+    if (!selection.material) return <div className="p-8 text-center">Пожалуйста, начните с выбора типа бассейна.</div>;
+
+    // --- Calculations ---
+
+    // 1. Bowl / Material Section
+    let bowlTotal = 0;
+    let bowlItems = [];
+
+    if (selection.material.id === 'composite' && selection.bowl) {
+        bowlTotal = selection.bowl.price + selection.bowl.deliveryPrice;
+        bowlItems = [
+            { ...selection.bowl, quantity: 1 },
+            { name: 'Доставка чаши до объекта', price: selection.bowl.deliveryPrice, quantity: 1 }
+        ];
+    } else if (selection.dimensions) {
+        // Custom pools (Concrete/Poly)
+        const volume = selection.dimensions.volume;
+        const pricePerM3 = selection.material.basePricePerCubicMeter;
+        const materialCost = volume * pricePerM3;
+
+        bowlTotal = materialCost;
+        bowlItems = [
+            {
+                name: `Строительство чаши (${selection.material.name})`,
+                price: pricePerM3,
+                quantity: volume,
+                unit: 'м³'
+            }
+        ];
+    }
+
+    // 2. Filtration & Parts Equipment
+    const partsItems = selection.parts ? selection.parts.items : [];
+    const filtrationTotal =
+        filtrationEquipment.reduce((acc, item) => acc + (item.price * item.quantity), 0) +
+        partsItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    // 3. Heating Equipment
+    const heatingItems = selection.heating && selection.heating.type !== 'none' ? selection.heating.items : [];
+    const heatingTotal = heatingItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    // 4. Installation Works
+    const partsInstallation = partsItems.reduce((acc, item) => acc + (item.installationPrice || 0), 0);
+    const heatingInstallation = selection.heating ? selection.heating.installationPrice : 0;
+    const standardWorksTotal = standardWorks.reduce((acc, item) => acc + item.price, 0);
+
+    const installationTotal = standardWorksTotal + partsInstallation + heatingInstallation;
+
+    // 5. Construction Works (Only for Composite, or adjusted for others?)
+    // For now, keeping it same, but maybe should be hidden for concrete if included in base price?
+    // Let's assume Construction Works are separate for all types for now, or maybe specific to Composite installation.
+    // The example showed "Строительные работы по установке бассейна".
+    // For Concrete, this might be different. Let's keep it simple for now and show for all, 
+    // but maybe rename to "Подготовительные работы" if needed. 
+    // Actually, for Concrete, the "basePricePerCubicMeter" was a placeholder for "Work + Materials".
+    // Let's keep the Construction Works section but maybe it's less relevant for Concrete if we assume turnkey price per m3.
+    // However, to keep the estimate looking full, let's leave it.
+    const constructionWorksTotal = constructionWorks.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    // 6. Construction Materials
+    const constructionMaterialsTotal = constructionMaterials.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    // Grand Total
+    const grandTotal = bowlTotal + filtrationTotal + heatingTotal + installationTotal + constructionWorksTotal + constructionMaterialsTotal;
+
+    const TableSection = ({ title, items, total, colorClass = "bg-blue-100" }) => (
+        <div className="mb-8 break-inside-avoid">
+            <div className={`${colorClass} p-3 font-bold text-center border border-gray-200 rounded-t-lg text-gray-800 uppercase tracking-wide text-sm`}>{title}</div>
+            <table className="w-full text-sm border-collapse border-x border-b border-gray-200">
+                <thead>
+                    <tr className="bg-gray-50 text-gray-600">
+                        <th className="border-b border-gray-200 p-3 text-left w-1/2 font-semibold">Наименование</th>
+                        <th className="border-b border-gray-200 p-3 text-center font-semibold">Ед.</th>
+                        <th className="border-b border-gray-200 p-3 text-center font-semibold">Кол-во</th>
+                        <th className="border-b border-gray-200 p-3 text-right font-semibold">Цена</th>
+                        <th className="border-b border-gray-200 p-3 text-right font-semibold">Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {items.map((item, idx) => (
+                        <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                            <td className="border-b border-gray-100 p-3 text-gray-700">{item.name}</td>
+                            <td className="border-b border-gray-100 p-3 text-center text-gray-500">{item.unit || 'шт'}</td>
+                            <td className="border-b border-gray-100 p-3 text-center text-gray-500">{item.quantity?.toFixed(2) || '1.00'}</td>
+                            <td className="border-b border-gray-100 p-3 text-right font-medium text-gray-700">{item.price.toLocaleString('ru-RU')}</td>
+                            <td className="border-b border-gray-100 p-3 text-right font-bold text-gray-900">
+                                {((item.price * (item.quantity || 1))).toLocaleString('ru-RU')}
+                            </td>
+                        </tr>
+                    ))}
+                    <tr className="bg-gray-50/50">
+                        <td colSpan="4" className="p-3 text-right font-bold text-gray-600">Итого по разделу:</td>
+                        <td className="p-3 text-right font-bold text-gray-900">{total.toLocaleString('ru-RU')}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    );
+
+    return (
+        <StepLayout title="Коммерческое предложение">
+            <div className="bg-white p-8 md:p-12 shadow-2xl max-w-5xl mx-auto print:shadow-none print:p-0 rounded-xl">
+
+                <div className="mb-12 flex justify-between items-start border-b border-gray-100 pb-8">
+                    <div>
+                        <h2 className="text-3xl font-bold mb-2 text-gray-900">Смета на строительство</h2>
+                        <p className="text-gray-500">Тип бассейна: <span className="font-semibold text-blue-600">{selection.material.name}</span></p>
+                        {selection.dimensions && (
+                            <p className="text-gray-500 text-sm mt-1">
+                                Размеры: {selection.dimensions.length} x {selection.dimensions.width} x {selection.dimensions.depth} м
+                                (V = {selection.dimensions.volume.toFixed(1)} м³)
+                            </p>
+                        )}
+                        <p className="text-gray-400 text-sm mt-2">Дата: {new Date().toLocaleDateString('ru-RU')}</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-sm text-gray-500 uppercase tracking-wider mb-1">Итоговая стоимость</p>
+                        <p className="text-4xl font-bold text-blue-600">{grandTotal.toLocaleString('ru-RU')} ₽</p>
+                    </div>
+                </div>
+
+                <TableSection
+                    title="Чаша бассейна / Строительство"
+                    items={bowlItems}
+                    total={bowlTotal}
+                />
+
+                <TableSection
+                    title="Оборудование фильтрации и закладные"
+                    items={[...partsItems, ...filtrationEquipment]}
+                    total={filtrationTotal}
+                />
+
+                {heatingItems.length > 0 && (
+                    <TableSection
+                        title="Подогрев бассейна"
+                        items={heatingItems}
+                        total={heatingTotal}
+                    />
+                )}
+
+                <TableSection
+                    title="Монтажные работы"
+                    items={[
+                        ...partsItems.map(p => ({ name: `Монтаж: ${p.name}`, price: p.installationPrice || 0, quantity: 1 })),
+                        ...(selection.heating ? [{ name: 'Монтаж теплообменника/нагревателя', price: selection.heating.installationPrice, quantity: 1 }] : []),
+                        ...standardWorks.map(w => ({ ...w, quantity: 1 }))
+                    ]}
+                    total={installationTotal}
+                />
+
+                <TableSection
+                    title="Строительные работы (подготовка)"
+                    items={constructionWorks}
+                    total={constructionWorksTotal}
+                    colorClass="bg-orange-100"
+                />
+
+                <TableSection
+                    title="Строительные материалы"
+                    items={constructionMaterials}
+                    total={constructionMaterialsTotal}
+                    colorClass="bg-orange-100"
+                />
+
+                <div className="mt-12 text-center print:hidden">
+                    <button
+                        onClick={() => window.print()}
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-10 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                    >
+                        Распечатать смету / Сохранить в PDF
+                    </button>
+                </div>
+
+            </div>
+        </StepLayout>
+    );
+}

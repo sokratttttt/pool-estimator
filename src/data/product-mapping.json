@@ -1,0 +1,14 @@
+{
+    "items": [
+        {
+            "name": "Форсунка универсальная нерж/сталь",
+            "url": "https://xenozone.ru/catalog/zakladnye-elementy/forsunki/forsunka-universalnaya-nerzh-stal-pod-layner-beton-2/",
+            "selector": ".price_value"
+        },
+        {
+            "name": "Скиммер стандарт (пластик)",
+            "url": "https://aquapolis.ru/skimmer-kripsol-ks-evo-s-standartnyj-pod-lajner.html",
+            "selector": ".price-box .price"
+        }
+    ]
+}

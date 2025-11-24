@@ -1,0 +1,14 @@
+{
+    "name": "aquapolis-scraper",
+    "version": "1.0.0",
+    "description": "Быстрый парсер Aquapolis.ru на Node.js",
+    "main": "aquapolis-scraper.js",
+    "scripts": {
+        "scrape": "node aquapolis-scraper.js"
+    },
+    "dependencies": {
+        "puppeteer": "^21.6.1",
+        "cheerio": "^1.0.0-rc.12",
+        "exceljs": "^4.4.0"
+    }
+}

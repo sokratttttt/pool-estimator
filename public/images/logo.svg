@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 60" fill="none">
+  <!-- Wave Element -->
+  <path d="M20 45 C 40 35, 60 35, 80 45 S 120 55, 140 45" stroke="#00b4d8" stroke-width="4" stroke-linecap="round" fill="none"/>
+  
+  <!-- Text: MOS -->
+  <text x="10" y="40" font-family="Arial, sans-serif" font-weight="bold" font-size="32" fill="currentColor" letter-spacing="-1">MOS</text>
+  
+  <!-- Text: POOL (Thinner or different color to distinguish) -->
+  <text x="90" y="40" font-family="Arial, sans-serif" font-weight="bold" font-size="32" fill="#00b4d8" letter-spacing="-1">POOL</text>
+  
+  <!-- Subtitle (Optional, for scale) -->
+  <text x="12" y="55" font-family="Arial, sans-serif" font-size="8" fill="currentColor" opacity="0.6" letter-spacing="2">CONSTRUCTION</text>
+</svg>
