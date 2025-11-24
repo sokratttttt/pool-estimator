@@ -1,6 +1,6 @@
 {
     "name": "pool-estimator",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "Professional Pool Cost Estimator",
     "author": "Sokratttttt",
     "repository": {
@@ -25,12 +25,14 @@
     },
     "dependencies": {
         "@supabase/supabase-js": "^2.45.4",
+        "docx": "^9.5.1",
         "dotenv": "^17.2.3",
         "electron-log": "^5.4.3",
         "electron-updater": "^6.6.2",
         "exceljs": "^4.4.0",
         "file-saver": "^2.0.5",
         "framer-motion": "^11.0.0",
+        "gantt-task-react": "^0.3.9",
         "html2canvas": "^1.4.1",
         "jspdf": "^3.0.4",
         "jspdf-autotable": "^3.8.2",

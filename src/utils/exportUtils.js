@@ -195,6 +195,26 @@ export const exportToPDF = async (items, totalSum, clientInfo) => {
         doc.text(`Менеджер: ${clientInfo?.managerName || 'Платон'}`, 140, 50);
         doc.text(`Телефон: ${settings.phone || '+7 (919) 296-16-47'}`, 140, 55);
 
+        // Marketing / Benefits Section
+        doc.setFontSize(14);
+        doc.setTextColor(0, 113, 227);
+        doc.text('Почему выбирают MOS-POOL:', 14, 70);
+
+        doc.setFontSize(10);
+        doc.setTextColor(60);
+        const benefits = [
+            '• Гарантия на чашу бассейна — 10 лет',
+            '• Сертифицированное оборудование от ведущих брендов',
+            '• Собственная сервисная служба 24/7',
+            '• Прозрачная смета без скрытых платежей'
+        ];
+
+        let benefitY = 80;
+        benefits.forEach(benefit => {
+            doc.text(benefit, 14, benefitY);
+            benefitY += 6;
+        });
+
         // Prepare table data
         const tableBody = [];
         const grouped = items.reduce((acc, item) => {
@@ -208,7 +228,7 @@ export const exportToPDF = async (items, totalSum, clientInfo) => {
             tableBody.push([{
                 content: category,
                 colSpan: 5,
-                styles: { fillColor: [227, 242, 253], fontStyle: 'bold', textColor: [13, 71, 161] }
+                styles: { fillColor: [240, 248, 255], fontStyle: 'bold', textColor: [0, 51, 102] }
             }]);
 
             let categoryTotal = 0;
@@ -228,7 +248,7 @@ export const exportToPDF = async (items, totalSum, clientInfo) => {
             tableBody.push([{
                 content: `Итого по разделу: ${categoryTotal.toLocaleString('ru-RU')} ₽`,
                 colSpan: 5,
-                styles: { fontStyle: 'bold', halign: 'right', fillColor: [245, 245, 245] }
+                styles: { fontStyle: 'bold', halign: 'right', fillColor: [250, 250, 250], textColor: [80, 80, 80] }
             }]);
         });
 
@@ -240,7 +260,7 @@ export const exportToPDF = async (items, totalSum, clientInfo) => {
 
         // Generate Table
         autoTable(doc, {
-            startY: 65,
+            startY: benefitY + 10,
             head: [['Наименование', 'Ед.', 'Кол-во', 'Цена', 'Сумма']],
             body: tableBody,
             styles: fontLoaded ? { font: 'Roboto', fontSize: 9 } : { fontSize: 9 },

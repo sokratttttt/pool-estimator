@@ -85,7 +85,7 @@ export function SkeletonChart({ type = 'bar' }) {
                     <Skeleton
                         key={i}
                         width="100%"
-                        height={`${Math.random() * 60 + 40}%`}
+                        height="60%"
                         rounded="rounded-t-lg"
                     />
                 ))}

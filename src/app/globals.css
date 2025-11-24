@@ -42,6 +42,46 @@ button {
     cursor: pointer;
 }
 
+/* Import Premium Design System */
+@import '../styles/apple.css';
+
+/* Base Styles */
+body {
+    font-family: var(--font-sans);
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+}
+
+/* Ensure smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Remove default margins */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Links */
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Buttons */
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
 /* Inputs */
 input,
 textarea,
@@ -49,21 +89,127 @@ select {
     font-family: inherit;
 }
 
-/* Scrollbar Styling */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--color-navy-deep);
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--color-navy-light);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-cyan-bright);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   ПЛАНШЕТНЫЙ РЕЖИМ (768px - 1024px)
+   ============================================ */
+
+@media (min-width: 768px) and (max-width: 1024px) {
+
+    /* Увеличенные тач-таргеты для кнопок */
+    button:not(.no-tablet-resize),
+    a.apple-button,
+    .apple-button {
+        min-height: 48px;
+        padding: 14px 24px;
+        font-size: 17px;
+    }
+
+    /* Крупнее input поля */
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+        min-height: 52px;
+        font-size: 17px;
+        padding: 14px 16px;
+    }
+
+    /* Увеличенные чекбоксы и радио кнопки */
+    input[type="checkbox"],
+    input[type="radio"] {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+    }
+
+    /* Крупнее типографика */
+    body {
+        font-size: 17px;
+        line-height: 1.6;
+    }
+
+    h1,
+    .apple-heading-1 {
+        font-size: 42px;
+    }
+
+    h2,
+    .apple-heading-2 {
+        font-size: 32px;
+    }
+
+    h3,
+    .apple-heading-3 {
+        font-size: 24px;
+    }
+
+    /* Больше отступов в карточках */
+    .apple-card {
+        padding: 24px;
+    }
+
+    /* Увеличенные gap для контейнеров */
+    .apple-container {
+        padding: 24px;
+    }
+
+    /* Крупнее иконки */
+    svg:not(.no-tablet-resize) {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Планшет в портретной ориентации */
+@media (orientation: portrait) and (min-width: 768px) and (max-width: 1024px) {
+    .calculator-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Планшет в альбомной ориентации */
+@media (orientation: landscape) and (min-width: 768px) and (max-width: 1024px) {
+    .calculator-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Тач-устройства - увеличенные области нажатия */
+@media (hover: none) and (pointer: coarse) {
+
+    button,
+    a,
+    input[type="checkbox"],
+    input[type="radio"],
+    select {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* Убрать hover эффекты на тач-устройствах */
+    *:hover {
+        transition: none !important;
+    }
 }

@@ -4,14 +4,20 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 const createSupabaseClient = () => {
-    if (typeof window !== 'undefined' && window.supabase) {
-        return window.supabase;
+    if (typeof window === 'undefined') {
+        return createClient(supabaseUrl, supabaseAnonKey);
     }
-    const client = createClient(supabaseUrl, supabaseAnonKey);
-    if (typeof window !== 'undefined') {
-        window.supabase = client;
+
+    if (!window._supabaseClient) {
+        window._supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true
+            }
+        });
     }
-    return client;
+    return window._supabaseClient;
 };
 
 export const supabase = createSupabaseClient();

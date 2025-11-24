@@ -11,6 +11,7 @@ import { SkeletonListItem } from '@/components/Skeleton';
 import { useHistory } from '../../context/HistoryContext';
 import { useEstimate } from '../../context/EstimateContext';
 import { exportToExcel, exportToPDF } from '../../utils/exportUtils';
+import { exportToComparisonPDF } from '../../utils/comparisonUtils';
 import { toast } from 'sonner';
 
 export default function HistoryPage() {
@@ -23,6 +24,8 @@ export default function HistoryPage() {
     const [sortOrder, setSortOrder] = useState('desc');
     const [statusFilter, setStatusFilter] = useState('all');
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedEstimates, setSelectedEstimates] = useState([]);
+    const [isComparing, setIsComparing] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 300);
@@ -102,6 +105,32 @@ export default function HistoryPage() {
         }
     };
 
+    const toggleSelection = (id) => {
+        setSelectedEstimates(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const handleCompare = async () => {
+        if (selectedEstimates.length < 2) {
+            toast.error('Выберите минимум 2 сметы для сравнения');
+            return;
+        }
+
+        try {
+            setIsComparing(true);
+            const selectedData = estimates.filter(e => selectedEstimates.includes(e.id));
+            await exportToComparisonPDF(selectedData);
+            toast.success('Сравнение скачано');
+            setSelectedEstimates([]);
+        } catch (error) {
+            console.error('Error comparing:', error);
+            toast.error('Ошибка при создании сравнения');
+        } finally {
+            setIsComparing(false);
+        }
+    };
+
     const filteredEstimates = useMemo(() => {
         let filtered = estimates.filter(estimate =>
             estimate.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -153,6 +182,27 @@ export default function HistoryPage() {
                 {/* Search and Sort */}
                 {estimates.length > 0 && (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto mb-6 space-y-4">
+                        {/* Compare Button */}
+                        <AnimatePresence>
+                            {selectedEstimates.length >= 2 && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="flex justify-end"
+                                >
+                                    <AppleButton
+                                        variant="primary"
+                                        onClick={handleCompare}
+                                        loading={isComparing}
+                                        icon={<Copy size={18} />}
+                                    >
+                                        Сравнить ({selectedEstimates.length})
+                                    </AppleButton>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         {/* Search */}
                         <div className="relative">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-apple-text-tertiary" size={20} />
@@ -212,11 +262,11 @@ export default function HistoryPage() {
                                         ? status.value === 'completed'
                                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50'
                                             : status.value === 'in_progress'
-                                                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50'
+                                                ? 'bg-blue-500/20 text-blue-400 border-blue-500/50'
                                                 : status.value === 'sent'
-                                                    ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50'
+                                                    ? 'bg-purple-500/20 text-purple-400 border-purple-500/50'
                                                     : status.value === 'draft'
-                                                        ? 'bg-gray-500/20 text-gray-400 border border-gray-500/50'
+                                                        ? 'bg-gray-500/20 text-gray-400 border-gray-500/50'
                                                         : 'bg-apple-primary text-white'
                                         : 'bg-apple-bg-secondary text-apple-text-primary hover:bg-apple-bg-tertiary'
                                         }`}
@@ -299,6 +349,15 @@ export default function HistoryPage() {
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-3 mb-2">
+                                                        {/* Checkbox */}
+                                                        <div onClick={(e) => e.stopPropagation()} className="flex items-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedEstimates.includes(estimate.id)}
+                                                                onChange={() => toggleSelection(estimate.id)}
+                                                                className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                        </div>
                                                         <h3 className="apple-heading-3">{estimate.name}</h3>
                                                         {estimate.author && (
                                                             <div className="px-2 py-0.5 bg-white/5 rounded text-xs text-apple-text-secondary border border-white/10">

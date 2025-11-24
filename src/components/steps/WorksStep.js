@@ -15,8 +15,11 @@ export default function WorksStep() {
     useEffect(() => {
         const autoWorks = calculateAutoWorks(selection);
         const merged = { ...autoWorks, ...selectedWorks };
-        setSelectedWorks(merged);
-    }, [selection.dimensions, selection.bowl]);
+        // Only update if there are changes to avoid infinite loop
+        if (JSON.stringify(merged) !== JSON.stringify(selectedWorks)) {
+            setSelectedWorks(merged);
+        }
+    }, [selection.dimensions, selection.bowl, selection]); // Added selection to dependencies, but guarded with check
 
     const toggleWork = (workId, work) => {
         const newWorks = { ...selectedWorks };

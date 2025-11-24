@@ -92,6 +92,7 @@ export default function PDFSettings() {
                     </label>
                     {settings.logoDataUrl ? (
                         <div className="relative inline-block">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={settings.logoDataUrl}
                                 alt="Logo"

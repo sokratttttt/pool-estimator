@@ -28,6 +28,29 @@ const steps = [
     { id: 'summary', label: 'Смета' },
 ];
 
+// Client-side only time ago component to avoid hydration mismatch
+function TimeAgo({ date }) {
+    const [timeAgo, setTimeAgo] = useState('');
+
+    useEffect(() => {
+        const updateTime = () => {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            if (seconds < 60) {
+                setTimeAgo(`${seconds}с назад`);
+            } else {
+                setTimeAgo(`${Math.floor(seconds / 60)}м назад`);
+            }
+        };
+
+        updateTime();
+        const interval = setInterval(updateTime, 1000);
+        return () => clearInterval(interval);
+    }, [date]);
+
+    if (!timeAgo) return null;
+    return <>{timeAgo}</>;
+}
+
 export default function Configurator() {
     const { selection, undo, redo, canUndo, canRedo, lastSaved } = useEstimate();
     const searchParams = useSearchParams();
@@ -107,7 +130,7 @@ export default function Configurator() {
 
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [currentStep, visibleSteps]);
+    }, [currentStep, visibleSteps, currentStepIndex, handleBack, handleNext]);
 
     // Ensure we don't get stuck on a hidden step
     useEffect(() => {
@@ -220,11 +243,7 @@ export default function Configurator() {
                                         <div className="flex items-center justify-end gap-1.5 text-xs text-emerald-400 mb-2 opacity-80">
                                             <Check size={12} />
                                             <span>
-                                                Сохранено {
-                                                    Math.floor((new Date() - lastSaved) / 1000) < 60
-                                                        ? `${Math.floor((new Date() - lastSaved) / 1000)}с назад`
-                                                        : `${Math.floor((new Date() - lastSaved) / 60000)}м назад`
-                                                }
+                                                Сохранено <TimeAgo date={lastSaved} />
                                             </span>
                                         </div>
                                     )}

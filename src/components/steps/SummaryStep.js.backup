@@ -468,53 +468,104 @@ export default function SummaryStep() {
                                     onChange={(e) => setEstimateName(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSave()}
                                     className="mb-6"
-                                    autoFocus
-                                />
-
-                                <div className="flex gap-3">
-                                    <AppleButton
-                                        variant="secondary"
-                                        onClick={() => setShowSaveModal(false)}
-                                        className="flex-1"
-                                    >
-                                        Отмена
+                                    Сохранить
                                     </AppleButton>
-                                    <AppleButton
-                                        variant="primary"
-                                        onClick={handleSave}
-                                        className="flex-1"
-                                        disabled={!estimateName.trim()}
-                                    >
-                                        Сохранить
-                                    </AppleButton>
-                                </div>
-                            </div>
-                        </motion.div>
                     </div>
+                            </div>
+                        </motion.div >
+                    </div >
                 )
-                }
-            </AnimatePresence>
-            {/* Catalog Selector */}
-            <AnimatePresence>
-                {showCatalogSelector && (
-                    <CatalogSelector
-                        category="all"
-                        onSelect={(product) => {
-                            const newItem = {
-                                id: `custom-${Date.now()}`,
-                                name: product.name,
-                                quantity: 1,
-                                unit: product.unit,
-                                price: product.price,
-                                total: product.price,
-                                category: 'Дополнительное оборудование',
-                            };
-                            setCustomItems(prev => [...prev, newItem]);
-                        }}
-                        onClose={() => setShowCatalogSelector(false)}
+}
+            </AnimatePresence >
+
+    {/* Template Save Modal */ }
+    < AnimatePresence >
+    { showTemplateModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="bg-apple-surface rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-apple-border"
+            >
+                <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-b border-apple-border p-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                                <Bookmark size={20} className="text-white" />
+                            </div>
+                            <h3 className="apple-heading-2">Сохранить как шаблон</h3>
+                        </div>
+                        <button
+                            onClick={() => setShowTemplateModal(false)}
+                            className="w-8 h-8 rounded-lg hover:bg-apple-bg-secondary transition-colors flex items-center justify-center"
+                        >
+                            <X size={20} className="text-apple-text-secondary" />
+                        </button>
+                    </div>
+                </div>
+
+                <div className="p-6">
+                    <AppleInput
+                        label="Название шаблона"
+                        placeholder="Например: Стандартный бассейн 8×4"
+                        value={templateName}
+                        onChange={(e) => setTemplateName(e.target.value)}
+                        className="mb-4"
+                        autoFocus
                     />
-                )}
-            </AnimatePresence>
+                    <AppleInput
+                        label="Описание (необязательно)"
+                        placeholder="Краткое описание конфигурации"
+                        value={templateDescription}
+                        onChange={(e) => setTemplateDescription(e.target.value)}
+                        className="mb-6"
+                    />
+
+                    <div className="flex gap-3">
+                        <AppleButton
+                            variant="secondary"
+                            onClick={() => setShowTemplateModal(false)}
+                            className="flex-1"
+                        >
+                            Отмена
+                        </AppleButton>
+                        <AppleButton
+                            variant="primary"
+                            onClick={handleSaveAsTemplate}
+                            className="flex-1"
+                            disabled={!templateName.trim()}
+                        >
+                            Сохранить
+                        </AppleButton>
+                    </div>
+                </div>
+            </motion.div>
         </div>
+    )}
+            </AnimatePresence >
+
+    {/* Catalog Selector */ }
+    < AnimatePresence >
+    { showCatalogSelector && (
+        <CatalogSelector
+            category="all"
+            onSelect={(product) => {
+                const newItem = {
+                    id: `custom-${Date.now()}`,
+                    name: product.name,
+                    quantity: 1,
+                    unit: product.unit,
+                    price: product.price,
+                    total: product.price,
+                    category: 'Дополнительное оборудование',
+                };
+                setCustomItems(prev => [...prev, newItem]);
+            }}
+            onClose={() => setShowCatalogSelector(false)}
+        />
+    )}
+            </AnimatePresence >
+        </div >
     );
 }
