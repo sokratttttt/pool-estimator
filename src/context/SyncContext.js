@@ -25,6 +25,31 @@ export function SyncProvider({ children }) {
         };
     }, []);
 
+    // Обновление времени последнего визита
+    const updateLastSeen = async (email) => {
+        try {
+            await supabase
+                .from('users')
+                .update({ last_seen: new Date().toISOString() })
+                .eq('email', email);
+        } catch (error) {
+            console.error('Error updating last seen:', error);
+        }
+    };
+
+    // Проверка текущего пользователя - ОБЪЯВЛЯЕМ ПЕРЕД useEffect
+    const checkUser = useCallback(async () => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                setUser(session.user);
+                await updateLastSeen(session.user.email);
+            }
+        } catch (error) {
+            console.error('Error checking user:', error);
+        }
+    }, []);
+
     // Проверка авторизации при загрузке
     useEffect(() => {
         checkUser();
@@ -40,31 +65,6 @@ export function SyncProvider({ children }) {
 
         return () => subscription.unsubscribe();
     }, [checkUser]);
-
-    // Проверка текущего пользователя
-    const checkUser = useCallback(async () => {
-        try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user) {
-                setUser(session.user);
-                await updateLastSeen(session.user.email);
-            }
-        } catch (error) {
-            console.error('Error checking user:', error);
-        }
-    }, []);
-
-    // Обновление времени последнего визита
-    const updateLastSeen = async (email) => {
-        try {
-            await supabase
-                .from('users')
-                .update({ last_seen: new Date().toISOString() })
-                .eq('email', email);
-        } catch (error) {
-            console.error('Error updating last seen:', error);
-        }
-    };
 
     // Вход
     const login = async (email, password) => {
@@ -98,8 +98,6 @@ export function SyncProvider({ children }) {
             toast.error('Ошибка выхода');
         }
     };
-
-
 
     const value = {
         user,
