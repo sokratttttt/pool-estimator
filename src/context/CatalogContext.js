@@ -61,6 +61,8 @@ export function CatalogProvider({ children }) {
                 id: product.id || `${type}_${Date.now()}`,
                 name: product.name,
                 category: type,
+                subcategory: product.subcategory || null,
+                article: product.article || null,
                 price: product.price,
                 unit: product.unit || 'шт',
                 image: product.image || null,

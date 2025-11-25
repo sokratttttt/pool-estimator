@@ -1,8 +1,44 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+// Функция для загрузки шрифта
+const loadFonts = async (doc) => {
+    try {
+        const response = await fetch('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf');
+        if (!response.ok) throw new Error('Failed to load font');
+
+        const blob = await response.blob();
+        const reader = new FileReader();
+
+        return new Promise((resolve, reject) => {
+            reader.onloadend = () => {
+                const base64data = reader.result.split(',')[1];
+                if (base64data) {
+                    doc.addFileToVFS('Roboto-Regular.ttf', base64data);
+                    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+                    doc.setFont('Roboto');
+                    resolve(true);
+                } else {
+                    reject(new Error('Failed to convert font to base64'));
+                }
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error loading font:', error);
+        // Fallback to standard font if loading fails (will show garbage for Cyrillic but better than crash)
+        doc.setFont('helvetica');
+        return false;
+    }
+};
+
 export const generateProposal = async (items, totalSum, clientInfo, estimateId) => {
     const doc = new jsPDF();
+
+    // Загружаем шрифт перед генерацией
+    await loadFonts(doc);
+
     let currentY = 20;
 
     // =============== ОБЛОЖКА ===============
@@ -152,7 +188,12 @@ export const generateProposal = async (items, totalSum, clientInfo, estimateId) 
             startY: currentY,
             head: [['Наименование', 'Кол-во', 'Ед.', 'Цена', 'Сумма']],
             body: tableData,
-            styles: { fontSize: 9, cellPadding: 3 },
+            styles: {
+                fontSize: 9,
+                cellPadding: 3,
+                font: 'Roboto', // Важно: используем загруженный шрифт
+                fontStyle: 'normal'
+            },
             headStyles: { fillColor: [0, 180, 216], textColor: 255, fontStyle: 'bold' },
             alternateRowStyles: { fillColor: [245, 245, 245] },
             margin: { left: 20, right: 20 }

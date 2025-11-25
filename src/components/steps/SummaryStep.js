@@ -70,7 +70,7 @@ export default function SummaryStep() {
             name: client.name,
             phone: client.phone || prev.phone,
             email: client.email || prev.email,
-            clientId: client.id // Store link
+            clientId: client.id
         }));
         toast.success('Данные клиента загружены');
     };
@@ -84,7 +84,6 @@ export default function SummaryStep() {
             return;
         }
 
-        // Include client info in selection to save it
         const finalSelection = {
             ...selection,
             clientInfo: clientInfo
@@ -115,12 +114,25 @@ export default function SummaryStep() {
     };
 
     const handleReorder = (section, reorderedItems) => {
-        // Update allItems with the new order for the specific section
         const otherItems = allItems.filter(item => (item.section || item.category) !== section);
         const newAllItems = [...otherItems, ...reorderedItems];
         setAllItems(newAllItems);
         toast.success('Порядок изменен');
     };
+
+    const handleExportExcel = async () => {
+        try {
+            setIsExporting(true);
+            await exportToExcel(allItems, totalSum, clientInfo);
+            toast.success('Excel экспортирован');
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+            toast.error('Ошибка при экспорте в Excel');
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     const handleExportPDF = async () => {
         try {
             setIsExporting(true);
@@ -175,8 +187,6 @@ export default function SummaryStep() {
             toast.error(error.message || 'Ошибка при открытии WhatsApp');
         }
     };
-
-
 
     const handleDeliveryCalculate = ({ cost, distance, address }) => {
         setDeliveryItem({
@@ -293,10 +303,8 @@ export default function SummaryStep() {
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-
                 {/* Left Column - Controls (4 cols) */}
                 <div className="xl:col-span-4 space-y-6 xl:sticky xl:top-24">
-
                     {/* Client Info */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -427,7 +435,6 @@ export default function SummaryStep() {
                             </div>
                         </AppleCard>
                     </motion.div>
-
                 </div>
             </div>
 
@@ -441,7 +448,6 @@ export default function SummaryStep() {
                             exit={{ opacity: 0, scale: 0.9, y: 20 }}
                             className="bg-apple-surface rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-apple-border"
                         >
-                            {/* Header with gradient */}
                             <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-b border-apple-border p-6">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
@@ -459,7 +465,6 @@ export default function SummaryStep() {
                                 </div>
                             </div>
 
-                            {/* Content */}
                             <div className="p-6">
                                 <AppleInput
                                     label="Название сметы"
@@ -491,9 +496,111 @@ export default function SummaryStep() {
                             </div>
                         </motion.div>
                     </div>
-                )
-                }
+                )}
             </AnimatePresence>
+
+            {/* Template Save Modal */}
+            <AnimatePresence>
+                {showTemplateModal && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="bg-apple-surface rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-apple-border"
+                        >
+                            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border-b border-apple-border p-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                                            <Bookmark size={20} className="text-white" />
+                                        </div>
+                                        <h3 className="apple-heading-2">Сохранить как шаблон</h3>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowTemplateModal(false)}
+                                        className="w-8 h-8 rounded-lg hover:bg-apple-bg-secondary transition-colors flex items-center justify-center"
+                                    >
+                                        <X size={20} className="text-apple-text-secondary" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="p-6">
+                                <AppleInput
+                                    label="Название шаблона"
+                                    placeholder="Например: Стандартный бассейн 8×4"
+                                    value={templateName}
+                                    onChange={(e) => setTemplateName(e.target.value)}
+                                    className="mb-4"
+                                    autoFocus
+                                />
+                                <AppleInput
+                                    label="Описание (необязательно)"
+                                    placeholder="Краткое описание конфигурации"
+                                    value={templateDescription}
+                                    onChange={(e) => setTemplateDescription(e.target.value)}
+                                    className="mb-6"
+                                />
+
+                                <div className="flex gap-3">
+                                    <AppleButton
+                                        variant="secondary"
+                                        onClick={() => setShowTemplateModal(false)}
+                                        className="flex-1"
+                                    >
+                                        Отмена
+                                    </AppleButton>
+                                    <AppleButton
+                                        variant="primary"
+                                        onClick={handleSaveAsTemplate}
+                                        className="flex-1"
+                                        disabled={!templateName.trim()}
+                                    >
+                                        Сохранить
+                                    </AppleButton>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Gantt Chart Modal */}
+            <AnimatePresence>
+                {showGanttModal && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-apple-surface rounded-3xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden border border-apple-border"
+                        >
+                            <div className="bg-gradient-to-br from-green-500/10 to-teal-500/10 border-b border-apple-border p-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
+                                            <Calendar size={20} className="text-white" />
+                                        </div>
+                                        <h3 className="apple-heading-2">График работ</h3>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowGanttModal(false)}
+                                        className="w-8 h-8 rounded-lg hover:bg-apple-bg-secondary transition-colors flex items-center justify-center"
+                                    >
+                                        <X size={20} className="text-apple-text-secondary" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
+                                <GanttChart items={allItems} />
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
             {/* Catalog Selector */}
             <AnimatePresence>
                 {showCatalogSelector && (

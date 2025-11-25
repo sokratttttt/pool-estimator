@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Package, Filter, X, Plus } from 'lucide-react';
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList } from 'react-window';
 import { useEquipmentCatalog } from '@/context/EquipmentCatalogContext';
 import { useEstimate } from '@/context/EstimateContext';
 import { toast } from 'sonner';
@@ -60,21 +60,21 @@ const CatalogItem = ({ item, onAdd, style }) => {
 
 // Главный компонент каталога
 export default function EquipmentCatalogSearch() {
-    const { 
-        categories, 
-        filteredItems, 
-        loading, 
+    const {
+        categories,
+        filteredItems,
+        loading,
         error,
-        searchQuery, 
-        setSearchQuery, 
-        selectedCategory, 
+        searchQuery,
+        setSearchQuery,
+        selectedCategory,
         setSelectedCategory,
         itemsCount,
         filteredCount
     } = useEquipmentCatalog();
-    
+
     const { addItem } = useEstimate();
-    
+
     const [showFilters, setShowFilters] = useState(false);
 
     // Debounced поиск
@@ -210,17 +210,16 @@ export default function EquipmentCatalogSearch() {
                                         </button>
                                     )}
                                 </div>
-                                
+
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-60 overflow-y-auto premium-scrollbar">
                                     {categories.map((category) => (
                                         <button
                                             key={category}
                                             onClick={() => setSelectedCategory(category === selectedCategory ? '' : category)}
-                                            className={`px-3 py-2 rounded-lg text-sm text-left transition-all ${
-                                                selectedCategory === category
-                                                    ? 'bg-cyan-bright/20 border-cyan-bright/50 text-cyan-bright'
-                                                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                                            } border`}
+                                            className={`px-3 py-2 rounded-lg text-sm text-left transition-all ${selectedCategory === category
+                                                ? 'bg-cyan-bright/20 border-cyan-bright/50 text-cyan-bright'
+                                                : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                                                } border`}
                                         >
                                             {category}
                                         </button>
@@ -243,15 +242,14 @@ export default function EquipmentCatalogSearch() {
                         </p>
                     </div>
                 ) : (
-                    <List
-                        height={600}
+                    <FixedSizeList
+                        height={400}
                         itemCount={filteredItems.length}
-                        itemSize={ITEM_HEIGHT}
+                        itemSize={80}
                         width="100%"
-                        className="premium-scrollbar"
                     >
                         {Row}
-                    </List>
+                    </FixedSizeList>
                 )}
             </div>
         </div>

@@ -1,11 +1,12 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { supabase } from '@/lib/supabase';
 
 const EquipmentCatalogContext = createContext();
 
 export function EquipmentCatalogProvider({ children }) {
-    const [catalog, setCatalog] = useState(null);
+    const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -19,32 +20,47 @@ export function EquipmentCatalogProvider({ children }) {
     const loadCatalog = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/data/catalog.json');
 
-            if (!response.ok) {
-                throw new Error('Не удалось загрузить каталог');
+            if (!supabase) {
+                throw new Error('Supabase client not initialized');
             }
 
-            const data = await response.json();
-            setCatalog(data);
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .order('name');
+
+            if (error) throw error;
+
+            setItems(data || []);
             setError(null);
         } catch (err) {
             console.error('Ошибка загрузки каталога:', err);
             setError(err.message);
+            // Fallback to local file if Supabase fails? 
+            // For now, let's show error to ensure we know if migration worked.
         } finally {
             setLoading(false);
         }
     };
 
+    // Получить все уникальные категории
+    const categories = useMemo(() => {
+        if (!items.length) return [];
+        // Extract unique categories and sort them
+        const uniqueCategories = [...new Set(items.map(item => item.category).filter(Boolean))];
+        return uniqueCategories.sort();
+    }, [items]);
+
     // Поиск с мемоизацией для производительности
     const filteredItems = useMemo(() => {
-        if (!catalog || !catalog.items) return [];
+        if (!items) return [];
 
-        let items = catalog.items;
+        let result = items;
 
         // Фильтр по категории
         if (selectedCategory) {
-            items = items.filter(item =>
+            result = result.filter(item =>
                 item.category === selectedCategory ||
                 item.subcategory === selectedCategory
             );
@@ -53,38 +69,31 @@ export function EquipmentCatalogProvider({ children }) {
         // Поиск по запросу (артикул, название)
         if (searchQuery.trim()) {
             const query = searchQuery.toLowerCase().trim();
-            items = items.filter(item =>
-                item.article.toLowerCase().includes(query) ||
+            result = result.filter(item =>
+                (item.article && item.article.toLowerCase().includes(query)) ||
                 item.name.toLowerCase().includes(query)
             );
         }
 
-        return items;
-    }, [catalog, searchQuery, selectedCategory]);
+        return result;
+    }, [items, searchQuery, selectedCategory]);
 
     // Функция поиска товара по ID
     const getItemById = (id) => {
-        if (!catalog || !catalog.items) return null;
-        return catalog.items.find(item => item.id === id);
+        return items.find(item => item.id === id);
     };
 
     // Функция поиска товара по артикулу
     const getItemByArticle = (article) => {
-        if (!catalog || !catalog.items) return null;
-        return catalog.items.find(item =>
-            item.article.toLowerCase() === article.toLowerCase()
+        return items.find(item =>
+            item.article && item.article.toLowerCase() === article.toLowerCase()
         );
     };
 
-    // Получить все уникальные категории
-    const categories = useMemo(() => {
-        if (!catalog || !catalog.categories) return [];
-        return catalog.categories;
-    }, [catalog]);
-
     const value = {
         // Данные
-        catalog,
+        catalog: { items, categories }, // Keep structure for compatibility if needed, though we use items directly mostly
+        items,
         categories,
         filteredItems,
 
@@ -101,8 +110,9 @@ export function EquipmentCatalogProvider({ children }) {
         getItemByArticle,
 
         // Утилиты
-        itemsCount: catalog?.items?.length || 0,
-        filteredCount: filteredItems.length
+        itemsCount: items.length,
+        filteredCount: filteredItems.length,
+        refreshCatalog: loadCatalog
     };
 
     return (

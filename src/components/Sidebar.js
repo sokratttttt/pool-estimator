@@ -27,6 +27,7 @@ export default function Sidebar() {
         { icon: FileText, label: 'Шаблоны', href: '/templates' },
         { icon: History, label: 'История', href: '/history' },
         { icon: Package, label: 'Каталог', href: '/catalog' },
+        { icon: Sparkles, label: 'Галерея', href: '/gallery' },
         { icon: Settings, label: 'Настройки', href: '/settings' },
     ];
 
