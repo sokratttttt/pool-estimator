@@ -16,6 +16,7 @@ import StatsDonut from '../components/dashboard/StatsDonut';
 import { SkeletonStats, SkeletonChart } from '@/components/Skeleton';
 import { useHistory } from '@/context/HistoryContext';
 import { useSync } from '@/context/SyncContext';
+import StickyNotes from '@/components/StickyNotes';
 
 export default function Dashboard() {
     const { estimates: history } = useHistory();
@@ -227,7 +228,17 @@ export default function Dashboard() {
                 </motion.div>
             )}
 
-            {/* Recent Estimates */}
+            {/* Sticky Notes Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="mb-8"
+            >
+                <StickyNotes />
+            </motion.div>
+
+            {/* Recent Activity + Quick Actions */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                     <div className="flex items-center justify-between mb-4">
@@ -299,7 +310,7 @@ export default function Dashboard() {
                         </Link>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

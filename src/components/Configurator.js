@@ -15,6 +15,7 @@ import SummaryStep from './steps/SummaryStep';
 import AppleButton from './apple/AppleButton';
 import { ArrowRight, ArrowLeft, Check, Undo2, Redo2 } from 'lucide-react';
 import { generateEstimateItems, calculateTotal } from '@/utils/estimateUtils';
+import AIAssistant from './AIAssistant';
 
 const steps = [
     { id: 'material', label: 'Тип' },
@@ -315,6 +316,9 @@ export default function Configurator() {
                     </div>
                 </div>
             </div>
+
+            {/* AI Assistant */}
+            <AIAssistant estimate={estimate} />
         </div>
     );
 }

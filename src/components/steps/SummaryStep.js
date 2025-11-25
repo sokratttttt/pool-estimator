@@ -8,7 +8,7 @@ import { exportToExcel, exportToPDF } from '@/utils/exportUtils';
 import { generateContract } from '@/utils/contractUtils';
 import { generateProposal } from '@/utils/proposalUtils';
 import { sendToWhatsApp } from '@/utils/whatsappUtils';
-import { Edit2, Save, FileSpreadsheet, FileText, X, Plus, Bookmark, MessageCircle, Calendar } from 'lucide-react';
+import { Edit2, Save, FileSpreadsheet, FileText, X, Plus, Bookmark, MessageCircle, Calendar, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AppleButton from '../apple/AppleButton';
 import AppleInput from '../apple/AppleInput';
@@ -19,6 +19,7 @@ import DeliveryCalculator from '../DeliveryCalculator';
 import PaymentSchedule from '../PaymentSchedule';
 import DraggableList from '../DraggableList';
 import GanttChart from '../GanttChart';
+import DescriptionGeneratorModal from '../DescriptionGeneratorModal';
 import { toast } from 'sonner';
 
 export default function SummaryStep() {
@@ -44,7 +45,7 @@ export default function SummaryStep() {
         managerPhone: '+7 (919) 296-16-47'
     });
     const [showGanttModal, setShowGanttModal] = useState(false);
-
+    const [showDescriptionModal, setShowDescriptionModal] = useState(false);
     const [allItems, setAllItems] = useState([]);
 
     useEffect(() => {
@@ -245,6 +246,14 @@ export default function SummaryStep() {
                         size="sm"
                     >
                         Шаблон
+                    </AppleButton>
+                    <AppleButton
+                        variant="secondary"
+                        onClick={() => setShowDescriptionModal(true)}
+                        icon={<Sparkles size={18} />}
+                        size="sm"
+                    >
+                        ✨ Описание
                     </AppleButton>
                     <AppleButton
                         variant="secondary"
@@ -622,6 +631,22 @@ export default function SummaryStep() {
                     />
                 )}
             </AnimatePresence>
+
+            {/* Description Generator Modal */}
+            <DescriptionGeneratorModal
+                isOpen={showDescriptionModal}
+                onClose={() => setShowDescriptionModal(false)}
+                poolData={{
+                    type: selection?.type || 'Бассейн',
+                    size: selection?.size || 'Стандарт',
+                    equipment: allItems.filter(i => i.category === 'Оборудование').map(i => i.name)
+                }}
+                onGenerate={(description) => {
+                    navigator.clipboard.writeText(description);
+                    toast.success('Описание скопировано!');
+                    setShowDescriptionModal(false);
+                }}
+            />
         </div>
     );
 }

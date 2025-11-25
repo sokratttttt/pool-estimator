@@ -1,81 +1,58 @@
 'use client';
-import { createContext, useContext, useState, useEffect } from 'react';
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
     const [theme, setTheme] = useState('light');
-    const [autoSwitch, setAutoSwitch] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        // Load saved preferences
+        setMounted(true);
+        // Load theme from localStorage
         const savedTheme = localStorage.getItem('theme');
-        const savedAutoSwitch = localStorage.getItem('theme-auto-switch');
-
-        if (savedAutoSwitch !== null) {
-            setAutoSwitch(savedAutoSwitch === 'true');
-        }
-
         if (savedTheme) {
             setTheme(savedTheme);
             applyTheme(savedTheme);
-        } else if (savedAutoSwitch !== 'false') {
-            // Auto-switch based on time
-            updateThemeByTime();
+        } else {
+            // Check system preference
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const initialTheme = prefersDark ? 'dark' : 'light';
+            setTheme(initialTheme);
+            applyTheme(initialTheme);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        if (autoSwitch) {
-            updateThemeByTime();
-
-            // Update every hour
-            const interval = setInterval(updateThemeByTime, 60 * 60 * 1000);
-            return () => clearInterval(interval);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [autoSwitch]);
-
-    const updateThemeByTime = () => {
-        const hour = new Date().getHours();
-        // Dark theme from 20:00 to 7:00
-        const newTheme = (hour >= 20 || hour < 7) ? 'dark' : 'light';
-        setTheme(newTheme);
-        applyTheme(newTheme);
-    };
-
     const applyTheme = (newTheme) => {
+        const root = document.documentElement;
         if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
+            root.classList.add('dark');
         } else {
-            document.documentElement.classList.remove('dark');
+            root.classList.remove('dark');
         }
     };
 
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
-        applyTheme(newTheme);
         localStorage.setItem('theme', newTheme);
-
-        // Disable auto-switch when manually toggled
-        setAutoSwitch(false);
-        localStorage.setItem('theme-auto-switch', 'false');
+        applyTheme(newTheme);
     };
 
-    const toggleAutoSwitch = () => {
-        const newAutoSwitch = !autoSwitch;
-        setAutoSwitch(newAutoSwitch);
-        localStorage.setItem('theme-auto-switch', String(newAutoSwitch));
-
-        if (newAutoSwitch) {
-            updateThemeByTime();
-        }
+    const setThemeMode = (mode) => {
+        setTheme(mode);
+        localStorage.setItem('theme', mode);
+        applyTheme(mode);
     };
+
+    // Prevent flash of wrong theme
+    if (!mounted) {
+        return <>{children}</>;
+    }
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, autoSwitch, toggleAutoSwitch }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, setThemeMode }}>
             {children}
         </ThemeContext.Provider>
     );

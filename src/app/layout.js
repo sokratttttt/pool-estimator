@@ -11,7 +11,7 @@ import { SyncProvider } from "../context/SyncContext";
 import { ClientProvider } from "../context/ClientContext";
 import { Toaster } from 'sonner';
 import { Inter, Montserrat } from 'next/font/google';
-import MainNav from '../components/MainNav';
+import Sidebar from '../components/Sidebar';
 
 const inter = Inter({
     subsets: ['latin', 'cyrillic'],
@@ -40,11 +40,9 @@ export const metadata = {
     },
 };
 
-import Sidebar from '../components/Sidebar';
-
 export default function RootLayout({ children }) {
     return (
-        <html lang="ru" className={`${inter.variable} ${montserrat.variable}`}>
+        <html lang="ru" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
             <body className="min-h-screen bg-navy-deep text-white antialiased overflow-x-hidden">
                 <ThemeProvider>
                     <SyncProvider>
@@ -76,4 +74,3 @@ export default function RootLayout({ children }) {
         </html>
     );
 }
-
