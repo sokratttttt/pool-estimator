@@ -131,7 +131,7 @@ export default function Configurator() {
 
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [currentStep, visibleSteps, currentStepIndex, handleBack, handleNext]);
+    }, [currentStep, visibleSteps, currentStepIndex, handleBack, handleNext, undo, redo, canUndo, canRedo]);
 
     // Ensure we don't get stuck on a hidden step
     useEffect(() => {
@@ -318,7 +318,11 @@ export default function Configurator() {
             </div>
 
             {/* AI Assistant */}
-            <AIAssistant estimate={estimate} />
+            <AIAssistant estimate={{
+                selection,
+                items: generateEstimateItems(selection),
+                total: calculateTotal(generateEstimateItems(selection), {})
+            }} />
         </div>
     );
 }
