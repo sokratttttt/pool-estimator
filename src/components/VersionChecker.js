@@ -5,8 +5,6 @@ import { Download, X, RefreshCw } from 'lucide-react';
 import AppleButton from './apple/AppleButton';
 import { supabase } from '@/lib/supabase';
 
-const CURRENT_VERSION = '1.0.0';
-
 export default function VersionChecker() {
     const [updateAvailable, setUpdateAvailable] = useState(false);
     const [latestVersion, setLatestVersion] = useState(null);
@@ -14,6 +12,7 @@ export default function VersionChecker() {
     const [isElectron, setIsElectron] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [updateProgress, setUpdateProgress] = useState(null);
+    const [currentVersion, setCurrentVersion] = useState('1.0.0');
 
     useEffect(() => {
         const compareVersions = (v1, v2) => {
@@ -42,7 +41,7 @@ export default function VersionChecker() {
                     return;
                 }
 
-                if (data && compareVersions(data.version, CURRENT_VERSION) > 0) {
+                if (data && compareVersions(data.version, currentVersion) > 0) {
                     setLatestVersion(data.version);
                     setReleaseNotes(data.release_notes || 'Доступна новая версия');
                     setUpdateAvailable(true);
@@ -61,6 +60,13 @@ export default function VersionChecker() {
         // Check if running in Electron
         const inElectron = typeof window !== 'undefined' && window.electron;
         setIsElectron(inElectron);
+
+        // Get current version from Electron
+        if (inElectron && window.electron.getAppVersion) {
+            window.electron.getAppVersion().then(version => {
+                setCurrentVersion(version);
+            });
+        }
 
         // Check version on mount and periodically
         checkVersion();
@@ -92,7 +98,7 @@ export default function VersionChecker() {
         }
 
         return () => clearInterval(interval);
-    }, []);
+    }, [currentVersion]);
 
     const handleUpdate = () => {
         if (isElectron && window.electron.downloadUpdate) {
@@ -204,7 +210,7 @@ export default function VersionChecker() {
                     </div>
 
                     <p className="text-xs text-apple-text-tertiary text-center mt-4">
-                        Текущая версия: {CURRENT_VERSION}
+                        Текущая версия: {currentVersion}
                     </p>
                 </motion.div>
             </motion.div>
