@@ -25,20 +25,37 @@ export function EquipmentCatalogProvider({ children }) {
                 throw new Error('Supabase client not initialized');
             }
 
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('name');
+            let allItems = [];
+            let from = 0;
+            const step = 1000;
+            let hasMore = true;
 
-            if (error) throw error;
+            while (hasMore) {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .range(from, from + step - 1)
+                    .order('name');
 
-            setItems(data || []);
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    allItems = [...allItems, ...data];
+                    from += step;
+                    // Если получили меньше чем запрашивали, значит это конец
+                    if (data.length < step) {
+                        hasMore = false;
+                    }
+                } else {
+                    hasMore = false;
+                }
+            }
+
+            setItems(allItems);
             setError(null);
         } catch (err) {
             console.error('Ошибка загрузки каталога:', err);
             setError(err.message);
-            // Fallback to local file if Supabase fails? 
-            // For now, let's show error to ensure we know if migration worked.
         } finally {
             setLoading(false);
         }
