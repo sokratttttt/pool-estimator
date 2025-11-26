@@ -21,21 +21,32 @@ export function CatalogProvider({ children }) {
                 return;
             }
 
-            const { data: products, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('created_at', { ascending: false });
+            let allItems = [];
+            let from = 0;
+            const step = 1000;
+            let hasMore = true;
 
-            if (error) throw error;
+            while (hasMore) {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .range(from, from + step - 1)
+                    .order('created_at', { ascending: false });
 
-            // Flatten/ensure category is present (it is in DB)
-            // We don't need to group here because the state is just a list of products
-            // The grouping happens in getProductsByCategory if needed, or we can just store flat list
-            // The original code flattened the grouped response:
-            // const allProducts = [ ...data.bowls, ... ]
-            // Since we get a flat list from DB, we can just set it directly
+                if (error) throw error;
 
-            setProducts(products || []);
+                if (data && data.length > 0) {
+                    allItems = [...allItems, ...data];
+                    from += step;
+                    if (data.length < step) {
+                        hasMore = false;
+                    }
+                } else {
+                    hasMore = false;
+                }
+            }
+
+            setProducts(allItems);
         } catch (error) {
             console.error('Error loading catalog:', error);
             toast.error('Не удалось загрузить каталог');

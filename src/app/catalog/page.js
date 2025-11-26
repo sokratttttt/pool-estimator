@@ -63,6 +63,20 @@ export default function CatalogPage() {
         setShowProductForm(true);
     };
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 24;
+
+    const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+    const currentProducts = sortedProducts.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    // Reset page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, selectedCategory, priceRange]);
+
     return (
         <div className="min-h-screen bg-apple-bg-primary">
             <div className="apple-container apple-section">
@@ -155,78 +169,103 @@ export default function CatalogPage() {
                 </div>
 
                 {/* Products Grid */}
-                {sortedProducts.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {sortedProducts.map((product, index) => (
-                            <motion.div
-                                key={product.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                            >
-                                <AppleCard className="h-full flex flex-col">
-                                    {/* Image */}
-                                    <div className="aspect-square bg-apple-bg-secondary rounded-lg mb-4 overflow-hidden relative">
-                                        {product.image ? (
-                                            <Image
-                                                src={product.image}
-                                                alt={product.name}
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                className="object-contain"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <Package size={64} className="text-apple-text-tertiary" />
-                                            </div>
-                                        )}
+                {currentProducts.length > 0 ? (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                            {currentProducts.map((product, index) => (
+                                <motion.div
+                                    key={product.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                >
+                                    <AppleCard className="h-full flex flex-col">
+                                        {/* Image */}
+                                        <div className="aspect-square bg-apple-bg-secondary rounded-lg mb-4 overflow-hidden relative">
+                                            {product.image ? (
+                                                <Image
+                                                    src={product.image}
+                                                    alt={product.name}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                    className="object-contain"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <Package size={64} className="text-apple-text-tertiary" />
+                                                </div>
+                                            )}
 
-                                    </div>
+                                        </div>
 
-                                    {/* Content */}
-                                    <div className="flex-1 flex flex-col">
-                                        <h3 className="apple-heading-3 mb-2 line-clamp-2">
-                                            {product.name}
-                                        </h3>
-                                        {product.description && (
-                                            <p className="apple-caption mb-3 line-clamp-2 flex-1">
-                                                {product.description}
-                                            </p>
-                                        )}
-                                        <div className="mt-auto">
-                                            <p className="apple-heading-2 text-apple-primary mb-4">
-                                                {product.price.toLocaleString('ru-RU')} ₽
-                                                <span className="apple-caption text-apple-text-secondary ml-1">
-                                                    / {product.unit}
-                                                </span>
-                                            </p>
+                                        {/* Content */}
+                                        <div className="flex-1 flex flex-col">
+                                            <h3 className="apple-heading-3 mb-2 line-clamp-2">
+                                                {product.name}
+                                            </h3>
+                                            {product.description && (
+                                                <p className="apple-caption mb-3 line-clamp-2 flex-1">
+                                                    {product.description}
+                                                </p>
+                                            )}
+                                            <div className="mt-auto">
+                                                <p className="apple-heading-2 text-apple-primary mb-4">
+                                                    {product.price.toLocaleString('ru-RU')} ₽
+                                                    <span className="apple-caption text-apple-text-secondary ml-1">
+                                                        / {product.unit}
+                                                    </span>
+                                                </p>
 
-                                            {/* Actions */}
-                                            <div className="flex gap-2">
-                                                <AppleButton
-                                                    variant="secondary"
-                                                    size="sm"
-                                                    icon={<Edit2 size={16} />}
-                                                    onClick={() => handleEdit(product)}
-                                                    className="flex-1"
-                                                >
-                                                    Изменить
-                                                </AppleButton>
-                                                <AppleButton
-                                                    variant="secondary"
-                                                    size="sm"
-                                                    icon={<Trash2 size={16} />}
-                                                    onClick={() => handleDelete(product)}
-                                                    className="text-red-500 hover:bg-red-50"
-                                                >
-                                                </AppleButton>
+                                                {/* Actions */}
+                                                <div className="flex gap-2">
+                                                    <AppleButton
+                                                        variant="secondary"
+                                                        size="sm"
+                                                        icon={<Edit2 size={16} />}
+                                                        onClick={() => handleEdit(product)}
+                                                        className="flex-1"
+                                                    >
+                                                        Изменить
+                                                    </AppleButton>
+                                                    <AppleButton
+                                                        variant="secondary"
+                                                        size="sm"
+                                                        icon={<Trash2 size={16} />}
+                                                        onClick={() => handleDelete(product)}
+                                                        className="text-red-500 hover:bg-red-50"
+                                                    >
+                                                    </AppleButton>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </AppleCard>
-                            </motion.div>
-                        ))}
-                    </div>
+                                    </AppleCard>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center gap-2">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    Назад
+                                </button>
+                                <span className="px-4 py-2 text-slate-400">
+                                    Страница {currentPage} из {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    Вперед
+                                </button>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="text-center py-16">
                         <Package size={64} className="mx-auto text-apple-text-tertiary mb-4" />
