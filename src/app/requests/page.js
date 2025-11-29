@@ -1,232 +1,261 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Plus, Phone, Mail, Calculator, Send, Edit, Trash2, TableIcon, Sparkles } from 'lucide-react';
-import { calculateDealProbability } from '@/lib/dealPredictor';
-import { motion } from 'framer-motion';
-import { toast } from 'sonner';
-
-const STATUS_COLORS = {
-    new: 'bg-purple-500',
-    calculated: 'bg-yellow-500',
-    sent: 'bg-green-500',
-    in_progress: 'bg-blue-500',
-    completed: 'bg-gray-500'
-};
-
-const STATUS_LABELS = {
-    new: 'Новая',
-    calculated: 'Просчитано',
-    sent: 'Отправлено',
-    in_progress: 'В работе',
-    completed: 'Завершено'
-};
+import { useEffect, useState } from 'react';
+import { useRequests } from '@/context/RequestsContext';
+import { Plus, Filter, Search, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import AppleButton from '@/components/apple/AppleButton';
+import AppleInput from '@/components/apple/AppleInput';
+import AppleCard from '@/components/apple/AppleCard';
+import RequestsTable from '@/components/requests/RequestsTable';
+import RequestStats from '@/components/requests/RequestStats';
+import RequestForm from '@/components/requests/RequestForm';
 
 export default function RequestsPage() {
-    const [requests, setRequests] = useState([]);
-    const [showAddForm, setShowAddForm] = useState(false);
-    const [editingId, setEditingId] = useState(null);
+    const {
+        requests,
+        loading,
+        stats,
+        fetchRequests,
+        fetchStats,
+        createRequest,
+        updateRequest,
+        deleteRequest
+    } = useRequests();
+
+    const [showForm, setShowForm] = useState(false);
+    const [editingRequest, setEditingRequest] = useState(null);
+    const [showFilters, setShowFilters] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filters, setFilters] = useState({
+        status: '',
+        manager: '',
+        forecast_status: '',
+        request_type: ''
+    });
 
     useEffect(() => {
         fetchRequests();
+        fetchStats();
+    }, [fetchRequests, fetchStats]);
 
-        // Realtime subscription
-        const channel = supabase
-            .channel('requests_changes')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'requests'
-                },
-                () => {
-                    fetchRequests();
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
+    const handleFilter = () => {
+        const appliedFilters = {
+            ...filters,
+            search: searchQuery
         };
-    }, []);
+        fetchRequests(appliedFilters);
+    };
 
-    const fetchRequests = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('requests')
-                .select('*')
-                .order('date', { ascending: false });
+    const handleClearFilters = () => {
+        setFilters({
+            status: '',
+            manager: '',
+            forecast_status: '',
+            request_type: ''
+        });
+        setSearchQuery('');
+        fetchRequests();
+    };
 
-            if (error) throw error;
-            setRequests(data || []);
-        } catch (error) {
-            console.error('Error fetching requests:', error);
-            toast.error('Не удалось загрузить заявки');
+    const handleEdit = (request) => {
+        setEditingRequest(request);
+        setShowForm(true);
+    };
+
+    const handleDelete = async (id) => {
+        if (confirm('Вы уверены, что хотите удалить эту заявку?')) {
+            await deleteRequest(id);
         }
     };
 
-    const updateStatus = async (id, newStatus) => {
-        try {
-            const { error } = await supabase
-                .from('requests')
-                .update({ status: newStatus })
-                .eq('id', id);
-
-            if (error) throw error;
-            toast.success('Статус обновлен');
-        } catch (error) {
-            console.error('Error updating status:', error);
-            toast.error('Ошибка обновления');
+    const handleSave = async (data) => {
+        if (editingRequest) {
+            await updateRequest(editingRequest.id, data);
+        } else {
+            await createRequest(data);
         }
+        setShowForm(false);
+        setEditingRequest(null);
     };
 
-    const deleteRequest = async (id) => {
-        if (!confirm('Удалить заявку?')) return;
-
-        try {
-            const { error } = await supabase
-                .from('requests')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-            toast.success('Заявка удалена');
-        } catch (error) {
-            console.error('Error deleting request:', error);
-            toast.error('Ошибка удаления');
-        }
+    const handleCreateEstimate = (request) => {
+        // Navigate to calculator with pre-filled data
+        // This is a placeholder - implement based on your routing
+        console.log('Create estimate for request:', request);
     };
 
     return (
-        <div className="p-6 max-w-[2000px] mx-auto">
+        <div className="p-6 max-w-[1800px] mx-auto">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <TableIcon size={32} className="text-cyan-bright" />
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8"
+            >
+                <div className="flex items-center justify-between mb-2">
                     <div>
                         <h1 className="text-3xl font-bold text-white">Заявки</h1>
-                        <p className="text-gray-400">Всего заявок: {requests.length}</p>
+                        <p className="text-gray-400">Управление входящими заявками клиентов</p>
+                    </div>
+                    <div className="flex gap-3">
+                        <AppleButton
+                            variant="secondary"
+                            icon={<Filter size={20} />}
+                            onClick={() => setShowFilters(!showFilters)}
+                        >
+                            Фильтры
+                        </AppleButton>
+                        <AppleButton
+                            variant="primary"
+                            icon={<Plus size={20} />}
+                            onClick={() => {
+                                setEditingRequest(null);
+                                setShowForm(true);
+                            }}
+                        >
+                            Новая заявка
+                        </AppleButton>
                     </div>
                 </div>
-                <button
-                    onClick={() => setShowAddForm(true)}
-                    className="px-4 py-2 bg-gradient-primary hover:opacity-90 text-white rounded-lg font-medium flex items-center gap-2 transition-opacity"
-                >
-                    <Plus size={20} />
-                    Новая заявка
-                </button>
-            </div>
+            </motion.div>
 
-            {/* Table */}
-            <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-gray-900">
-                            <tr>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Дата</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Телефон</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Тип</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Размеры</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Адрес</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Дата работы</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Менеджер</th>
-                                <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">🎯 AI</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Статус</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Заметки</th>
-                                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-700">
-                            {requests.map((request, index) => (
-                                <motion.tr
-                                    key={request.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.05 }}
-                                    className="hover:bg-gray-750 transition-colors"
-                                >
-                                    <td className="px-4 py-3 text-sm text-gray-300">
-                                        {new Date(request.date).toLocaleDateString('ru-RU')}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm">
-                                        <a href={`tel:${request.phone}`} className="text-cyan-bright hover:underline flex items-center gap-1">
-                                            <Phone size={14} />
-                                            {request.phone}
-                                        </a>
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{request.type || '—'}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{request.size || '—'}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{request.address || '—'}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">
-                                        {request.work_date ? new Date(request.work_date).toLocaleDateString('ru-RU') : '—'}
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-gray-300">{request.manager || '—'}</td>
-                                    <td className="px-4 py-3 text-center">
-                                        {(() => {
-                                            const prob = calculateDealProbability(request);
-                                            return (
-                                                <div className="flex items-center justify-center gap-1" title={prob.category.label}>
-                                                    <span className="text-xl">{prob.category.emoji}</span>
-                                                    <span className="text-sm font-semibold text-gray-300">{prob.score}%</span>
-                                                </div>
-                                            );
-                                        })()}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <select
-                                            value={request.status}
-                                            onChange={(e) => updateStatus(request.id, e.target.value)}
-                                            className={`px-3 py-1 rounded text-white text-sm font-medium cursor-pointer ${STATUS_COLORS[request.status]} border-none focus:ring-2 focus:ring-cyan-bright`}
-                                        >
-                                            {Object.entries(STATUS_LABELS).map(([value, label]) => (
-                                                <option key={value} value={value}>{label}</option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-gray-400 max-w-xs truncate">
-                                        {request.notes || '—'}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => window.location.href = '/calculator'}
-                                                className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded transition-colors"
-                                                title="Просчитать"
-                                            >
-                                                <Calculator size={16} />
-                                            </button>
-                                            <button
-                                                onClick={() => updateStatus(request.id, 'sent')}
-                                                className="p-2 bg-green-500 hover:bg-green-600 text-white rounded transition-colors"
-                                                title="Отправить"
-                                                disabled={request.status === 'sent'}
-                                            >
-                                                <Send size={16} />
-                                            </button>
-                                            <button
-                                                onClick={() => deleteRequest(request.id)}
-                                                className="p-2 bg-red-500 hover:bg-red-600 text-white rounded transition-colors"
-                                                title="Удалить"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </motion.tr>
-                            ))}
-                        </tbody>
-                    </table>
+            {/* Statistics */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="mb-8"
+            >
+                <RequestStats stats={stats} loading={loading} />
+            </motion.div>
 
-                    {requests.length === 0 && (
-                        <div className="text-center py-12 text-gray-500">
-                            <TableIcon size={48} className="mx-auto mb-3 opacity-20" />
-                            <p>Нет заявок</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+            {/* Filters */}
+            <AnimatePresence>
+                {showFilters && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mb-6"
+                    >
+                        <AppleCard variant="premium">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <div>
+                                    <label className="apple-caption mb-2 block">Поиск</label>
+                                    <div className="relative">
+                                        <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                        <input
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Имя или телефон"
+                                            className="w-full pl-10 pr-4 py-2 rounded-xl bg-apple-bg-secondary border border-apple-border text-white outline-none focus:border-cyan-bright"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="apple-caption mb-2 block">Статус</label>
+                                    <select
+                                        value={filters.status}
+                                        onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                                        style={{ colorScheme: 'dark' }}
+                                        className="w-full px-4 py-2 rounded-xl bg-apple-bg-secondary border border-apple-border text-white outline-none focus:border-cyan-bright [&>option]:bg-gray-800 [&>option]:text-white"
+                                    >
+                                        <option value="">Все</option>
+                                        <option value="new">Новая</option>
+                                        <option value="in_progress">В работе</option>
+                                        <option value="contacted">Связались</option>
+                                        <option value="estimate_sent">Смета отправлена</option>
+                                        <option value="completed">Завершена</option>
+                                        <option value="cancelled">Отменена</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="apple-caption mb-2 block">Прогноз</label>
+                                    <select
+                                        value={filters.forecast_status}
+                                        onChange={(e) => setFilters({ ...filters, forecast_status: e.target.value })}
+                                        style={{ colorScheme: 'dark' }}
+                                        className="w-full px-4 py-2 rounded-xl bg-apple-bg-secondary border border-apple-border text-white outline-none focus:border-cyan-bright [&>option]:bg-gray-800 [&>option]:text-white"
+                                    >
+                                        <option value="">Все</option>
+                                        <option value="hot">Горячая</option>
+                                        <option value="warm">Теплая</option>
+                                        <option value="cold">Холодная</option>
+                                        <option value="neutral">Нейтральная</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="apple-caption mb-2 block">Тип</label>
+                                    <select
+                                        value={filters.request_type}
+                                        onChange={(e) => setFilters({ ...filters, request_type: e.target.value })}
+                                        style={{ colorScheme: 'dark' }}
+                                        className="w-full px-4 py-2 rounded-xl bg-apple-bg-secondary border border-apple-border text-white outline-none focus:border-cyan-bright [&>option]:bg-gray-800 [&>option]:text-white"
+                                    >
+                                        <option value="">Все</option>
+                                        <option value="construction">Строительство</option>
+                                        <option value="repair">Ремонт</option>
+                                        <option value="equipment">Оборудование</option>
+                                        <option value="other">Другое</option>
+                                    </select>
+                                </div>
+
+                                <div className="flex items-end gap-2">
+                                    <AppleButton
+                                        variant="primary"
+                                        onClick={handleFilter}
+                                        className="flex-1"
+                                    >
+                                        Применить
+                                    </AppleButton>
+                                    <AppleButton
+                                        variant="secondary"
+                                        onClick={handleClearFilters}
+                                        icon={<X size={18} />}
+                                    >
+                                        Сбросить
+                                    </AppleButton>
+                                </div>
+                            </div>
+                        </AppleCard>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Requests Table */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+            >
+                <RequestsTable
+                    requests={requests}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onCreateEstimate={handleCreateEstimate}
+                    loading={loading}
+                />
+            </motion.div>
+
+            {/* Request Form Modal */}
+            <AnimatePresence>
+                {showForm && (
+                    <RequestForm
+                        request={editingRequest}
+                        onSave={handleSave}
+                        onClose={() => {
+                            setShowForm(false);
+                            setEditingRequest(null);
+                        }}
+                        loading={loading}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

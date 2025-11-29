@@ -1,14 +1,16 @@
 'use client';
 import { motion } from 'framer-motion';
+import { memo, useMemo } from 'react';
 
-export default function AppleCard({
+const AppleCard = memo(function AppleCard({
     children,
     className = '',
     variant = 'glass', // glass, premium, flat
     hover = true,
     ...props
 }) {
-    const getVariantStyles = () => {
+    // ✨ Memoize variant styles - only recalculate when variant changes
+    const variantStyles = useMemo(() => {
         if (variant === 'premium') {
             return {
                 background: 'linear-gradient(135deg, rgba(30, 58, 95, 0.8) 0%, rgba(10, 25, 41, 0.9) 100%)',
@@ -31,7 +33,7 @@ export default function AppleCard({
             border: '1px solid rgba(255, 255, 255, 0.1)',
             boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
         };
-    };
+    }, [variant]);
 
     return (
         <motion.div
@@ -39,10 +41,14 @@ export default function AppleCard({
             animate={{ opacity: 1, y: 0 }}
             whileHover={hover ? { y: -2, boxShadow: '0 16px 48px rgba(0, 0, 0, 0.3)' } : {}}
             className={`rounded-xl p-6 transition-all duration-300 ${className}`}
-            style={getVariantStyles()}
+            style={variantStyles}
             {...props}
         >
             {children}
         </motion.div>
     );
-}
+});
+
+AppleCard.displayName = 'AppleCard';
+
+export default AppleCard;

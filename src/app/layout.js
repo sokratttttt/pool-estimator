@@ -1,4 +1,5 @@
 import VersionChecker from '@/components/VersionChecker';
+import PageTransition from '@/components/PageTransition';
 import "./globals.css";
 import { EstimateProvider } from "../context/EstimateContext";
 import { TemplateProvider } from "../context/TemplateContext";
@@ -6,9 +7,11 @@ import { HistoryProvider } from "../context/HistoryContext";
 import { CatalogProvider } from "../context/CatalogContext";
 import { EquipmentCatalogProvider } from "../context/EquipmentCatalogContext";
 import { ThemeProvider } from "../context/ThemeContext";
+import { PhotoProvider } from "../context/PhotoContext";
 import { BackupProvider } from "../context/BackupContext";
 import { SyncProvider } from "../context/SyncContext";
 import { ClientProvider } from "../context/ClientContext";
+import { RequestsProvider } from "../context/RequestsContext";
 import { Toaster } from 'sonner';
 import { Inter, Montserrat } from 'next/font/google';
 import Sidebar from '../components/Sidebar';
@@ -45,30 +48,36 @@ export default function RootLayout({ children }) {
         <html lang="ru" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
             <body className="min-h-screen bg-navy-deep text-white antialiased overflow-x-hidden">
                 <ThemeProvider>
-                    <SyncProvider>
-                        <ClientProvider>
-                            <BackupProvider>
-                                <EstimateProvider>
-                                    <TemplateProvider>
-                                        <HistoryProvider>
-                                            <CatalogProvider>
-                                                <EquipmentCatalogProvider>
-                                                    <div className="flex min-h-screen">
-                                                        <Sidebar />
-                                                        <main className="flex-1 md:pl-72 pt-16 md:pt-0 min-w-0 transition-all duration-300">
-                                                            <VersionChecker />
-                                                            {children}
-                                                        </main>
-                                                    </div>
-                                                    <Toaster position="top-right" richColors theme="dark" />
-                                                </EquipmentCatalogProvider>
-                                            </CatalogProvider>
-                                        </HistoryProvider>
-                                    </TemplateProvider>
-                                </EstimateProvider>
-                            </BackupProvider>
-                        </ClientProvider>
-                    </SyncProvider>
+                    <PhotoProvider>
+                        <SyncProvider>
+                            <ClientProvider>
+                                <RequestsProvider>
+                                    <BackupProvider>
+                                        <CatalogProvider>
+                                            <EquipmentCatalogProvider>
+                                                <EstimateProvider>
+                                                    <TemplateProvider>
+                                                        <HistoryProvider>
+                                                            <div className="flex min-h-screen">
+                                                                <Sidebar />
+                                                                <main className="flex-1 md:pl-72 pt-16 md:pt-0 min-w-0 transition-all duration-300">
+                                                                    <VersionChecker />
+                                                                    <PageTransition>
+                                                                        {children}
+                                                                    </PageTransition>
+                                                                </main>
+                                                            </div>
+                                                            <Toaster position="top-right" richColors theme="dark" />
+                                                        </HistoryProvider>
+                                                    </TemplateProvider>
+                                                </EstimateProvider>
+                                            </EquipmentCatalogProvider>
+                                        </CatalogProvider>
+                                    </BackupProvider>
+                                </RequestsProvider>
+                            </ClientProvider>
+                        </SyncProvider>
+                    </PhotoProvider>
                 </ThemeProvider>
             </body>
         </html>

@@ -1,7 +1,9 @@
 'use client';
 import { motion } from 'framer-motion';
+import { memo, useMemo } from 'react';
+import { useRipple } from '../effects/Ripple';
 
-export default function AppleButton({
+const AppleButton = memo(function AppleButton({
     children,
     onClick,
     variant = 'primary', // primary, secondary, ghost, gold
@@ -11,9 +13,19 @@ export default function AppleButton({
     disabled = false,
     loading = false,
     className = '',
+    ariaLabel,
+    type = 'button',
     ...props
 }) {
-    const getVariantStyles = () => {
+    // ✨ Ripple effect
+    const { RippleContainer } = useRipple(
+        variant === 'primary' || variant === 'gold'
+            ? 'rgba(255, 255, 255, 0.4)'
+            : 'rgba(0, 217, 255, 0.3)'
+    );
+
+    // ✨ Memoize variant styles - only recalculate when variant or disabled changes
+    const variantStyles = useMemo(() => {
         switch (variant) {
             case 'primary':
                 return {
@@ -39,9 +51,10 @@ export default function AppleButton({
                     color: '#FFFFFF'
                 };
         }
-    };
+    }, [variant, disabled]);
 
-    const getSizeClass = () => {
+    // ✨ Memoize size classes
+    const sizeClass = useMemo(() => {
         switch (size) {
             case 'sm':
                 return 'text-sm px-4 py-2';
@@ -50,34 +63,51 @@ export default function AppleButton({
             default:
                 return 'px-6 py-3';
         }
-    };
+    }, [size]);
 
     return (
-        <motion.button
-            whileHover={{ scale: disabled || loading ? 1 : 1.02, boxShadow: disabled || loading ? undefined : '0 8px 24px rgba(0, 217, 255, 0.3)' }}
-            whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
-            onClick={onClick}
-            disabled={disabled || loading}
-            className={`
-                inline-flex items-center justify-center gap-2
-                ${getSizeClass()}
-                font-semibold rounded-lg
-                transition-all duration-200
-                ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                ${className}
-            `}
-            style={getVariantStyles()}
-            {...props}
+        <RippleContainer
+            className="inline-block rounded-lg"
         >
-            {loading ? (
-                <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
-            ) : (
-                <>
-                    {icon && iconPosition === 'left' && <span className="flex-shrink-0">{icon}</span>}
-                    <span className="relative z-10">{children}</span>
-                    {icon && iconPosition === 'right' && <span className="flex-shrink-0">{icon}</span>}
-                </>
-            )}
-        </motion.button>
+            <motion.button
+                whileHover={{ scale: disabled || loading ? 1 : 1.02, boxShadow: disabled || loading ? undefined : '0 8px 24px rgba(0, 217, 255, 0.3)' }}
+                whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
+                onClick={onClick}
+                disabled={disabled || loading}
+                type={type}
+                aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
+                aria-disabled={disabled || loading}
+                aria-busy={loading}
+                className={`
+                    inline-flex items-center justify-center gap-2
+                    ${sizeClass}
+                    font-semibold rounded-lg
+                    transition-all duration-200
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-deep
+                    ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                    ${className}
+                `}
+                style={variantStyles}
+                {...props}
+            >
+                {loading ? (
+                    <div
+                        className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full"
+                        role="status"
+                        aria-label="Загрузка"
+                    />
+                ) : (
+                    <>
+                        {icon && iconPosition === 'left' && <span className="flex-shrink-0" aria-hidden="true">{icon}</span>}
+                        <span className="relative z-10">{children}</span>
+                        {icon && iconPosition === 'right' && <span className="flex-shrink-0" aria-hidden="true">{icon}</span>}
+                    </>
+                )}
+            </motion.button>
+        </RippleContainer>
     );
-}
+});
+
+AppleButton.displayName = 'AppleButton';
+
+export default AppleButton;

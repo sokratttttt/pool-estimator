@@ -8,8 +8,11 @@ import AppleButton from '../../components/apple/AppleButton';
 import AppleCard from '../../components/apple/AppleCard';
 import ContextMenu from '@/components/ContextMenu';
 import { SkeletonListItem } from '@/components/Skeleton';
+import { EmptyState } from '@/components/ui';
 import { useHistory } from '../../context/HistoryContext';
 import { useEstimate } from '../../context/EstimateContext';
+import { useDebounce } from '../../hooks/useDebounce';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { exportToExcel, exportToPDF } from '../../utils/exportUtils';
 import { exportToComparisonPDF } from '../../utils/comparisonUtils';
 import { toast } from 'sonner';
@@ -20,8 +23,9 @@ export default function HistoryPage() {
     const router = useRouter();
     const [deletingId, setDeletingId] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [sortBy, setSortBy] = useState('date');
-    const [sortOrder, setSortOrder] = useState('desc');
+    const debouncedSearchQuery = useDebounce(searchQuery, 300);
+    const [sortBy, setSortBy] = useLocalStorage('history-sort-by', 'date');
+    const [sortOrder, setSortOrder] = useLocalStorage('history-sort-order', 'desc');
     const [statusFilter, setStatusFilter] = useState('all');
     const [isLoading, setIsLoading] = useState(true);
     const [selectedEstimates, setSelectedEstimates] = useState([]);
@@ -133,7 +137,7 @@ export default function HistoryPage() {
 
     const filteredEstimates = useMemo(() => {
         let filtered = estimates.filter(estimate =>
-            estimate.name.toLowerCase().includes(searchQuery.toLowerCase())
+            estimate.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
         );
 
         if (statusFilter !== 'all') {
@@ -153,7 +157,7 @@ export default function HistoryPage() {
         });
 
         return filtered;
-    }, [estimates, searchQuery, sortBy, sortOrder, statusFilter]);
+    }, [estimates, debouncedSearchQuery, sortBy, sortOrder, statusFilter]);
 
     const toggleSort = (field) => {
         if (sortBy === field) {
@@ -286,18 +290,23 @@ export default function HistoryPage() {
                         ))}
                     </div>
                 ) : filteredEstimates.length === 0 ? (
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                        <AppleCard variant="premium" className="max-w-md mx-auto text-center py-12">
-                            <FileText size={64} className="mx-auto text-apple-text-tertiary mb-4" />
-                            <h3 className="apple-heading-3 mb-2">Нет смет</h3>
-                            <p className="apple-body-secondary mb-6">
-                                {searchQuery || statusFilter !== 'all' ? 'Попробуйте изменить фильтры поиска' : 'Создайте первую смету'}
-                            </p>
-                            <Link href="/calculator">
-                                <AppleButton variant="primary">Создать смету</AppleButton>
-                            </Link>
-                        </AppleCard>
-                    </motion.div>
+                    <div className="max-w-2xl mx-auto">
+                        <EmptyState
+                            icon={<FileText size={64} />}
+                            title={searchQuery || statusFilter !== 'all' ? 'Ничего не найдено' : 'У вас пока нет сохраненных смет'}
+                            description={searchQuery || statusFilter !== 'all'
+                                ? 'Попробуйте изменить фильтры или условия поиска'
+                                : 'Создайте свою первую смету в калькуляторе и она появится здесь'
+                            }
+                            action={{
+                                label: searchQuery || statusFilter !== 'all' ? 'Сбросить фильтры' : 'Создать смету',
+                                onClick: () => searchQuery || statusFilter !== 'all'
+                                    ? (setSearchQuery(''), setStatusFilter('all'))
+                                    : router.push('/calculator'),
+                                variant: 'primary'
+                            }}
+                        />
+                    </div>
                 ) : (
                     <div className="max-w-4xl mx-auto space-y-4">
                         <AnimatePresence>

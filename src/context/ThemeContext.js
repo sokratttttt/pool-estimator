@@ -1,58 +1,99 @@
 'use client';
-
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
-export function ThemeProvider({ children }) {
-    const [theme, setTheme] = useState('light');
-    const [mounted, setMounted] = useState(false);
+const THEME_STORAGE_KEY = 'mos-pool-theme';
 
+// Color themes
+const THEMES = {
+    navy: {
+        name: 'Navy Deep',
+        primary: '#0a1628',
+        secondary: '#1e293b',
+        accent: '#06b6d4',
+        text: '#ffffff'
+    },
+    dark: {
+        name: 'Dark',
+        primary: '#0f172a',
+        secondary: '#1e293b',
+        accent: '#3b82f6',
+        text: '#ffffff'
+    },
+    blue: {
+        name: 'Ocean Blue',
+        primary: '#0c4a6e',
+        secondary: '#075985',
+        accent: '#0ea5e9',
+        text: '#ffffff'
+    }
+};
+
+export function ThemeProvider({ children }) {
+    const [currentTheme, setCurrentTheme] = useState('navy');
+    const [customColors, setCustomColors] = useState({});
+
+    // Load theme from localStorage
     useEffect(() => {
-        setMounted(true);
-        // Load theme from localStorage
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            setTheme(savedTheme);
-            applyTheme(savedTheme);
-        } else {
-            // Check system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const initialTheme = prefersDark ? 'dark' : 'light';
-            setTheme(initialTheme);
-            applyTheme(initialTheme);
+        const saved = localStorage.getItem(THEME_STORAGE_KEY);
+        if (saved) {
+            try {
+                const { theme, colors } = JSON.parse(saved);
+                setCurrentTheme(theme);
+                setCustomColors(colors || {});
+            } catch (error) {
+                console.error('Failed to load theme:', error);
+            }
         }
     }, []);
 
-    const applyTheme = (newTheme) => {
-        const root = document.documentElement;
-        if (newTheme === 'dark') {
-            root.classList.add('dark');
-        } else {
-            root.classList.remove('dark');
+    // Save theme to localStorage
+    useEffect(() => {
+        localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({
+            theme: currentTheme,
+            colors: customColors
+        }));
+    }, [currentTheme, customColors]);
+
+    // Get current theme colors
+    const colors = useMemo(() => ({
+        ...THEMES[currentTheme],
+        ...customColors
+    }), [currentTheme, customColors]);
+
+    // Change theme
+    const setTheme = useCallback((themeName) => {
+        if (THEMES[themeName]) {
+            setCurrentTheme(themeName);
         }
-    };
+    }, []);
 
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        applyTheme(newTheme);
-    };
+    // Set custom color
+    const setColor = useCallback((colorName, colorValue) => {
+        setCustomColors(prev => ({
+            ...prev,
+            [colorName]: colorValue
+        }));
+    }, []);
 
-    const setThemeMode = (mode) => {
-        setTheme(mode);
-        localStorage.setItem('theme', mode);
-        applyTheme(mode);
-    };
+    // Reset to default theme
+    const resetTheme = useCallback(() => {
+        setCurrentTheme('navy');
+        setCustomColors({});
+    }, []);
 
-    // Prevent flash of wrong theme
-    if (!mounted) {
-        return <>{children}</>;
-    }
+    const value = useMemo(() => ({
+        currentTheme,
+        colors,
+        themes: THEMES,
+        setTheme,
+        setColor,
+        resetTheme
+    }), [currentTheme, colors, setTheme, setColor, resetTheme]);
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, setThemeMode }}>
+        <ThemeContext.Provider value={value}>
             {children}
         </ThemeContext.Provider>
     );

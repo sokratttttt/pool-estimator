@@ -1,191 +1,131 @@
 'use client';
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 
 const CatalogContext = createContext();
 
 export function CatalogProvider({ children }) {
-    const [products, setProducts] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [catalog, setCatalog] = useState({ bowls: [], additional: [], filtration: [], heating: [], parts: [] });
+    const [isLoadingCatalog, setIsLoadingCatalog] = useState(true);
 
-    // Load products from Supabase on mount
+    // Load catalog on mount
     useEffect(() => {
-        fetchCatalog();
-    }, []);
+        const loadCatalog = async () => {
+            setIsLoadingCatalog(true);
+            try {
+                if (!supabase) {
+                    console.warn('Supabase not configured');
+                    setIsLoadingCatalog(false);
+                    return;
+                }
 
-    const fetchCatalog = async () => {
-        try {
-            if (!supabase) {
-                console.warn('Supabase not configured');
-                return;
-            }
-
-            let allItems = [];
-            let from = 0;
-            const step = 1000;
-            let hasMore = true;
-
-            while (hasMore) {
-                const { data, error } = await supabase
+                const { data: products, error } = await supabase
                     .from('products')
                     .select('*')
-                    .range(from, from + step - 1)
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
 
-                if (data && data.length > 0) {
-                    allItems = [...allItems, ...data];
-                    from += step;
-                    if (data.length < step) {
-                        hasMore = false;
+                // Group products by category
+                const grouped = {
+                    bowls: [],
+                    heating: [],
+                    filtration: [],
+                    parts: [],
+                    additional: [],
+                    accessories: [],
+                    chemicals: []
+                };
+
+                (products || []).forEach(product => {
+                    if (grouped[product.category]) {
+                        grouped[product.category].push(product);
+                    } else if (product.category === 'accessories') {
+                        grouped.additional.push(product);
                     }
-                } else {
-                    hasMore = false;
+                });
+
+                setCatalog(grouped);
+            } catch (err) {
+                console.error('Failed to load catalog:', err);
+                toast.error('Не удалось загрузить каталог. Попробуйте обновить страницу.');
+            } finally {
+                setIsLoadingCatalog(false);
+            }
+        };
+
+        loadCatalog();
+    }, []);
+
+    // Update catalog
+    const updateCatalog = useCallback((type, newItems) => {
+        setCatalog(prev => {
+            const updated = { ...prev };
+            const existingIds = new Set(updated[type]?.map(i => i.id));
+            const uniqueNewItems = newItems.filter(i => !existingIds.has(i.id));
+
+            updated[type] = [...(updated[type] || []), ...uniqueNewItems];
+            return updated;
+        });
+        toast.success(`Каталог обновлен: добавлено ${newItems.length} позиций`);
+    }, []);
+
+    // Get products by category
+    const getProductsByCategory = useCallback((category) => {
+        if (category === 'all') {
+            return Object.values(catalog).flat();
+        }
+        return catalog[category] || [];
+    }, [catalog]);
+
+    // Get all products as flat array
+    const products = useMemo(() => {
+        return Object.values(catalog).flat();
+    }, [catalog]);
+
+    // Update product
+    const updateProduct = useCallback((productId, updates) => {
+        setCatalog(prev => {
+            const newCatalog = { ...prev };
+            Object.keys(newCatalog).forEach(category => {
+                const index = newCatalog[category].findIndex(p => p.id === productId);
+                if (index !== -1) {
+                    newCatalog[category][index] = {
+                        ...newCatalog[category][index],
+                        ...updates
+                    };
                 }
-            }
+            });
+            return newCatalog;
+        });
+    }, []);
 
-            setProducts(allItems);
-        } catch (error) {
-            console.error('Error loading catalog:', error);
-            toast.error('Не удалось загрузить каталог');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    // Delete product
+    const deleteProduct = useCallback((productId) => {
+        setCatalog(prev => {
+            const newCatalog = { ...prev };
+            Object.keys(newCatalog).forEach(category => {
+                newCatalog[category] = newCatalog[category].filter(p => p.id !== productId);
+            });
+            return newCatalog;
+        });
+    }, []);
 
-    const addProduct = async (product) => {
-        try {
-            if (!supabase) {
-                toast.error('Supabase не настроен');
-                return;
-            }
-
-            // Determine type based on category
-            const type = product.category === 'bowls' ? 'bowls' :
-                product.category === 'heating' ? 'heating' :
-                    product.category === 'filtration' ? 'filtration' :
-                        product.category === 'parts' ? 'parts' : 'additional';
-
-            const newProduct = {
-                id: product.id || `${type}_${Date.now()}`,
-                name: product.name,
-                category: type,
-                subcategory: product.subcategory || null,
-                article: product.article || null,
-                price: product.price,
-                unit: product.unit || 'шт',
-                image: product.image || null,
-                description: product.description || null,
-                specifications: product.specifications || null,
-            };
-
-            const { data, error } = await supabase
-                .from('products')
-                .insert([newProduct])
-                .select()
-                .single();
-
-            if (error) throw error;
-
-            await fetchCatalog(); // Reload to get fresh data
-            toast.success('Товар добавлен');
-        } catch (error) {
-            console.error('Error adding product:', error);
-            toast.error(error.message || 'Не удалось добавить товар');
-        }
-    };
-
-    const updateProduct = async (id, updates) => {
-        try {
-            if (!supabase) {
-                toast.error('Supabase не настроен');
-                return;
-            }
-
-            // Check image size if present
-            if (updates.image) {
-                const sizeInMB = (updates.image.length * 0.75) / (1024 * 1024);
-                if (sizeInMB > 2) {
-                    toast.error(`Изображение слишком большое: ${sizeInMB.toFixed(2)} MB. Максимум 2MB.`);
-                    return;
-                }
-            }
-
-            const updateData = {
-                ...updates,
-                updated_at: new Date().toISOString()
-            };
-
-            const { error } = await supabase
-                .from('products')
-                .update(updateData)
-                .eq('id', id);
-
-            if (error) throw error;
-
-            // Update local state
-            setProducts(prev =>
-                prev.map(p =>
-                    p.id === id ? { ...p, ...updates, updated_at: new Date().toISOString() } : p
-                )
-            );
-
-            toast.success('Товар обновлен');
-        } catch (error) {
-            console.error('Error updating product:', error);
-            toast.error(error.message || 'Не удалось обновить товар');
-        }
-    };
-
-    const deleteProduct = async (id) => {
-        try {
-            if (!supabase) {
-                toast.error('Supabase не настроен');
-                return;
-            }
-
-            const { error } = await supabase
-                .from('products')
-                .delete()
-                .eq('id', id);
-
-            if (error) throw error;
-
-            setProducts(prev => prev.filter(p => p.id !== id));
-            toast.success('Товар удален');
-        } catch (error) {
-            console.error('Error deleting product:', error);
-            toast.error(error.message || 'Не удалось удалить товар');
-        }
-    };
-
-    const getProduct = (id) => {
-        return products.find(product => product.id === id);
-    };
-
-    const getProductsByCategory = (category) => {
-        if (category === 'all') return products;
-        if (category === 'accessories') {
-            return products.filter(p => p.category === 'accessories' || p.category === 'additional');
-        }
-        return products.filter(product => product.category === category);
-    };
+    // Memoized context value
+    const value = useMemo(() => ({
+        catalog,
+        setCatalog,
+        isLoadingCatalog,
+        updateCatalog,
+        products,
+        getProductsByCategory,
+        updateProduct,
+        deleteProduct
+    }), [catalog, isLoadingCatalog, updateCatalog, products, getProductsByCategory, updateProduct, deleteProduct]);
 
     return (
-        <CatalogContext.Provider
-            value={{
-                products,
-                isLoading,
-                addProduct,
-                updateProduct,
-                deleteProduct,
-                getProduct,
-                getProductsByCategory,
-                refreshCatalog: fetchCatalog
-            }}
-        >
+        <CatalogContext.Provider value={value}>
             {children}
         </CatalogContext.Provider>
     );

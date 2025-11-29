@@ -112,7 +112,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="p-6 max-w-[1600px] mx-auto">
+        <div className="p-6 max-w-[1800px] mx-auto">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
@@ -140,7 +140,7 @@ export default function Dashboard() {
                     variants={container}
                     initial="hidden"
                     animate="show"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-4 gap-6 mb-8"
                 >
                     <motion.div variants={item}>
                         <AppleCard variant="premium" className="h-full relative overflow-hidden">
@@ -239,7 +239,7 @@ export default function Dashboard() {
             </motion.div>
 
             {/* Recent Activity + Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 3xl:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold text-white">Последние проекты</h2>

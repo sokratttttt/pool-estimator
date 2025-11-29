@@ -35,6 +35,7 @@ module.exports = {
       screens: {
         'xs': '480px',
         '3xl': '1920px',
+        'uwide': '2560px', // Ultra-wide monitors
       },
       container: {
         center: true,
@@ -44,7 +45,8 @@ module.exports = {
           md: '768px',
           lg: '1024px',
           xl: '1280px',
-          '2xl': '1536px',
+          '2xl': '1600px', // Increased from 1536px
+          '3xl': '1800px', // New for 1920x1080
         },
       },
       backgroundImage: {

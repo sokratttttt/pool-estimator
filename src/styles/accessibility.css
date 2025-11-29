@@ -1,0 +1,86 @@
+/**
+ * Global focus indicator styles for better keyboard navigation
+ * Add this to your global CSS file (e.g., globals.css)
+ */
+
+/* Base focus-visible styles */
+*:focus-visible {
+    outline: 2px solid #00D9FF;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Remove default focus for mouse users */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Custom focus ring utility classes */
+.focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-deep;
+}
+
+.focus-ring-inset {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cyan-500;
+}
+
+/* Skip link styles */
+.skip-link {
+    @apply fixed top-0 left-0 z-[9999] p-4 bg-cyan-500 text-white font-medium rounded-br-lg;
+    @apply transform -translate-y-full focus:translate-y-0;
+    @apply transition-transform duration-200;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2;
+}
+
+/* Screen reader only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus-visible for button-like elements */
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible {
+    @apply ring-2 ring-cyan-500 ring-offset-2 ring-offset-navy-deep;
+}
+
+/* Focus-visible for form elements */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    @apply ring-2 ring-cyan-500 ring-offset-2 ring-offset-white dark:ring-offset-navy-deep;
+    @apply border-cyan-500;
+}
+
+/* Improve contrast for disabled elements */
+:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    *:focus-visible {
+        outline-width: 3px;
+        outline-offset: 3px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -12,7 +12,9 @@ import {
     Sparkles,
     Menu,
     X,
-    FileText
+    FileText,
+    MessageSquare,
+    ClipboardList
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -23,7 +25,9 @@ export default function Sidebar() {
     const menuItems = [
         { icon: LayoutDashboard, label: 'Дашборд', href: '/' },
         { icon: Calculator, label: 'Калькулятор', href: '/calculator' },
+        { icon: MessageSquare, label: 'Чат', href: '/chat' },
         { icon: Users, label: 'Клиенты', href: '/clients' },
+        { icon: ClipboardList, label: 'Заявки', href: '/requests' },
         { icon: FileText, label: 'Шаблоны', href: '/templates' },
         { icon: History, label: 'История', href: '/history' },
         { icon: Package, label: 'Каталог', href: '/catalog' },

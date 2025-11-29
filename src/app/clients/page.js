@@ -6,6 +6,7 @@ import AppleCard from '@/components/apple/AppleCard';
 import AppleButton from '@/components/apple/AppleButton';
 import AppleInput from '@/components/apple/AppleInput';
 import { SkeletonCard } from '@/components/Skeleton';
+import { EmptyState } from '@/components/ui';
 import { useClients } from '@/context/ClientContext';
 import { useHistory } from '@/context/HistoryContext';
 
@@ -133,20 +134,23 @@ export default function ClientsPage() {
                     ))}
                 </div>
             ) : filteredClients.length === 0 ? (
-                <AppleCard variant="flat" className="text-center py-12">
-                    <Users size={64} className="mx-auto text-gray-500 mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">
-                        {searchQuery ? 'Клиенты не найдены' : 'Нет клиентов'}
-                    </h3>
-                    <p className="text-gray-400 mb-6">
-                        {searchQuery ? 'Попробуйте изменить запрос' : 'Добавьте первого клиента в базу'}
-                    </p>
-                    {!searchQuery && (
-                        <AppleButton variant="primary" icon={<Plus size={20} />} onClick={() => openModal()}>
-                            Добавить клиента
-                        </AppleButton>
-                    )}
-                </AppleCard>
+                <EmptyState
+                    icon={<Users size={64} />}
+                    title={searchQuery ? 'Клиенты не найдены' : 'Список клиентов пуст'}
+                    description={searchQuery
+                        ? 'Попробуйте изменить условия поиска'
+                        : 'Добавьте первого клиента для начала работы с базой'
+                    }
+                    action={searchQuery ? {
+                        label: 'Сбросить поиск',
+                        onClick: () => setSearchQuery(''),
+                        variant: 'secondary'
+                    } : {
+                        label: 'Добавить клиента',
+                        onClick: () => openModal(),
+                        variant: 'primary'
+                    }}
+                />
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredClients.map((client, idx) => {

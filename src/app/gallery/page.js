@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ZoomIn } from 'lucide-react';
+import { X, ZoomIn, Image as ImageIcon, Search } from 'lucide-react';
 import Image from 'next/image';
+import AppleInput from '../../components/apple/AppleInput';
+import { EmptyState } from '@/components/ui';
 
 // Map of file names to display names or categories if needed
 // For now, we'll just display them in a grid
@@ -57,12 +59,23 @@ const galleryImages = [
 export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [filter, setFilter] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const categories = ['All', ...new Set(galleryImages.map(img => img.category))];
 
-    const filteredImages = filter === 'All'
-        ? galleryImages
-        : galleryImages.filter(img => img.category === filter);
+    const filteredImages = useMemo(() => {
+        return galleryImages.filter(img => {
+            const matchesCategory = filter === 'All' || img.category === filter;
+            const matchesSearch = img.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                img.category.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesCategory && matchesSearch;
+        });
+    }, [filter, searchQuery]);
+
+    const handleReset = () => {
+        setFilter('All');
+        setSearchQuery('');
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 p-8">
@@ -72,51 +85,81 @@ export default function GalleryPage() {
                     <p className="text-gray-600">Примеры реализации наших бассейнов</p>
                 </div>
 
-                {/* Filters */}
-                <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
-                    {categories.map(category => (
-                        <button
-                            key={category}
-                            onClick={() => setFilter(category)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${filter === category
+                {/* Controls */}
+                <div className="flex flex-col md:flex-row gap-6 mb-8 items-start md:items-center justify-between">
+                    {/* Filters */}
+                    <div className="flex gap-2 overflow-x-auto pb-2 max-w-full md:max-w-2xl no-scrollbar">
+                        {categories.map(category => (
+                            <button
+                                key={category}
+                                onClick={() => setFilter(category)}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${filter === category
                                     ? 'bg-blue-600 text-white'
-                                    : 'bg-white text-gray-600 hover:bg-gray-100'
-                                }`}
-                        >
-                            {category}
-                        </button>
-                    ))}
+                                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                                    }`}
+                            >
+                                {category}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Search */}
+                    <div className="w-full md:w-64 relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Поиск..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                        />
+                    </div>
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredImages.map((image, index) => (
-                        <motion.div
-                            key={image.src}
-                            layoutId={image.src}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            className="group relative aspect-[4/3] bg-gray-200 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow"
-                            onClick={() => setSelectedImage(image)}
-                        >
-                            <Image
-                                src={image.src}
-                                alt={image.title}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <p className="text-white font-medium">{image.title}</p>
-                                <p className="text-white/80 text-sm">{image.category}</p>
-                            </div>
-                            <div className="absolute top-4 right-4 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                <ZoomIn className="w-5 h-5 text-gray-700" />
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                {filteredImages.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredImages.map((image, index) => (
+                            <motion.div
+                                key={image.src}
+                                layoutId={image.src}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.05 }}
+                                className="group relative aspect-[4/3] bg-gray-200 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow"
+                                onClick={() => setSelectedImage(image)}
+                            >
+                                <Image
+                                    src={image.src}
+                                    alt={image.title}
+                                    fill
+                                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <p className="text-white font-medium">{image.title}</p>
+                                    <p className="text-white/80 text-sm">{image.category}</p>
+                                </div>
+                                <div className="absolute top-4 right-4 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    <ZoomIn className="w-5 h-5 text-gray-700" />
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="py-12">
+                        <EmptyState
+                            icon={<ImageIcon size={64} />}
+                            title="Фотографии не найдены"
+                            description="Попробуйте изменить параметры поиска или выбрать другую категорию"
+                            action={{
+                                label: 'Сбросить фильтры',
+                                onClick: handleReset,
+                                variant: 'primary'
+                            }}
+                        />
+                    </div>
+                )}
 
                 {/* Lightbox */}
                 <AnimatePresence>

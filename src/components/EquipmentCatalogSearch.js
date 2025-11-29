@@ -58,6 +58,13 @@ const CatalogItem = ({ item, onAdd, style }) => {
     );
 };
 
+// Рендер строки виртуализированного списка
+const Row = ({ index, style, data }) => {
+    const { items, onAdd } = data;
+    const item = items[index];
+    return <CatalogItem item={item} onAdd={onAdd} style={style} />;
+};
+
 // Главный компонент каталога
 export default function EquipmentCatalogSearch() {
     const {
@@ -103,12 +110,6 @@ export default function EquipmentCatalogSearch() {
 
     // Высота одного элемента списка
     const ITEM_HEIGHT = 88;
-
-    // Рендер строки виртуализированного списка
-    const Row = ({ index, style }) => {
-        const item = filteredItems[index];
-        return <CatalogItem item={item} onAdd={handleAddItem} style={style} />;
-    };
 
     if (loading) {
         return (
@@ -247,6 +248,7 @@ export default function EquipmentCatalogSearch() {
                         itemCount={filteredItems.length}
                         itemSize={80}
                         width="100%"
+                        itemData={{ items: filteredItems, onAdd: handleAddItem }}
                     >
                         {Row}
                     </FixedSizeList>

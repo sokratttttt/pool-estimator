@@ -1,22 +1,42 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useChat } from '@/context/ChatContext';
 import { MessageSquare, Plus, Hash, User } from 'lucide-react';
-import { motion } from 'framer-motion';
+import UserSelector from './UserSelector';
 
 export default function ChatSidebar() {
-    const { channels, activeChannel, setActiveChannel, createChannel } = useChat();
+    const { channels, activeChannel, setActiveChannel, createDirectMessage, currentUser, profiles, onlineUsers } = useChat();
+    const [showUserSelector, setShowUserSelector] = useState(false);
+
+    const getChannelInfo = (channel) => {
+        if (channel.type === 'group') {
+            return {
+                name: channel.name,
+                avatar: null,
+                isOnline: false,
+                initials: channel.name?.[0]?.toUpperCase() || '#'
+            };
+        }
+
+        // For DMs, find the other participant
+        const otherParticipant = channel.channel_participants?.find(p => p.user_id !== currentUser?.id);
+        const profile = otherParticipant ? profiles[otherParticipant.user_id] : null;
+
+        return {
+            name: profile?.full_name || profile?.email || 'Личное сообщение',
+            avatar: profile?.avatar_url,
+            isOnline: otherParticipant ? onlineUsers.has(otherParticipant.user_id) : false,
+            initials: (profile?.full_name || profile?.email || '?')[0]?.toUpperCase()
+        };
+    };
 
     return (
         <div className="w-80 border-r border-gray-200 bg-white flex flex-col h-full">
             <div className="p-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 className="font-bold text-lg text-gray-800">Сообщения</h2>
                 <button
-                    onClick={() => {
-                        const name = prompt('Название чата:');
-                        if (name) createChannel(name, []); // TODO: Add user selector
-                    }}
+                    onClick={() => setShowUserSelector(true)}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
                     <Plus size={20} className="text-blue-600" />
@@ -31,28 +51,51 @@ export default function ChatSidebar() {
                     </div>
                 ) : (
                     <div className="space-y-1 p-2">
-                        {channels.map(channel => (
-                            <button
-                                key={channel.id}
-                                onClick={() => setActiveChannel(channel)}
-                                className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors ${activeChannel?.id === channel.id
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'hover:bg-gray-50 text-gray-700'
-                                    }`}
-                            >
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${activeChannel?.id === channel.id ? 'bg-blue-100' : 'bg-gray-100'
-                                    }`}>
-                                    {channel.type === 'group' ? <Hash size={20} /> : <User size={20} />}
-                                </div>
-                                <div>
-                                    <p className="font-medium truncate">{channel.name || 'Без названия'}</p>
-                                    <p className="text-xs opacity-70 truncate">Нажмите, чтобы открыть</p>
-                                </div>
-                            </button>
-                        ))}
+                        {channels.map(channel => {
+                            const info = getChannelInfo(channel);
+                            return (
+                                <button
+                                    key={channel.id}
+                                    onClick={() => setActiveChannel(channel)}
+                                    className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors ${activeChannel?.id === channel.id
+                                            ? 'bg-blue-50 text-blue-700'
+                                            : 'hover:bg-gray-50 text-gray-700'
+                                        }`}
+                                >
+                                    <div className="relative">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center overflow-hidden ${activeChannel?.id === channel.id ? 'bg-blue-100' : 'bg-gray-100'
+                                            }`}>
+                                            {info.avatar ? (
+                                                <img src={info.avatar} alt={info.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="font-medium text-lg">{info.initials}</span>
+                                            )}
+                                        </div>
+                                        {info.isOnline && (
+                                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                                        )}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-medium truncate">{info.name}</p>
+                                        <p className="text-xs opacity-70 truncate">
+                                            {info.isOnline ? 'В сети' : 'Нажмите, чтобы открыть'}
+                                        </p>
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 )}
             </div>
+
+            <UserSelector
+                isOpen={showUserSelector}
+                onClose={() => setShowUserSelector(false)}
+                onSelect={async (user) => {
+                    await createDirectMessage(user.id);
+                    setShowUserSelector(false);
+                }}
+            />
         </div>
     );
 }
