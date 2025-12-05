@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { UIContextType, UITheme } from '@/types/ui';
+import type { UIContextType, UITheme } from '@/types/ui';
 
 const UIContext = createContext<UIContextType | null>(null);
 

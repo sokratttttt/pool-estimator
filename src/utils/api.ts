@@ -9,7 +9,7 @@
 export const fetchWithTimeout = (url, options = {}, timeout = 30000) => {
     return Promise.race([
         fetch(url, options),
-        new Promise((_: any, reject: any) =>
+        new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Request timeout')), timeout)
         )
     ]);
@@ -45,10 +45,13 @@ export const fetchWithRetry = async (url, options = {}, retries = 3, delay = 100
  */
 export class APIClient {
     baseURL: string;
-    defaultOptions: any;
-    interceptors: { request: any[]; response: any[] };
+    defaultOptions: RequestInit;
+    interceptors: {
+        request: ((url: string, options: RequestInit) => Promise<RequestInit | void>)[];
+        response: ((response: Response) => Promise<Response | void>)[];
+    };
 
-    constructor(baseURL = '', defaultOptions: any = {}) {
+    constructor(baseURL = '', defaultOptions: RequestInit = {}) {
         this.baseURL = baseURL;
         this.defaultOptions = {
             headers: {
@@ -63,17 +66,17 @@ export class APIClient {
     }
 
     // Add request interceptor
-    addRequestInterceptor(interceptor) {
+    addRequestInterceptor(interceptor: (url: string, options: RequestInit) => Promise<RequestInit | void>) {
         this.interceptors.request.push(interceptor);
     }
 
     // Add response interceptor
-    addResponseInterceptor(interceptor) {
+    addResponseInterceptor(interceptor: (response: Response) => Promise<Response | void>) {
         this.interceptors.response.push(interceptor);
     }
 
     // Apply request interceptors
-    async applyRequestInterceptors(url, options) {
+    async applyRequestInterceptors(url: string, options: RequestInit) {
         let modifiedOptions = { ...options };
 
         for (const interceptor of this.interceptors.request) {
@@ -85,7 +88,7 @@ export class APIClient {
     }
 
     // Apply response interceptors
-    async applyResponseInterceptors(response) {
+    async applyResponseInterceptors(response: Response) {
         let modifiedResponse = response;
 
         for (const interceptor of this.interceptors.response) {
@@ -97,7 +100,7 @@ export class APIClient {
     }
 
     // Make request
-    async request(endpoint: string, options: any = {}) {
+    async request(endpoint: string, options: RequestInit = {}) {
         const url = `${this.baseURL}${endpoint}`;
         const mergedOptions = {
             ...this.defaultOptions,
@@ -134,12 +137,12 @@ export class APIClient {
     }
 
     // GET request
-    get(endpoint, options = {}) {
+    get(endpoint: string, options: RequestInit = {}) {
         return this.request(endpoint, { ...options, method: 'GET' });
     }
 
     // POST request
-    post(endpoint, data, options = {}) {
+    post(endpoint: string, data: unknown, options: RequestInit = {}) {
         return this.request(endpoint, {
             ...options,
             method: 'POST',
@@ -148,7 +151,7 @@ export class APIClient {
     }
 
     // PUT request
-    put(endpoint, data, options = {}) {
+    put(endpoint: string, data: unknown, options: RequestInit = {}) {
         return this.request(endpoint, {
             ...options,
             method: 'PUT',
@@ -157,7 +160,7 @@ export class APIClient {
     }
 
     // PATCH request
-    patch(endpoint, data, options = {}) {
+    patch(endpoint: string, data: unknown, options: RequestInit = {}) {
         return this.request(endpoint, {
             ...options,
             method: 'PATCH',
@@ -166,12 +169,12 @@ export class APIClient {
     }
 
     // DELETE request
-    delete(endpoint, options = {}) {
+    delete(endpoint: string, options: RequestInit = {}) {
         return this.request(endpoint, { ...options, method: 'DELETE' });
     }
 
     // Upload file
-    async upload(endpoint, file, fieldName = 'file', additionalData = {}) {
+    async upload(endpoint: string, file: Blob, fieldName = 'file', additionalData: Record<string, string | Blob> = {}) {
         const formData = new FormData();
         formData.append(fieldName, file);
 
@@ -190,14 +193,14 @@ export class APIClient {
 /**
  * Create API client instance
  */
-export const createAPIClient = (baseURL: any, options: any) => {
+export const createAPIClient = (baseURL: string, options: RequestInit) => {
     return new APIClient(baseURL, options);
 };
 
 /**
  * Query string builder
  */
-export const buildQueryString = (params: any) => {
+export const buildQueryString = (params: Record<string, string | number | boolean | null | undefined>) => {
     const searchParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {

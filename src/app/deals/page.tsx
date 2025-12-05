@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCorners, DragStartEvent, DragEndEvent } from '@dnd-kit/core';
 import KanbanColumn from '@/components/kanban/KanbanColumn';
 import DealCard from '@/components/kanban/DealCard';
 import DealStats from '@/components/kanban/DealStats';
@@ -10,7 +10,14 @@ import { Plus, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
-const STAGES = [
+interface Stage {
+    id: string;
+    label: string;
+    color: string;
+    icon: string;
+}
+
+const STAGES: Stage[] = [
     { id: 'leads', label: 'Лиды', color: 'bg-gray-500', icon: '🎯' },
     { id: 'estimate_sent', label: 'Смета отправлена', color: 'bg-blue-500', icon: '📊' },
     { id: 'negotiation', label: 'Переговоры', color: 'bg-yellow-500', icon: '💬' },
@@ -19,12 +26,27 @@ const STAGES = [
     { id: 'completed', label: 'Завершено', color: 'bg-green-500', icon: '✅' }
 ];
 
-import { Deal } from '@/types';
+import type { Deal } from '@/types';
 
 export default function DealsPage() {
     const [deals, setDeals] = useState<Deal[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [showStats, setShowStats] = useState(true);
+
+    const fetchDeals = useCallback(async () => {
+        try {
+            const { data, error } = await supabase
+                .from('deals')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setDeals(data || []);
+        } catch (error) {
+            console.error('Error fetching deals:', error);
+            toast.error('Не удалось загрузить сделки');
+        }
+    }, []);
 
     useEffect(() => {
         fetchDeals();
@@ -48,28 +70,15 @@ export default function DealsPage() {
         return () => {
             supabase.removeChannel(channel);
         };
+    }, [fetchDeals]);
+
+    const handleDragStart = useCallback((event: DragStartEvent) => {
+        if (event.active.id) {
+            setActiveId(event.active.id.toString());
+        }
     }, []);
 
-    const fetchDeals = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('deals')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            setDeals(data || []);
-        } catch (error) {
-            console.error('Error fetching deals:', error);
-            toast.error('Не удалось загрузить сделки');
-        }
-    };
-
-    const handleDragStart = (event: any) => {
-        setActiveId(event.active.id);
-    };
-
-    const handleDragEnd = async (event: any) => {
+    const handleDragEnd = useCallback(async (event: DragEndEvent) => {
         const { active, over } = event;
 
         if (!over) {
@@ -77,8 +86,12 @@ export default function DealsPage() {
             return;
         }
 
-        const dealId = active.id;
-        const newStage = over.id;
+        const dealId = active.id.toString();
+        const newStage = over.id.toString();
+
+        // Find old stage for activity log
+        const oldDeal = deals.find(d => d.id === dealId);
+        const oldStage = oldDeal?.stage;
 
         // Update locally first for instant feedback
         setDeals(prev => prev.map(deal =>
@@ -100,7 +113,7 @@ export default function DealsPage() {
                 .insert({
                     deal_id: dealId,
                     activity_type: 'stage_change',
-                    old_value: deals.find(d => d.id === dealId)?.stage,
+                    old_value: oldStage,
                     new_value: newStage,
                     description: `Сделка перемещена в "${STAGES.find(s => s.id === newStage)?.label}"`
                 });
@@ -113,14 +126,25 @@ export default function DealsPage() {
         }
 
         setActiveId(null);
-    };
+    }, [deals, fetchDeals]);
 
-    const dealsByStage = STAGES.reduce((acc: any, stage: any) => {
+    const dealsByStage = STAGES.reduce((acc: Record<string, Deal[]>, stage: Stage) => {
         acc[stage.id] = deals.filter(deal => deal.stage === stage.id);
         return acc;
     }, {});
 
     const activeDeal = deals.find(d => d.id === activeId);
+
+    const totalValue = deals.reduce((sum, d) => sum + (d.value || 0), 0);
+    const formattedValue = (totalValue / 1000000).toFixed(1);
+
+    const handleNewDeal = useCallback(() => {
+        toast.info('Функция добавления новой сделки в разработке');
+    }, []);
+
+    const toggleStats = useCallback(() => {
+        setShowStats(prev => !prev);
+    }, []);
 
     return (
         <div className="h-screen flex flex-col bg-navy-deep overflow-hidden">
@@ -132,18 +156,21 @@ export default function DealsPage() {
                         <div>
                             <h1 className="text-2xl font-bold text-white">Воронка продаж</h1>
                             <p className="text-sm text-gray-400">
-                                {deals.length} сделок на общую сумму {(deals.reduce((sum: any, d: any) => sum + (d.value || 0), 0) / 1000000).toFixed(1)}M ₽
+                                {deals.length} сделок на общую сумму {formattedValue}M ₽
                             </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
                         <button
-                            onClick={() => setShowStats(!showStats)}
+                            onClick={toggleStats}
                             className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm"
                         >
                             {showStats ? 'Скрыть' : 'Показать'} статистику
                         </button>
-                        <button className="px-4 py-2 bg-gradient-primary hover:opacity-90 text-white rounded-lg font-medium transition-opacity flex items-center gap-2">
+                        <button
+                            onClick={handleNewDeal}
+                            className="px-4 py-2 bg-gradient-primary hover:opacity-90 text-white rounded-lg font-medium transition-opacity flex items-center gap-2"
+                        >
                             <Plus size={20} />
                             Новая сделка
                         </button>

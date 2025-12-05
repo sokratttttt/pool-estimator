@@ -6,7 +6,7 @@ import AppleButton from './apple/AppleButton';
 import AppleInput from './apple/AppleInput';
 import { toast } from 'sonner';
 
-interface PDFSettingsProps { }
+type PDFSettingsProps = object;
 
 export default function PDFSettings({ }: PDFSettingsProps) {
     interface Settings {

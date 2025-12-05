@@ -1,17 +1,42 @@
-import { Deal } from '@/types';
+import type { Deal } from '@/types';
+
+
+export interface ClientRequest {
+    id: string;
+    created_at: string;
+    status: string;
+    phone?: string;
+    [key: string]: unknown;
+}
+
+export interface ManagerInsight {
+    type: string;
+    priority: 'low' | 'medium' | 'high' | 'info';
+    title: string;
+    description: string;
+    icon?: string;
+    data?: unknown;
+    deals?: Deal[];
+    tasks?: unknown[];
+    action?: {
+        label: string;
+        type: string;
+        data?: unknown;
+    };
+}
 
 /**
  * Analyze deals and generate actionable insights
  */
-export function generateManagerInsights(deals: Deal[], requests: any[]): any {
-    const insights: any[] = [];
+export function generateManagerInsights(deals: Deal[], requests: ClientRequest[]): ManagerInsight[] {
+    const insights: ManagerInsight[] = [];
 
     // 1. Stuck Deals Alert
     const stuckDeals = findStuckDeals(deals);
     if (stuckDeals.length > 0) {
         insights.push({
             type: 'alert',
-            priority: 'high',
+            priority: 'high' as const,
             title: `${stuckDeals.length} сделок без движения`,
             description: `${stuckDeals.length} сделок не обновлялись более 7 дней`,
             deals: stuckDeals,
@@ -35,7 +60,7 @@ export function generateManagerInsights(deals: Deal[], requests: any[]): any {
     if (priorityTasks.length > 0) {
         insights.push({
             type: 'tasks',
-            priority: 'medium',
+            priority: 'medium' as const,
             title: `${priorityTasks.length} приоритетных задач`,
             description: 'Действия, требующие внимания сегодня',
             tasks: priorityTasks,
@@ -62,18 +87,19 @@ function findStuckDeals(deals: Deal[]) {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     return deals
-        .filter((deal: any) => {
-            const updated = new Date(deal.updated_at);
+        .filter((deal) => {
+            const updated = new Date(deal.updated_at || deal.created_at);
             return updated < sevenDaysAgo && deal.stage !== 'completed';
         })
         .map((deal: Deal) => ({
             ...deal,
             daysStuck: Math.floor((Date.now() - new Date(deal.updated_at || deal.created_at).getTime()) / (1000 * 60 * 60 * 24))
         }))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .sort((a: any, b: any) => b.daysStuck - a.daysStuck);
 }
 
-function analyzeBestContactTimes(deals: Deal[], _requests: any[]) {
+function analyzeBestContactTimes(deals: Deal[], _requests: ClientRequest[]): ManagerInsight | null {
     // Analyze when clients typically respond
     const hourCounts = Array(24).fill(0);
 
@@ -94,7 +120,7 @@ function analyzeBestContactTimes(deals: Deal[], _requests: any[]) {
     if (peakHours.length > 0) {
         return {
             type: 'recommendation',
-            priority: 'low',
+            priority: 'low' as const,
             title: 'Лучшее время для контактов',
             description: `Клиенты чаще всего отвечают в ${peakHours.map(p => `${p.hour}:00`).join(', ')}`,
             data: { peakHours, bestHour },
@@ -105,7 +131,7 @@ function analyzeBestContactTimes(deals: Deal[], _requests: any[]) {
     return null;
 }
 
-function generatePriorityTasks(deals: Deal[], requests: any[]) {
+function generatePriorityTasks(deals: Deal[], requests: ClientRequest[]) {
     const tasks: any[] = [];
 
     // Tasks from deals
@@ -127,7 +153,7 @@ function generatePriorityTasks(deals: Deal[], requests: any[]) {
             if (sentDaysAgo >= 3) {
                 tasks.push({
                     type: 'follow_up',
-                    priority: 'medium',
+                    priority: 'medium' as const,
                     title: `Связаться с ${deal.client_name}`,
                     dealId: deal.id,
                     dueDate: 'сегодня',
@@ -184,7 +210,7 @@ function analyzeConversion(deals: Deal[]) {
 
     return {
         type: 'analytics',
-        priority: 'info',
+        priority: 'info' as const,
         title: 'Конверсия за месяц',
         description: `${recentConversion.toFixed(0)}% ${trend > 0 ? '↑' : trend < 0 ? '↓' : '→'} ${Math.abs(trend).toFixed(0)}%`,
         data: {
@@ -213,7 +239,7 @@ function calculateForecast(deals: Deal[]) {
 
     return {
         type: 'forecast',
-        priority: 'info',
+        priority: 'info' as const,
         title: 'Прогноз продаж',
         description: `Взвешенный прогноз: ${(forecast / 1000000).toFixed(1)}M ₽`,
         data: {
@@ -270,7 +296,7 @@ export function getDealRecommendations(deal: Deal): any {
 /**
  * Generate daily digest for manager
  */
-export function generateDailyDigest(deals: Deal[], requests: any[]): any {
+export function generateDailyDigest(deals: Deal[], requests: ClientRequest[]): unknown {
     const insights = generateManagerInsights(deals, requests);
 
     const newRequests = requests.filter(r => {

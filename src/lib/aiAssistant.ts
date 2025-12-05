@@ -1,5 +1,5 @@
 // AI Sales Assistant - Rule-based recommendation engine
-import {
+import type {
     Recommendation,
     RecommendationType,
     EstimateForAnalysis
@@ -10,7 +10,7 @@ import {
  */
 
 // Equipment popularity data (based on typical installations)
-// @ts-ignore - Reserved for future use
+// @ts-expect-error - Reserved for future use
 const _EQUIPMENT_STATS = {
     heating: {
         adoptionRate: 0.75, // 75% of pools have heating

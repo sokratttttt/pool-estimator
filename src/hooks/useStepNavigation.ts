@@ -1,4 +1,3 @@
-// TODO: Add proper TypeScript types for state
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 const steps = [
@@ -18,7 +17,7 @@ export const useStepNavigation = (selection: any, searchParams: any) => {
 
     // Calculate visible steps based on material selection
     const visibleSteps = useMemo(() => {
-        let visible = ['material'];
+        const visible = ['material'];
         if (selection.material?.id === 'composite') {
             visible.push('bowl');
         } else {
@@ -51,7 +50,7 @@ export const useStepNavigation = (selection: any, searchParams: any) => {
             setCurrentStep(visibleSteps[currentStepIndex + 1]);
             try {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            } catch (e) {
+            } catch {
                 // Ignore scroll errors
             }
         }
@@ -62,7 +61,7 @@ export const useStepNavigation = (selection: any, searchParams: any) => {
             setCurrentStep(visibleSteps[currentStepIndex - 1]);
             try {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            } catch (e) {
+            } catch {
                 // Ignore scroll errors
             }
         }

@@ -2,8 +2,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { User } from '@supabase/supabase-js';
-import { SyncContextType, LoginResult } from '@/types/sync';
+import type { User } from '@supabase/supabase-js';
+import type { SyncContextType, LoginResult } from '@/types/sync';
 
 const SyncContext = createContext<SyncContextType | null>(null);
 

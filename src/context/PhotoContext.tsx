@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { PhotoContextType, PhotoData } from '@/types/photo';
+import type { PhotoContextType, PhotoData } from '@/types/photo';
 
 const PhotoContext = createContext<PhotoContextType | null>(null);
 

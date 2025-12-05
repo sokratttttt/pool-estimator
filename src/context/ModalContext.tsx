@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { ModalContextType, ModalState } from '@/types/modal';
+import type { ModalContextType, ModalState } from '@/types/modal';
 
 const ModalContext = createContext<ModalContextType | null>(null);
 

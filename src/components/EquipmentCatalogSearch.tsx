@@ -3,90 +3,67 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Package, Filter, X, Plus } from 'lucide-react';
-// @ts-ignore
-// @ts-ignore
-import * as ReactWindow from 'react-window';
-const FixedSizeList = (ReactWindow as any).FixedSizeList || (ReactWindow as any).default?.FixedSizeList;
 import { useEquipmentCatalog } from '@/context/EquipmentCatalogContext';
 import { useEstimate } from '@/context/EstimateContext';
 import { toast } from 'sonner';
+import type { EquipmentItem } from '@/types/equipment';
+import type { AdditionalItem } from '@/context/EstimateContext';
 
 // Компонент одного товара в списке
 interface CatalogItemProps {
-    item: any;
-    onAdd: (item: any) => void;
-    style?: React.CSSProperties;
+    item: EquipmentItem;
+    onAdd: (item: EquipmentItem) => void;
 }
 
-const CatalogItem = ({ item, onAdd, style }: CatalogItemProps) => {
+const CatalogItem = ({ item, onAdd }: CatalogItemProps) => {
     return (
-        <div style={style} className="px-4">
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-4 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-bright/30 transition-all"
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-4 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-cyan-bright/30 transition-all"
+        >
+            {/* Артикул */}
+            <div className="min-w-[120px]">
+                <span className="text-xs text-slate-400">Артикул</span>
+                <p className="font-mono text-sm text-cyan-bright">{item.article}</p>
+            </div>
+
+            {/* Название */}
+            <div className="flex-1 min-w-0">
+                <p className="text-sm text-white truncate">{item.name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-slate-500">{item.category}</span>
+                    {item.subcategory && (
+                        <>
+                            <span className="text-slate-600">•</span>
+                            <span className="text-xs text-slate-500">{item.subcategory}</span>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Цена */}
+            <div className="text-right min-w-[120px]">
+                <span className="text-xs text-slate-400">Цена</span>
+                <p className="text-lg font-bold text-white">
+                    {typeof item.price === 'number' ? item.price.toLocaleString('ru-RU') : item.price} ₽
+                </p>
+            </div>
+
+            {/* Кнопка добавления */}
+            <button
+                onClick={() => onAdd(item)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-bright/20 hover:bg-cyan-bright/30 text-cyan-bright transition-all"
             >
-                {/* Артикул */}
-                <div className="min-w-[120px]">
-                    <span className="text-xs text-slate-400">Артикул</span>
-                    <p className="font-mono text-sm text-cyan-bright">{item.article}</p>
-                </div>
-
-                {/* Название */}
-                <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white truncate">{item.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-slate-500">{item.category}</span>
-                        {item.subcategory && (
-                            <>
-                                <span className="text-slate-600">•</span>
-                                <span className="text-xs text-slate-500">{item.subcategory}</span>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                {/* Цена */}
-                <div className="text-right min-w-[120px]">
-                    <span className="text-xs text-slate-400">Цена</span>
-                    <p className="text-lg font-bold text-white">
-                        {item.price.toLocaleString('ru-RU')} ₽
-                    </p>
-                </div>
-
-                {/* Кнопка добавления */}
-                <button
-                    onClick={() => onAdd(item)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-bright/20 hover:bg-cyan-bright/30 text-cyan-bright transition-all"
-                >
-                    <Plus className="w-4 h-4" />
-                    <span className="text-sm">Добавить</span>
-                </button>
-            </motion.div>
-        </div>
+                <Plus className="w-4 h-4" />
+                <span className="text-sm">Добавить</span>
+            </button>
+        </motion.div>
     );
 };
 
-// Рендер строки виртуализированного списка
-interface RowProps {
-    index: number;
-    style: React.CSSProperties;
-    data: {
-        items: any[];
-        onAdd: (item: any) => void;
-    };
-}
-
-const Row = ({ index, style, data }: RowProps) => {
-    const { items, onAdd } = data;
-    const item = items[index];
-    return <CatalogItem item={item} onAdd={onAdd} style={style} />;
-};
-
 // Главный компонент каталога
-interface EquipmentCatalogSearchProps { }
-
-export default function EquipmentCatalogSearch({ }: EquipmentCatalogSearchProps) {
+export default function EquipmentCatalogSearch() {
     const {
         categories,
         filteredItems,
@@ -105,21 +82,24 @@ export default function EquipmentCatalogSearch({ }: EquipmentCatalogSearchProps)
     const [showFilters, setShowFilters] = useState(false);
 
     // Debounced поиск
-    const handleSearch = useCallback((e: React.ChangeEvent<any>) => {
+    const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
     }, [setSearchQuery]);
 
     // Добавление товара в смету
-    const handleAddItem = useCallback((catalogItem: any) => {
-        const newItem = {
+    const handleAddItem = useCallback((catalogItem: EquipmentItem) => {
+        const newItem: AdditionalItem = {
             id: `catalog_${catalogItem.id}_${Date.now()}`,
             name: catalogItem.name,
             category: catalogItem.category,
-            section: catalogItem.subcategory || catalogItem.category,
+            price: typeof catalogItem.price === 'number' ? catalogItem.price : 0,
             quantity: 1,
             unit: 'шт',
-            price: catalogItem.price,
-            total: catalogItem.price,
+            taxable: true,
+            mandatory: false,
+            // Дополнительные поля для совместимости
+            section: catalogItem.subcategory || catalogItem.category,
+            total: typeof catalogItem.price === 'number' ? catalogItem.price : 0,
             source: 'catalog',
             catalogArticle: catalogItem.article
         };
@@ -127,9 +107,6 @@ export default function EquipmentCatalogSearch({ }: EquipmentCatalogSearchProps)
         addItem(newItem);
         toast.success(`${catalogItem.name} добавлен в смету`);
     }, [addItem]);
-
-    // Высота одного элемента списка
-
 
     if (loading) {
         return (
@@ -233,7 +210,7 @@ export default function EquipmentCatalogSearch({ }: EquipmentCatalogSearchProps)
                                 </div>
 
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-60 overflow-y-auto premium-scrollbar">
-                                    {categories.map((category: any) => (
+                                    {categories.map((category: string) => (
                                         <button
                                             key={category}
                                             onClick={() => setSelectedCategory(category === selectedCategory ? '' : category)}
@@ -252,7 +229,7 @@ export default function EquipmentCatalogSearch({ }: EquipmentCatalogSearchProps)
                 </AnimatePresence>
             </div>
 
-            {/* Список товаров (виртуализированный) */}
+            {/* Список товаров */}
             <div className="rounded-xl overflow-hidden bg-white/5 border border-white/10">
                 {filteredItems.length === 0 ? (
                     <div className="p-12 text-center">
@@ -263,15 +240,15 @@ export default function EquipmentCatalogSearch({ }: EquipmentCatalogSearchProps)
                         </p>
                     </div>
                 ) : (
-                    <FixedSizeList
-                        height={400}
-                        itemCount={filteredItems.length}
-                        itemSize={80}
-                        width="100%"
-                        itemData={{ items: filteredItems, onAdd: handleAddItem }}
-                    >
-                        {Row as any}
-                    </FixedSizeList>
+                    <div className="max-h-[400px] overflow-y-auto premium-scrollbar p-4 space-y-2">
+                        {filteredItems.map((item, index) => (
+                            <CatalogItem
+                                key={`${item.id}-${index}`}
+                                item={item}
+                                onAdd={handleAddItem}
+                            />
+                        ))}
+                    </div>
                 )}
             </div>
         </div>

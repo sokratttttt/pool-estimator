@@ -1,7 +1,7 @@
 // Deal Probability Predictor
 // ML-like scoring system based on multiple factors
-import { Deal } from '@/types';
-import {
+import type { Deal } from '@/types';
+import type {
     PredictionInput,
     PredictionFactors,
     ScoreCategory,

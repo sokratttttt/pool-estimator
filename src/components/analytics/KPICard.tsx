@@ -1,30 +1,32 @@
 'use client';
 import { motion } from 'framer-motion';
+import type { ReactNode } from 'react';
 
 /**
  * Карточка с ключевой метрикой (KPI)
- * @param {string} label - название метрики
- * @param {string} value - значение метрики
- * @param {ReactNode} icon - иконка
- * @param {string} trend - тренд (up/down/neutral)
- * @param {string} trendValue - значение тренда
  */
-interface KPICardProps {
-  label?: any;
-  value?: any;
-  icon?: any;
-  trend?: any;
-  trendValue?: any;
+export interface KPICardProps {
+    label: string;
+    value: string | number;
+    icon: ReactNode;
+    trend?: 'up' | 'down' | 'neutral';
+    trendValue?: string;
 }
 
-export default function KPICard({  label, value, icon, trend, trendValue  }: KPICardProps) {
-    const trendColors = {
+export default function KPICard({
+    label,
+    value,
+    icon,
+    trend,
+    trendValue
+}: KPICardProps) {
+    const trendColors: Record<'up' | 'down' | 'neutral', string> = {
         up: 'text-green-500',
         down: 'text-red-500',
         neutral: 'text-apple-text-tertiary'
     };
 
-    const trendIcons = {
+    const trendIcons: Record<'up' | 'down' | 'neutral', string> = {
         up: '↑',
         down: '↓',
         neutral: '→'

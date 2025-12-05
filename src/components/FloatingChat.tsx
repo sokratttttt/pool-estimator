@@ -6,11 +6,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ChatSidebar from './chat/ChatSidebar';
 import ChatWindow from './chat/ChatWindow';
 
-interface FloatingChatProps {
+type FloatingChatProps = object;
 
-}
-
-export default function FloatingChat({  }: FloatingChatProps) {
+export default function FloatingChat({ }: FloatingChatProps) {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
 

@@ -18,11 +18,9 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-interface SidebarProps {
+type SidebarProps = object;
 
-}
-
-export default function Sidebar({  }: SidebarProps) {
+export default function Sidebar({ }: SidebarProps) {
     const pathname = usePathname();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 

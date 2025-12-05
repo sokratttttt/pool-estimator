@@ -362,7 +362,7 @@ export const exportToPDF = async (
         autoTable(doc, {
             startY: benefitY + 10,
             head: [['Наименование', 'Ед.', 'Кол-во', 'Цена', 'Сумма']],
-            body: tableBody as unknown as import('jspdf-autotable').RowInput[],
+            body: tableBody as unknown as any[],
             styles: fontLoaded ? { font: 'Roboto', fontSize: 9 } : { fontSize: 9 },
             headStyles: { fillColor: [0, 113, 227], textColor: 255 },
             columnStyles: {

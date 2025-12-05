@@ -10,9 +10,7 @@ import ConfiguratorHeader from './configurator/ConfiguratorHeader';
 import ConfiguratorFooter from './configurator/ConfiguratorFooter';
 import ConfiguratorStepRenderer from './configurator/ConfiguratorStepRenderer';
 
-interface ConfiguratorProps {
-
-}
+type ConfiguratorProps = object;
 
 export default function Configurator({ }: ConfiguratorProps) {
     const { selection, undo, redo, canUndo, canRedo, lastSaved } = useEstimate();

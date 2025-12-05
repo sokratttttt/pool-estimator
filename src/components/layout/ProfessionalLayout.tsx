@@ -1,6 +1,7 @@
 'use client';
 
-import React, { ReactNode, useState } from 'react';
+import React, { useState } from 'react';
+import type { ReactNode } from 'react';
 import { MenuBar } from './MenuBar';
 import { ActivityBar } from './ActivityBar';
 import { StatusBar } from './StatusBar';

@@ -55,7 +55,7 @@ export interface QueryParams {
 // COMPONENT UTILITIES
 // ============================================
 
-import { ReactNode, CSSProperties, ButtonHTMLAttributes, InputHTMLAttributes } from 'react';
+import type { ReactNode, CSSProperties, ButtonHTMLAttributes, InputHTMLAttributes } from 'react';
 
 export type ButtonVariant =
     | 'primary' | 'secondary' | 'success' | 'danger' | 'warning'

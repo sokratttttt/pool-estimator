@@ -1,6 +1,6 @@
 'use client';
 
-// @ts-ignore
+
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -59,7 +59,7 @@ const poolTypeIcons = {
     }),
 };
 
-import { Project, MapFiltersState } from '@/types';
+import type { Project, MapFiltersState } from '@/types';
 
 interface MapViewProps {
     projects: Project[];
@@ -75,27 +75,27 @@ export default function MapView({ projects, filters, setFilters }: MapViewProps)
         <div className="relative w-full h-full">
             <MapFilters filters={filters} setFilters={setFilters} projectCount={projects.length} />
 
-            {/* @ts-ignore */}
+
             <MapContainer
                 center={center as L.LatLngExpression}
                 zoom={10}
                 style={{ height: '100%', width: '100%' }}
                 className="z-0"
             >
-                {/* @ts-ignore */}
+
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
                 {projects.map((project) => (
-                    // @ts-ignore
+
                     <Marker
                         key={project.id}
                         position={[parseFloat(project.latitude), parseFloat(project.longitude)]}
                         icon={poolTypeIcons[project.pool_type] || poolTypeIcons.standard}
                     >
-                        {/* @ts-ignore */}
+
                         <Popup maxWidth={300}>
                             <div className="p-2">
                                 <h3 className="font-bold text-lg mb-2 text-gray-900">{project.name}</h3>

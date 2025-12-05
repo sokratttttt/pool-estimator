@@ -1,7 +1,7 @@
 'use client';
 
 import { TemplateSelector } from '@/components/templates/TemplateSelector';
-import { POOL_TEMPLATES, PoolTemplate } from '@/data/pool-templates';
+import { POOL_TEMPLATES, type PoolTemplate } from '@/data/pool-templates';
 import { useRouter } from 'next/navigation';
 import { Zap, FileText, Clock, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';

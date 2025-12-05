@@ -154,7 +154,6 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
         if (productData.image) {
             const sizeInKB = (productData.image.length * 0.75) / 1024;
             if (process.env.NODE_ENV === 'development') {
-                console.log('Размер изображения:', sizeInKB.toFixed(2), 'KB');
             }
 
             if (sizeInKB > 2000) {

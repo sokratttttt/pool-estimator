@@ -1,12 +1,14 @@
 // Auto-generated type stubs
-interface ComponentProps {
-  [key: string]: any;
+export interface ComponentProps {
+  [key: string]: unknown;
 }
 
-interface FormData {
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface FormData {
   // TODO: Define FormData
 }
 
-interface ApiResponse {
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ApiResponse {
   // TODO: Define ApiResponse
 }

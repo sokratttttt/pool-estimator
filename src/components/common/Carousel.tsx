@@ -1,14 +1,13 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import React from 'react';
 
 /**
  * Carousel component for images/content
  */
-interface CarouselProps {
-    items: any[];
+interface CarouselProps<T = ReactNode> {
+    items: T[];
     autoPlay?: boolean;
     interval?: number;
     showDots?: boolean;
@@ -16,35 +15,45 @@ interface CarouselProps {
     className?: string;
 }
 
-export default function Carousel({
+export default function Carousel<T extends ReactNode>({
     items,
     autoPlay = false,
     interval = 3000,
     showDots = true,
     showArrows = true,
     className = ''
-}: CarouselProps) {
+}: CarouselProps<T>) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const nextSlide = () => {
+    const nextSlide = useCallback(() => {
         setCurrentIndex((prev: number) => (prev + 1) % items.length);
-    };
+    }, [items.length]);
 
-    const prevSlide = () => {
+    const prevSlide = useCallback(() => {
         setCurrentIndex((prev: number) => (prev - 1 + items.length) % items.length);
-    };
+    }, [items.length]);
 
-    const goToSlide = (index: number) => {
+    const goToSlide = useCallback((index: number) => {
         setCurrentIndex(index);
-    };
+    }, []);
 
     // Auto play
-    React.useEffect(() => {
+    useEffect(() => {
         if (!autoPlay) return;
 
         const timer = setInterval(nextSlide, interval);
         return () => clearInterval(timer);
-    }, [autoPlay, interval]);
+    }, [autoPlay, interval, nextSlide]);
+
+    if (items.length === 0) {
+        return (
+            <div className={`flex items-center justify-center h-64 bg-gray-100 rounded-lg ${className}`}>
+                <p className="text-gray-500">Нет элементов для отображения</p>
+            </div>
+        );
+    }
+
+    const currentItem = items[currentIndex] as ReactNode;
 
     return (
         <div className={`relative overflow-hidden rounded-lg ${className}`}>
@@ -59,7 +68,7 @@ export default function Carousel({
                         transition={{ duration: 0.3 }}
                         className="w-full h-full"
                     >
-                        {items[currentIndex]}
+                        {currentItem}
                     </motion.div>
                 </AnimatePresence>
             </div>
@@ -102,7 +111,7 @@ export default function Carousel({
             {/* Dots */}
             {showDots && items.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    {items.map((_: any, index: number) => (
+                    {items.map((_: T, index: number) => (
                         <button
                             key={index}
                             onClick={() => goToSlide(index)}

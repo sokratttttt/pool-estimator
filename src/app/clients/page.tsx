@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo, useCallback, ChangeEvent, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, Search, Phone, Mail, MapPin, Edit2, Trash2, X, Save, FileText, Building } from 'lucide-react';
 import AppleCard from '@/components/apple/AppleCard';
@@ -20,6 +20,14 @@ interface Client {
     notes?: string;
 }
 
+interface Estimate {
+    id: string;
+    clientInfo?: {
+        id?: string;
+        name?: string;
+    };
+}
+
 export default function ClientsPage() {
     const { clients, isLoading, saveClient, updateClient, deleteClient } = useClients();
     const { estimates } = useHistory();
@@ -36,21 +44,24 @@ export default function ClientsPage() {
         notes: ''
     });
 
-    const filteredClients = clients.filter((client: Client) =>
-        client.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        client.phone?.includes(searchQuery) ||
-        client.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        client.company?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    const getClientEstimates = (clientId: string) => {
-        return estimates.filter(est =>
-            est.clientInfo?.id === clientId ||
-            est.clientInfo?.name === clients.find((c: Client) => c.id === clientId)?.name
+    const filteredClients = useMemo(() => {
+        return clients.filter((client: Client) =>
+            client.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            client.phone?.includes(searchQuery) ||
+            client.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            client.company?.toLowerCase().includes(searchQuery.toLowerCase())
         );
-    };
+    }, [clients, searchQuery]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const getClientEstimates = useCallback((clientId: string) => {
+        const client = clients.find((c: Client) => c.id === clientId);
+        return estimates.filter((est: Estimate) =>
+            est.clientInfo?.id === clientId ||
+            est.clientInfo?.name === client?.name
+        );
+    }, [estimates, clients]);
+
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (editingClient) {
             await updateClient(editingClient.id, formData);
@@ -60,7 +71,7 @@ export default function ClientsPage() {
         closeModal();
     };
 
-    const openModal = (client: Client | null = null) => {
+    const openModal = useCallback((client: Client | null = null) => {
         if (client) {
             setEditingClient(client);
             setFormData({
@@ -83,9 +94,9 @@ export default function ClientsPage() {
             });
         }
         setIsModalOpen(true);
-    };
+    }, []);
 
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
         setIsModalOpen(false);
         setEditingClient(null);
         setFormData({
@@ -96,13 +107,49 @@ export default function ClientsPage() {
             address: '',
             notes: ''
         });
-    };
+    }, []);
 
     const handleDelete = async (id: string, name: string) => {
         if (confirm(`Удалить клиента "${name}"?`)) {
             await deleteClient(id);
         }
     };
+
+    const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+    }, []);
+
+    const handleNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, name: e.target.value }));
+    }, []);
+
+    const handleCompanyChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, company: e.target.value }));
+    }, []);
+
+    const handlePhoneChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, phone: e.target.value }));
+    }, []);
+
+    const handleEmailChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, email: e.target.value }));
+    }, []);
+
+    const handleAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setFormData(prev => ({ ...prev, address: e.target.value }));
+    }, []);
+
+    const handleNotesChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+        setFormData(prev => ({ ...prev, notes: e.target.value }));
+    }, []);
+
+    const resetSearch = useCallback(() => {
+        setSearchQuery('');
+    }, []);
+
+    const handleModalClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+    }, []);
 
     return (
         <div className="p-6 max-w-[1600px] mx-auto">
@@ -130,7 +177,7 @@ export default function ClientsPage() {
                         type="text"
                         placeholder="Поиск по имени, телефону, email..."
                         value={searchQuery}
-                        onChange={(e: React.ChangeEvent<any>) => setSearchQuery(e.target.value)}
+                        onChange={handleSearchChange}
                         className="apple-input w-full pl-12"
                     />
                 </div>
@@ -139,7 +186,7 @@ export default function ClientsPage() {
             {/* Clients Grid */}
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[...Array(6)].map((_: any, i: number) => (
+                    {[...Array(6)].map((_, i: number) => (
                         <SkeletonCard key={i} />
                     ))}
                 </div>
@@ -153,7 +200,7 @@ export default function ClientsPage() {
                     }
                     action={searchQuery ? {
                         label: 'Сбросить поиск',
-                        onClick: () => setSearchQuery(''),
+                        onClick: resetSearch,
                         variant: 'secondary'
                     } : {
                         label: 'Добавить клиента',
@@ -163,7 +210,7 @@ export default function ClientsPage() {
                 />
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredClients.map((client: any, idx: number) => {
+                    {filteredClients.map((client: Client, idx: number) => {
                         const clientEstimates = getClientEstimates(client.id);
                         return (
                             <motion.div
@@ -257,7 +304,7 @@ export default function ClientsPage() {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            onClick={(e: React.ChangeEvent<any>) => e.stopPropagation()}
+                            onClick={handleModalClick}
                             className="bg-apple-surface border border-apple-border rounded-2xl p-6 max-w-lg w-full shadow-2xl"
                         >
                             <div className="flex items-center justify-between mb-6">
@@ -273,7 +320,7 @@ export default function ClientsPage() {
                                 <AppleInput
                                     label="Имя *"
                                     value={formData.name}
-                                    onChange={(e: React.ChangeEvent<any>) => setFormData({ ...formData, name: e.target.value })}
+                                    onChange={handleNameChange}
                                     required
                                     placeholder="Иван Иванов"
                                 />
@@ -281,7 +328,7 @@ export default function ClientsPage() {
                                 <AppleInput
                                     label="Компания"
                                     value={formData.company}
-                                    onChange={(e: React.ChangeEvent<any>) => setFormData({ ...formData, company: e.target.value })}
+                                    onChange={handleCompanyChange}
                                     placeholder="ООО Компания"
                                 />
 
@@ -289,7 +336,7 @@ export default function ClientsPage() {
                                     <AppleInput
                                         label="Телефон"
                                         value={formData.phone}
-                                        onChange={(e: React.ChangeEvent<any>) => setFormData({ ...formData, phone: e.target.value })}
+                                        onChange={handlePhoneChange}
                                         placeholder="+7 (999) 000-00-00"
                                     />
 
@@ -297,7 +344,7 @@ export default function ClientsPage() {
                                         label="Email"
                                         type="email"
                                         value={formData.email}
-                                        onChange={(e: React.ChangeEvent<any>) => setFormData({ ...formData, email: e.target.value })}
+                                        onChange={handleEmailChange}
                                         placeholder="email@example.com"
                                     />
                                 </div>
@@ -305,7 +352,7 @@ export default function ClientsPage() {
                                 <AppleInput
                                     label="Адрес"
                                     value={formData.address}
-                                    onChange={(e: React.ChangeEvent<any>) => setFormData({ ...formData, address: e.target.value })}
+                                    onChange={handleAddressChange}
                                     placeholder="Москва, ул. Примерная, д. 1"
                                 />
 
@@ -315,7 +362,7 @@ export default function ClientsPage() {
                                     </label>
                                     <textarea
                                         value={formData.notes}
-                                        onChange={(e: React.ChangeEvent<any>) => setFormData({ ...formData, notes: e.target.value })}
+                                        onChange={handleNotesChange}
                                         placeholder="Дополнительная информация о клиенте..."
                                         className="apple-input w-full min-h-[100px] resize-y"
                                     />

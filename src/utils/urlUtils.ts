@@ -3,7 +3,7 @@
  * URL parsing and manipulation
  */
 
-import { QueryParams } from '@/types/utils';
+import type { QueryParams } from '@/types/utils';
 
 /**
  * Parse query string

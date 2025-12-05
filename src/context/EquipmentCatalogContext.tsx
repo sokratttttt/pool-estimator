@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { EquipmentCatalogContextType, EquipmentItem } from '@/types/equipment';
+import type { EquipmentCatalogContextType, EquipmentItem } from '@/types/equipment';
 
 const EquipmentCatalogContext = createContext<EquipmentCatalogContextType | null>(null);
 

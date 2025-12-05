@@ -5,9 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, CheckCircle, RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface UpdateCheckerProps {
-
-}
+type UpdateCheckerProps = object;
 
 interface UpdateInfo {
     version?: string;
@@ -70,7 +68,7 @@ export default function UpdateChecker({ }: UpdateCheckerProps) {
             } else {
                 toast.success('Вы используете последнюю версию');
             }
-        } catch (error) {
+        } catch {
             toast.error('Ошибка при проверке обновлений');
         } finally {
             setChecking(false);
@@ -83,7 +81,7 @@ export default function UpdateChecker({ }: UpdateCheckerProps) {
         try {
             await window.electron?.installUpdate();
             toast.info('Перезапуск приложения...');
-        } catch (error) {
+        } catch {
             toast.error('Ошибка при установке обновления');
         }
     };

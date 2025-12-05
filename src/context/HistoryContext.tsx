@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { supabase } from '@/lib/supabase';
 import { useSync } from './SyncContext';
 import { toast } from 'sonner';
-import {
+import type {
     HistoryContextType,
     HistoryEntry,
     HistorySnapshot,
@@ -152,6 +152,32 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
         return undefined;
     }, [user, isOnline, isInitialized, syncWithCloud, handleCloudUpdate]);
 
+    // ✨ Memoized record action
+    const recordAction = useCallback(<T,>(
+        action: Omit<HistoryAction<T>, 'timestamp' | 'userId'>,
+        description?: string
+    ) => {
+        if (!isRecording) return '';
+
+        const newEntry: HistoryEntry = {
+            id: Date.now().toString(),
+            action: {
+                ...action,
+                timestamp: new Date(),
+                userId: user?.id || 'guest',
+            },
+            description,
+            tags: [],
+            isUndone: false,
+            canRedo: false,
+            metadata: {}
+        };
+
+        setEntries(prev => [newEntry, ...prev].slice(0, MAX_HISTORY_SIZE));
+        setCurrentIndex(0);
+        return newEntry.id;
+    }, [isRecording, user]);
+
     // ✨ Memoized save estimate
     const saveEstimate = useCallback((name: string, selection: any, items: any, total: number) => {
         const newEstimate = {
@@ -179,7 +205,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
         }, `Created estimate: ${name}`);
 
         return newEstimate.id;
-    }, [user, saveToCloud]);
+    }, [user, saveToCloud, recordAction]);
 
     // ✨ Memoized update estimate
     const updateEstimate = useCallback((id: string, updates: any) => {
@@ -202,7 +228,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
             }
             return est;
         }));
-    }, [saveToCloud]);
+    }, [saveToCloud, recordAction]);
 
     // ✨ Memoized delete estimate
     const deleteEstimate = useCallback(async (id: string) => {
@@ -221,7 +247,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
                 changes: ['deleted']
             }, `Deleted estimate: ${estimate.name}`);
         }
-    }, [user, isOnline, estimates]);
+    }, [user, isOnline, estimates, recordAction]);
 
     // ✨ Memoized get estimate
     const getEstimate = useCallback((id: string) => {
@@ -255,34 +281,9 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
         }, `Duplicated estimate: ${original.name}`);
 
         return duplicate.id;
-    }, [getEstimate, user, saveToCloud]);
+    }, [getEstimate, user, saveToCloud, recordAction]);
 
     // --- New Advanced History Implementation ---
-
-    const recordAction = useCallback(<T,>(
-        action: Omit<HistoryAction<T>, 'timestamp' | 'userId'>,
-        description?: string
-    ) => {
-        if (!isRecording) return '';
-
-        const newEntry: HistoryEntry = {
-            id: Date.now().toString(),
-            action: {
-                ...action,
-                timestamp: new Date(),
-                userId: user?.id || 'guest',
-            },
-            description,
-            tags: [],
-            isUndone: false,
-            canRedo: false,
-            metadata: {}
-        };
-
-        setEntries(prev => [newEntry, ...prev].slice(0, MAX_HISTORY_SIZE));
-        setCurrentIndex(0);
-        return newEntry.id;
-    }, [isRecording, user]);
 
     const undo = useCallback(() => {
         // Placeholder for undo logic

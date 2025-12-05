@@ -1,15 +1,35 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, ChangeEvent } from 'react';
 import { useRequests } from '@/context/RequestsContext';
 import { Plus, Filter, Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AppleButton from '@/components/apple/AppleButton';
-
 import AppleCard from '@/components/apple/AppleCard';
 import RequestsTable from '@/components/requests/RequestsTable';
 import RequestStats from '@/components/requests/RequestStats';
 import RequestForm from '@/components/requests/RequestForm';
+import type {
+    Request,
+    RequestStatus,
+    ForecastStatus,
+    RequestType as RequestTypeEnum
+} from '@/types/request';
+
+interface Filters {
+    status: RequestStatus | '';
+    manager: string;
+    forecast_status: ForecastStatus | '';
+    request_type: RequestTypeEnum | '';
+}
+
+interface AppliedFilters {
+    status?: RequestStatus;
+    manager?: string;
+    forecast_status?: ForecastStatus;
+    request_type?: RequestTypeEnum;
+    search?: string;
+}
 
 export default function RequestsPage() {
     const {
@@ -24,10 +44,10 @@ export default function RequestsPage() {
     } = useRequests();
 
     const [showForm, setShowForm] = useState(false);
-    const [editingRequest, setEditingRequest] = useState<any>(null);
+    const [editingRequest, setEditingRequest] = useState<Request | null>(null);
     const [showFilters, setShowFilters] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filters, setFilters] = useState({
+    const [filters, setFilters] = useState<Filters>({
         status: '',
         manager: '',
         forecast_status: '',
@@ -39,10 +59,8 @@ export default function RequestsPage() {
         fetchStats();
     }, [fetchRequests, fetchStats]);
 
-    const handleFilter = () => {
-        // Convert empty strings to undefined for type compatibility
-        type FilterValue = string | undefined;
-        const appliedFilters: Record<string, FilterValue> = {};
+    const handleFilter = useCallback(() => {
+        const appliedFilters: AppliedFilters = {};
 
         if (filters.status) appliedFilters.status = filters.status;
         if (filters.manager) appliedFilters.manager = filters.manager;
@@ -50,10 +68,10 @@ export default function RequestsPage() {
         if (filters.request_type) appliedFilters.request_type = filters.request_type;
         if (searchQuery) appliedFilters.search = searchQuery;
 
-        fetchRequests(appliedFilters as Parameters<typeof fetchRequests>[0]);
-    };
+        fetchRequests(appliedFilters);
+    }, [filters, searchQuery, fetchRequests]);
 
-    const handleClearFilters = () => {
+    const handleClearFilters = useCallback(() => {
         setFilters({
             status: '',
             manager: '',
@@ -62,20 +80,20 @@ export default function RequestsPage() {
         });
         setSearchQuery('');
         fetchRequests();
-    };
+    }, [fetchRequests]);
 
-    const handleEdit = (request: any) => {
+    const handleEdit = useCallback((request: Request) => {
         setEditingRequest(request);
         setShowForm(true);
-    };
+    }, []);
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = useCallback(async (id: string) => {
         if (confirm('Вы уверены, что хотите удалить эту заявку?')) {
             await deleteRequest(id);
         }
-    };
+    }, [deleteRequest]);
 
-    const handleSave = async (data: any) => {
+    const handleSave = useCallback(async (data: Request) => {
         if (editingRequest) {
             await updateRequest(editingRequest.id, data);
         } else {
@@ -83,13 +101,54 @@ export default function RequestsPage() {
         }
         setShowForm(false);
         setEditingRequest(null);
-    };
+    }, [editingRequest, updateRequest, createRequest]);
 
-    const handleCreateEstimate = (request: any) => {
+    const handleCreateEstimate = useCallback((_request: Request) => {
         // Navigate to calculator with pre-filled data
         // This is a placeholder - implement based on your routing
-        console.log('Create estimate for request:', request);
-    };
+    }, []);
+
+    const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+    }, []);
+
+    const handleStatusChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setFilters(prev => ({
+            ...prev,
+            status: value ? (value as RequestStatus) : ''
+        }));
+    }, []);
+
+    const handleForecastChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setFilters(prev => ({
+            ...prev,
+            forecast_status: value ? (value as ForecastStatus) : ''
+        }));
+    }, []);
+
+    const handleRequestTypeChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setFilters(prev => ({
+            ...prev,
+            request_type: value ? (value as RequestTypeEnum) : ''
+        }));
+    }, []);
+
+    const toggleFilters = useCallback(() => {
+        setShowFilters(prev => !prev);
+    }, []);
+
+    const handleNewRequest = useCallback(() => {
+        setEditingRequest(null);
+        setShowForm(true);
+    }, []);
+
+    const handleFormClose = useCallback(() => {
+        setShowForm(false);
+        setEditingRequest(null);
+    }, []);
 
     return (
         <div className="p-6 max-w-[1800px] mx-auto">
@@ -108,17 +167,14 @@ export default function RequestsPage() {
                         <AppleButton
                             variant="secondary"
                             icon={<Filter size={20} />}
-                            onClick={() => setShowFilters(!showFilters)}
+                            onClick={toggleFilters}
                         >
                             Фильтры
                         </AppleButton>
                         <AppleButton
                             variant="primary"
                             icon={<Plus size={20} />}
-                            onClick={() => {
-                                setEditingRequest(null);
-                                setShowForm(true);
-                            }}
+                            onClick={handleNewRequest}
                         >
                             Новая заявка
                         </AppleButton>
@@ -133,7 +189,7 @@ export default function RequestsPage() {
                 transition={{ delay: 0.1 }}
                 className="mb-8"
             >
-                <RequestStats stats={stats as Parameters<typeof RequestStats>[0]['stats']} loading={loading} />
+                <RequestStats stats={stats} loading={loading} />
             </motion.div>
 
             {/* Filters */}
@@ -154,7 +210,7 @@ export default function RequestsPage() {
                                         <input
                                             type="text"
                                             value={searchQuery}
-                                            onChange={(e: React.ChangeEvent<any>) => setSearchQuery(e.target.value)}
+                                            onChange={handleSearchChange}
                                             placeholder="Имя или телефон"
                                             className="w-full pl-10 pr-4 py-2 rounded-xl bg-apple-bg-secondary border border-apple-border text-white outline-none focus:border-cyan-bright"
                                         />
@@ -165,7 +221,7 @@ export default function RequestsPage() {
                                     <label className="apple-caption mb-2 block">Статус</label>
                                     <select
                                         value={filters.status}
-                                        onChange={(e: React.ChangeEvent<any>) => setFilters({ ...filters, status: e.target.value })}
+                                        onChange={handleStatusChange}
                                         style={{ colorScheme: 'dark' }}
                                         className="w-full px-4 py-2 rounded-xl bg-apple-bg-secondary border border-apple-border text-white outline-none focus:border-cyan-bright [&>option]:bg-gray-800 [&>option]:text-white"
                                     >
@@ -183,7 +239,7 @@ export default function RequestsPage() {
                                     <label className="apple-caption mb-2 block">Прогноз</label>
                                     <select
                                         value={filters.forecast_status}
-                                        onChange={(e: React.ChangeEvent<any>) => setFilters({ ...filters, forecast_status: e.target.value })}
+                                        onChange={handleForecastChange}
                                         style={{ colorScheme: 'dark' }}
                                         className="w-full px-4 py-2 rounded-xl bg-apple-bg-secondary border border-apple-border text-white outline-none focus:border-cyan-bright [&>option]:bg-gray-800 [&>option]:text-white"
                                     >
@@ -199,14 +255,15 @@ export default function RequestsPage() {
                                     <label className="apple-caption mb-2 block">Тип</label>
                                     <select
                                         value={filters.request_type}
-                                        onChange={(e: React.ChangeEvent<any>) => setFilters({ ...filters, request_type: e.target.value })}
+                                        onChange={handleRequestTypeChange}
                                         style={{ colorScheme: 'dark' }}
                                         className="w-full px-4 py-2 rounded-xl bg-apple-bg-secondary border border-apple-border text-white outline-none focus:border-cyan-bright [&>option]:bg-gray-800 [&>option]:text-white"
                                     >
                                         <option value="">Все</option>
-                                        <option value="construction">Строительство</option>
-                                        <option value="repair">Ремонт</option>
-                                        <option value="equipment">Оборудование</option>
+                                        <option value="pool">Бассейн</option>
+                                        <option value="spa">СПА</option>
+                                        <option value="consultation">Консультация</option>
+                                        <option value="service">Обслуживание</option>
                                         <option value="other">Другое</option>
                                     </select>
                                 </div>
@@ -254,10 +311,7 @@ export default function RequestsPage() {
                     <RequestForm
                         request={editingRequest}
                         onSave={handleSave}
-                        onClose={() => {
-                            setShowForm(false);
-                            setEditingRequest(null);
-                        }}
+                        onClose={handleFormClose}
                         loading={loading}
                     />
                 )}

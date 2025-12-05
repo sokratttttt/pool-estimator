@@ -1,8 +1,8 @@
 'use client';
 
-// @ts-ignore
+
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMapEvents } from "react-leaflet";
-import L, { LeafletMouseEvent } from 'leaflet';
+import L, { type LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 
@@ -68,14 +68,14 @@ export default function DeliveryMap({ baseLocation, destinationCoords, onMapClic
 
     return (
         <div className="rounded-lg overflow-hidden border border-gray-700">
-            {/* @ts-ignore - React Leaflet types issue */}
+
             <MapContainer
                 center={center as L.LatLngExpression}
                 zoom={zoom}
                 style={{ height: '400px', width: '100%' }}
                 className="z-0"
             >
-                {/* @ts-ignore - React Leaflet types issue */}
+
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -84,7 +84,7 @@ export default function DeliveryMap({ baseLocation, destinationCoords, onMapClic
                 <MapClickHandler onMapClick={onMapClick} />
 
                 {/* Base marker */}
-                {/* @ts-ignore - React Leaflet types issue */}
+
                 <Marker position={[baseLocation.lat, baseLocation.lng]} icon={baseIcon}>
                     <Popup>
                         <div className="text-center">
@@ -97,7 +97,7 @@ export default function DeliveryMap({ baseLocation, destinationCoords, onMapClic
                 {/* Destination marker */}
                 {destinationCoords && (
                     <>
-                        {/* @ts-ignore - React Leaflet types issue */}
+
                         <Marker position={[destinationCoords.lat, destinationCoords.lng]} icon={destinationIcon}>
                             <Popup>
                                 <div className="text-center">

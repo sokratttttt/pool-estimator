@@ -10,7 +10,7 @@ import BowlFilters from './bowl/BowlFilters';
 import BowlGrid from './bowl/BowlGrid';
 import BowlList from './bowl/BowlList';
 
-import { Bowl } from '@/types';
+import type { Bowl } from '@/types';
 
 interface BowlStepProps {
     bowl?: Bowl;

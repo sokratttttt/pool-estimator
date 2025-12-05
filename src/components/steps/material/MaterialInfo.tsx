@@ -3,11 +3,9 @@ import { motion } from 'framer-motion';
 import { Info } from 'lucide-react';
 import AppleCard from '../../apple/AppleCard';
 
-interface MaterialInfoProps {
+type MaterialInfoProps = object;
 
-}
-
-export default function MaterialInfo({  }: MaterialInfoProps) {
+export default function MaterialInfo({ }: MaterialInfoProps) {
     return (
         <motion.div
             initial={{ opacity: 0 }}

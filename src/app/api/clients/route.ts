@@ -1,26 +1,38 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
 const dataFilePath = path.join(process.cwd(), 'src/data/clients.json');
 
+interface Client {
+    id: string;
+    createdAt: string;
+    updatedAt?: string;
+    estimates?: any[];
+    [key: string]: any;
+}
+
+interface Data {
+    clients: Client[];
+}
+
 // Helper to read clients
-async function readClients() {
+async function readClients(): Promise<Data> {
     try {
         const data = await fs.readFile(dataFilePath, 'utf8');
         return JSON.parse(data);
-    } catch (error) {
+    } catch {
         return { clients: [] };
     }
 }
 
 // Helper to write clients
-async function writeClients(data: any) {
+async function writeClients(data: Data) {
     await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2));
 }
 
 // GET - Get all clients or a specific client
-export async function GET(request: any) {
+export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
@@ -43,12 +55,12 @@ export async function GET(request: any) {
 }
 
 // POST - Create a new client
-export async function POST(request: any) {
+export async function POST(request: NextRequest) {
     try {
         const clientData = await request.json();
         const data = await readClients();
 
-        const newClient = {
+        const newClient: Client = {
             id: `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             ...clientData,
             createdAt: new Date().toISOString(),
@@ -66,7 +78,7 @@ export async function POST(request: any) {
 }
 
 // PUT - Update a client
-export async function PUT(request: any) {
+export async function PUT(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
@@ -82,7 +94,7 @@ export async function PUT(request: any) {
         data.clients[clientIndex] = {
             ...data.clients[clientIndex],
             ...updates,
-            id, // Preserve ID
+            id: id!, // Preserve ID
             createdAt: data.clients[clientIndex].createdAt, // Preserve creation date
             updatedAt: new Date().toISOString()
         };
@@ -96,7 +108,7 @@ export async function PUT(request: any) {
 }
 
 // DELETE - Delete a client
-export async function DELETE(request: any) {
+export async function DELETE(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');

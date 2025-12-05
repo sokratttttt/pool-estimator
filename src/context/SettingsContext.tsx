@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { SettingsContextType, AppSettings } from '@/types/settings';
+import type { SettingsContextType, AppSettings } from '@/types/settings';
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
 

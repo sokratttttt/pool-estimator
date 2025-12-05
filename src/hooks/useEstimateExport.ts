@@ -4,7 +4,7 @@ import { generateContract } from '@/utils/contractUtils';
 import { generateProposal } from '@/utils/proposalUtils';
 import { sendToWhatsApp } from '@/utils/whatsappUtils';
 import { toast } from 'sonner';
-import {
+import type {
     UseEstimateExportReturn,
     ExportOptions,
     ExportResult,

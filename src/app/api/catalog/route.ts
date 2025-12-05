@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -41,11 +42,11 @@ export async function GET() {
         return NextResponse.json(grouped);
     } catch (error) {
         console.error('Error reading catalog:', error);
-        return NextResponse.json({ error: (error as any).message || 'Failed to read catalog data' }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : 'Failed to read catalog data') }, { status: 500 });
     }
 }
 
-export async function POST(request: any) {
+export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const supabase = getSupabase();
@@ -77,11 +78,11 @@ export async function POST(request: any) {
         return NextResponse.json({ success: true, data });
     } catch (error) {
         console.error('Error creating product:', error);
-        return NextResponse.json({ error: (error as any).message || 'Failed to create product' }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : 'Failed to create product') }, { status: 500 });
     }
 }
 
-export async function DELETE(request: any) {
+export async function DELETE(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
@@ -102,11 +103,11 @@ export async function DELETE(request: any) {
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Error deleting product:', error);
-        return NextResponse.json({ error: (error as any).message || 'Failed to delete product' }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : 'Failed to delete product') }, { status: 500 });
     }
 }
 
-export async function PUT(request: any) {
+export async function PUT(request: NextRequest) {
     try {
         const body = await request.json();
         const { id, updates } = body;
@@ -119,6 +120,7 @@ export async function PUT(request: any) {
         if (updates.image) {
             const sizeInMB = (updates.image.length * 0.75) / (1024 * 1024);
             if (process.env.NODE_ENV === 'development') {
+                // eslint-disable-next-line no-console
                 console.log(`Image size: ${sizeInMB.toFixed(2)} MB`);
             }
 
@@ -155,7 +157,7 @@ export async function PUT(request: any) {
     } catch (error) {
         console.error('Error updating product:', error);
         return NextResponse.json({
-            error: (error as any).message || 'Failed to update product'
+            error: (error instanceof Error ? error.message : 'Failed to update product')
         }, { status: 500 });
     }
 }

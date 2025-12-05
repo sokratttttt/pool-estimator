@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface SkipLinkProps { }
+type SkipLinkProps = object;
 
 export default function SkipLink({ }: SkipLinkProps) {
     return (

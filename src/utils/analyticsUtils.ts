@@ -2,12 +2,44 @@
  * Утилиты для расчета аналитических метрик
  */
 
+interface Estimate {
+    total?: number;
+    status?: string;
+    createdAt?: string;
+    created_at?: string;
+    selection?: {
+        clientInfo?: {
+            managerName?: string;
+        };
+        items?: any[];
+    };
+    items?: any[];
+}
+
+interface KPIResult {
+    totalEstimates: number;
+    totalAmount: number;
+    averageCheck: number;
+    conversionRate: number;
+}
+
+interface MonthData {
+    month: string;
+    year: number;
+    count: number;
+    amount: number;
+}
+
+interface CategoryData {
+    name: string;
+    value: number;
+    count: number;
+}
+
 /**
  * Рассчитать KPI метрики из массива смет
- * @param {Array} estimates - массив смет
- * @returns {Object} - объект с метриками
  */
-export const calculateKPIs = (estimates: any) => {
+export const calculateKPIs = (estimates: Estimate[]): KPIResult => {
     if (!estimates || estimates.length === 0) {
         return {
             totalEstimates: 0,
@@ -18,10 +50,9 @@ export const calculateKPIs = (estimates: any) => {
     }
 
     const totalEstimates = estimates.length;
-    const totalAmount = estimates.reduce((sum: any, est: any) => sum + (est.total || 0), 0);
+    const totalAmount = estimates.reduce((sum, est) => sum + (est.total || 0), 0);
     const averageCheck = totalAmount / totalEstimates;
 
-    // Конверсия = (количество со статусом 'won' или 'completed') / общее количество
     const wonCount = estimates.filter(est =>
         est.status === 'won' || est.status === 'completed'
     ).length;
@@ -35,17 +66,11 @@ export const calculateKPIs = (estimates: any) => {
     };
 };
 
-/**
- * Группировать продажи по месяцам
- * @param {Array} estimates - массив смет
- * @returns {Array} - массив объектов с данными по месяцам
- */
-export const getSalesByMonth = (estimates: any) => {
+export const getSalesByMonth = (estimates: Estimate[]): MonthData[] => {
     const monthNames = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 
-    // Группировка по месяцам
-    const grouped = estimates.reduce((acc: any, est: any) => {
-        const date = new Date(est.createdAt || est.created_at);
+    const grouped = estimates.reduce((acc: Record<string, MonthData>, est) => {
+        const date = new Date(est.createdAt || est.created_at || Date.now());
         const monthKey = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, '0')}`;
 
         if (!acc[monthKey]) {
@@ -63,28 +88,19 @@ export const getSalesByMonth = (estimates: any) => {
         return acc;
     }, {});
 
-    // Преобразовать в массив и отсортировать
-    return Object.values(grouped).sort((a: any, b: any) => {
+    return Object.values(grouped).sort((a: MonthData, b: MonthData) => {
         if (a.year !== b.year) return a.year - b.year;
         return monthNames.indexOf(a.month) - monthNames.indexOf(b.month);
     });
 };
 
-/**
- * Получить топ популярного оборудования
- * @param {Array} estimates - массив смет
- * @param {number} limit - количество позиций в топе
- * @returns {Array} - массив топ позиций
- */
-export const getTopEquipment = (estimates, limit = 10) => {
-    // Собрать все items из всех смет
+export const getTopEquipment = (estimates: Estimate[], limit: number = 10) => {
     const allItems = estimates.flatMap(est => {
         const selection = est.selection || {};
         return selection.items || est.items || [];
     });
 
-    // Группировка по названию
-    const grouped = allItems.reduce((acc: any, item: any) => {
+    const grouped = allItems.reduce((acc: Record<string, any>, item: any) => {
         const key = item.name || 'Без названия';
 
         if (!acc[key]) {
@@ -102,25 +118,18 @@ export const getTopEquipment = (estimates, limit = 10) => {
         return acc;
     }, {});
 
-    // Преобразовать в массив, отсортировать по количеству и взять топ
     return Object.values(grouped)
         .sort((a: any, b: any) => b.count - a.count)
         .slice(0, limit);
 };
 
-/**
- * Получить распределение по категориям
- * @param {Array} estimates - массив смет
- * @returns {Array} - массив с данными по категориям для pie chart
- */
-export const getSalesByCategory = (estimates: any) => {
+export const getSalesByCategory = (estimates: Estimate[]): CategoryData[] => {
     const allItems = estimates.flatMap(est => {
         const selection = est.selection || {};
         return selection.items || est.items || [];
     });
 
-    // Группировка по категориям
-    const grouped = allItems.reduce((acc: any, item: any) => {
+    const grouped = allItems.reduce((acc: Record<string, CategoryData>, item: any) => {
         const category = item.category || item.section || 'Разное';
 
         if (!acc[category]) {
@@ -137,30 +146,17 @@ export const getSalesByCategory = (estimates: any) => {
         return acc;
     }, {});
 
-    return Object.values(grouped).sort((a: any, b: any) => b.value - a.value);
+    return Object.values(grouped).sort((a: CategoryData, b: CategoryData) => b.value - a.value);
 };
 
-/**
- * Фильтровать сметы по периоду
- * @param {Array} estimates - массив смет
- * @param {Date} startDate - начальная дата
- * @param {Date} endDate - конечная дата
- * @returns {Array} - отфильтрованные сметы
- */
-export const filterByDateRange = (estimates: any, startDate: any, endDate: any) => {
+export const filterByDateRange = (estimates: Estimate[], startDate: Date, endDate: Date): Estimate[] => {
     return estimates.filter(est => {
-        const date = new Date(est.createdAt || est.created_at);
+        const date = new Date(est.createdAt || est.created_at || Date.now());
         return date >= startDate && date <= endDate;
     });
 };
 
-/**
- * Фильтровать сметы по менеджеру
- * @param {Array} estimates - массив смет
- * @param {string} managerName - имя менеджера
- * @returns {Array} - отфильтрованные сметы
- */
-export const filterByManager = (estimates: any, managerName: any) => {
+export const filterByManager = (estimates: Estimate[], managerName: string): Estimate[] => {
     if (!managerName || managerName === 'all') return estimates;
 
     return estimates.filter(est => {
@@ -170,24 +166,13 @@ export const filterByManager = (estimates: any, managerName: any) => {
     });
 };
 
-/**
- * Фильтровать сметы по статусу
- * @param {Array} estimates - массив смет
- * @param {string} status - статус ('draft', 'sent', 'won', 'lost')
- * @returns {Array} - отфильтрованные сметы
- */
-export const filterByStatus = (estimates: any, status: any) => {
+export const filterByStatus = (estimates: Estimate[], status: string): Estimate[] => {
     if (!status || status === 'all') return estimates;
     return estimates.filter(est => est.status === status);
 };
 
-/**
- * Получить список уникальных менеджеров
- * @param {Array} estimates - массив смет
- * @returns {Array} - массив имен менеджеров
- */
-export const getManagers = (estimates: any) => {
-    const managers = new Set();
+export const getManagers = (estimates: Estimate[]): string[] => {
+    const managers = new Set<string>();
 
     estimates.forEach(est => {
         const selection = est.selection || {};
@@ -200,12 +185,7 @@ export const getManagers = (estimates: any) => {
     return Array.from(managers).sort();
 };
 
-/**
- * Форматировать число как валюту
- * @param {number} amount - сумма
- * @returns {string} - отформатированная строка
- */
-export const formatCurrency = (amount: any) => {
+export const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('ru-RU', {
         style: 'currency',
         currency: 'RUB',
@@ -213,11 +193,6 @@ export const formatCurrency = (amount: any) => {
     }).format(amount);
 };
 
-/**
- * Форматировать процент
- * @param {number} value - значение от 0 до 1
- * @returns {string} - отформатированная строка
- */
-export const formatPercent = (value: any) => {
+export const formatPercent = (value: number): string => {
     return `${Math.round(value * 100)}%`;
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 
@@ -15,7 +15,7 @@ const MapView = dynamic(() => import('@/components/map/MapView'), {
     )
 });
 
-import { Project } from '@/types';
+import type { Project } from '@/types';
 
 export default function MapPage() {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -30,15 +30,7 @@ export default function MapPage() {
         budgetRange: [0, 15000000]
     });
 
-    useEffect(() => {
-        fetchProjects();
-    }, []);
-
-    useEffect(() => {
-        applyFilters();
-    }, [projects, filters]);
-
-    const fetchProjects = async () => {
+    const fetchProjects = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from('project_locations')
@@ -50,9 +42,13 @@ export default function MapPage() {
         } catch (error) {
             console.error('Error fetching projects:', error);
         }
-    };
+    }, []);
 
-    const applyFilters = () => {
+    useEffect(() => {
+        fetchProjects();
+    }, [fetchProjects]);
+
+    const applyFilters = useCallback(() => {
         let filtered = projects;
 
         if (filters.poolTypes.length > 0) {
@@ -71,7 +67,11 @@ export default function MapPage() {
         });
 
         setFilteredProjects(filtered);
-    };
+    }, [projects, filters]);
+
+    useEffect(() => {
+        applyFilters();
+    }, [applyFilters]);
 
     return (
         <div className="relative w-full h-screen overflow-hidden">

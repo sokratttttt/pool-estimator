@@ -56,18 +56,27 @@ interface PartsSelection {
     items?: PartItem[];
 }
 
-interface AdditionalItem {
+// Unified AdditionalItem type
+export interface AdditionalItem {
     id: string;
     name: string;
+    category: string;
     price: number;
     quantity: number;
     unit: string;
+    description?: string;
+    taxable: boolean;
+    mandatory: boolean;
     installationPrice?: number;
+    // Additional fields for compatibility
+    section?: string;
+    total?: number;
+    source?: string;
+    catalogArticle?: string;
 }
 
 // WorkItem replaced by WorkSelection from types/estimate-utils
-
-import { WorkSelection } from '@/types/estimate-utils';
+import type { WorkSelection } from '@/types/estimate-utils';
 
 export interface Selection {
     material: MaterialSelection | null;
@@ -81,10 +90,12 @@ export interface Selection {
     clientInfo: ClientInfo;
 }
 
+// Измененный тип для совместимости
 interface CatalogData {
     bowls?: Bowl[];
     heating?: HeatingSelection[];
     filtration?: FiltrationSelection[];
+    additional?: any[]; // Temporarily use any for compatibility
 }
 
 interface EstimateContextValue {
@@ -268,10 +279,8 @@ export function EstimateProvider({ children }: EstimateProviderProps) {
 
                     // Show subtle toast notification
                     if (process.env.NODE_ENV === 'development') {
-                        console.log('Auto-saved at', new Date().toLocaleTimeString());
                     }
-                } catch (error) {
-                    console.error('Auto-save failed:', error);
+                } catch (_error) {
                 }
             }
         }, 30000); // 30 seconds
@@ -287,12 +296,22 @@ export function EstimateProvider({ children }: EstimateProviderProps) {
         return dynamic !== undefined ? dynamic : defaultPrice;
     }, []);
 
+    // Функция для адаптации данных каталога
+    const adaptCatalogData = useCallback((catalogData: any): CatalogData => {
+        return {
+            bowls: catalogData.bowls || [],
+            heating: catalogData.heating || [],
+            filtration: catalogData.filtration || [],
+            additional: catalogData.additional || []
+        };
+    }, []);
+
     const value = useMemo<EstimateContextValue>(() => ({
         selection,
         setSelection,
         updateSelection,
         getDynamicPrice,
-        catalog: catalog as CatalogData,
+        catalog: adaptCatalogData(catalog),
         isLoadingCatalog,
         updateCatalog: updateCatalog as (category: string, items: any[]) => void,
         isInitialized,
@@ -315,7 +334,8 @@ export function EstimateProvider({ children }: EstimateProviderProps) {
         redo,
         canUndo,
         canRedo,
-        addItem
+        addItem,
+        adaptCatalogData
     ]);
 
     return (
@@ -334,4 +354,4 @@ export function useEstimate(): EstimateContextValue {
 }
 
 // Re-export Selection type for use in other files
-export type { ClientInfo, MaterialSelection, FiltrationSelection, HeatingSelection, PartsSelection, AdditionalItem, WorkSelection as WorkItem };
+export type { ClientInfo, MaterialSelection, FiltrationSelection, HeatingSelection, PartsSelection, WorkSelection as WorkItem };

@@ -4,7 +4,7 @@
  * Component and image lazy loading helpers
  */
 
-import { lazy, useState, useEffect, ComponentType } from 'react';
+import { lazy, useState, useEffect, type ComponentType } from 'react';
 
 /**
  * Lazy load component with retry logic

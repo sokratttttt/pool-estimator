@@ -2,7 +2,26 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { CatalogContextType, CatalogData, Product } from '@/types/catalog';
+import type { CatalogContextType, CatalogData } from '@/types/catalog';
+
+// Экспортируемый интерфейс Product
+export interface Product {
+    id: string;
+    name: string;
+    description?: string;
+    category: string;
+    price: number;
+    unit?: string;
+    sku?: string;
+    imageUrl?: string;
+    image?: string;
+    inStock?: boolean;
+    manufacturer?: string;
+    type?: string;
+    specifications?: Record<string, string | number>;
+    created_at?: string;
+    updated_at?: string;
+}
 
 const CatalogContext = createContext<CatalogContextType | null>(null);
 
@@ -20,7 +39,6 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
     const [catalog, setCatalog] = useState<CatalogData>(initialCatalog);
     const [isLoadingCatalog, setIsLoadingCatalog] = useState(true);
 
-    // Загрузка каталога при монтировании
     useEffect(() => {
         const loadCatalog = async () => {
             setIsLoadingCatalog(true);
@@ -38,7 +56,6 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
 
                 if (error) throw error;
 
-                // Группировка продуктов по категориям
                 const grouped: CatalogData = {
                     bowls: [],
                     heating: [],
@@ -69,7 +86,6 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         loadCatalog();
     }, []);
 
-    // Обновление каталога
     const updateCatalog = useCallback((type: string, newItems: Product[]) => {
         setCatalog(prev => {
             const updated = { ...prev };
@@ -82,7 +98,6 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         toast.success(`Каталог обновлен: добавлено ${newItems.length} позиций`);
     }, []);
 
-    // Получение продуктов по категории
     const getProductsByCategory = useCallback((category: string): Product[] => {
         if (category === 'all') {
             return Object.values(catalog).flat();
@@ -90,12 +105,10 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         return catalog[category] || [];
     }, [catalog]);
 
-    // Получение всех продуктов как плоского массива
     const products = useMemo<Product[]>(() => {
         return Object.values(catalog).flat();
     }, [catalog]);
 
-    // Обновление продукта
     const updateProduct = useCallback((productId: string, updates: Partial<Product>) => {
         setCatalog(prev => {
             const newCatalog = { ...prev };
@@ -112,7 +125,6 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         });
     }, []);
 
-    // Удаление продукта
     const deleteProduct = useCallback((productId: string) => {
         setCatalog(prev => {
             const newCatalog = { ...prev };
@@ -122,7 +134,7 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
             return newCatalog;
         });
     }, []);
-    // Добавление продукта
+
     const addProduct = useCallback((productData: Omit<Product, 'id'>) => {
         const newProduct: Product = {
             ...productData,
@@ -144,7 +156,6 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         toast.success(`Товар "${newProduct.name}" добавлен`);
     }, []);
 
-    // Мемоизированное значение контекста
     const value: CatalogContextType = useMemo(() => ({
         catalog,
         setCatalog,

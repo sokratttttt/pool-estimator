@@ -1,4 +1,4 @@
-import { EstimateItem } from './estimate-utils';
+import type { EstimateItem } from './estimate-utils';
 
 // Data types for saving
 export interface EstimateSaveData {

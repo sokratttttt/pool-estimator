@@ -3,25 +3,25 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Keyboard, X, Search, Command } from 'lucide-react';
-import { useGlobalShortcuts, formatShortcut, ShortcutConfig } from '@/hooks/useGlobalShortcuts';
+import { useGlobalShortcuts, formatShortcut, type ShortcutConfig } from '@/hooks/useGlobalShortcuts';
 
 // ============================================
 // TYPES
 // ============================================
 
 export interface ShortcutsHelpProps {
-    /** Показывать как модальное окно */
-    isOpen: boolean;
-    /** Callback при закрытии */
-    onClose: () => void;
-    /** Дополнительные shortcuts для отображения */
-    additionalShortcuts?: ShortcutConfig[];
+  /** Показывать как модальное окно */
+  isOpen: boolean;
+  /** Callback при закрытии */
+  onClose: () => void;
+  /** Дополнительные shortcuts для отображения */
+  additionalShortcuts?: ShortcutConfig[];
 }
 
 interface CategoryInfo {
-    id: ShortcutConfig['category'];
-    label: string;
-    icon: React.ReactNode;
+  id: ShortcutConfig['category'];
+  label: string;
+  icon: React.ReactNode;
 }
 
 // ============================================
@@ -29,10 +29,10 @@ interface CategoryInfo {
 // ============================================
 
 const CATEGORIES: CategoryInfo[] = [
-    { id: 'navigation', label: 'Навигация', icon: <Command size={16} /> },
-    { id: 'general', label: 'Общие', icon: <Keyboard size={16} /> },
-    { id: 'editing', label: 'Редактирование', icon: '✏️' },
-    { id: 'export', label: 'Экспорт', icon: '📤' },
+  { id: 'navigation', label: 'Навигация', icon: <Command size={16} /> },
+  { id: 'general', label: 'Общие', icon: <Keyboard size={16} /> },
+  { id: 'editing', label: 'Редактирование', icon: '✏️' },
+  { id: 'export', label: 'Экспорт', icon: '📤' },
 ];
 
 // ============================================
@@ -40,179 +40,179 @@ const CATEGORIES: CategoryInfo[] = [
 // ============================================
 
 export const ShortcutsHelp: React.FC<ShortcutsHelpProps> = ({
-    isOpen,
-    onClose,
-    additionalShortcuts = []
+  isOpen,
+  onClose,
+  additionalShortcuts = []
 }) => {
-    const { shortcuts } = useGlobalShortcuts({});
-    const [searchQuery, setSearchQuery] = useState('');
-    const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const { shortcuts } = useGlobalShortcuts({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-    // Объединяем все shortcuts
-    const allShortcuts = useMemo(() => [
-        ...shortcuts,
-        ...additionalShortcuts
-    ], [shortcuts, additionalShortcuts]);
+  // Объединяем все shortcuts
+  const allShortcuts = useMemo(() => [
+    ...shortcuts,
+    ...additionalShortcuts
+  ], [shortcuts, additionalShortcuts]);
 
-    // Фильтрация и группировка
-    const groupedShortcuts = useMemo(() => {
-        let filtered = allShortcuts;
+  // Фильтрация и группировка
+  const groupedShortcuts = useMemo(() => {
+    let filtered = allShortcuts;
 
-        // Поиск
-        if (searchQuery.trim()) {
-            const q = searchQuery.toLowerCase();
-            filtered = allShortcuts.filter(s =>
-                s.description.toLowerCase().includes(q) ||
-                s.key.toLowerCase().includes(q)
-            );
-        }
+    // Поиск
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = allShortcuts.filter(s =>
+        s.description.toLowerCase().includes(q) ||
+        s.key.toLowerCase().includes(q)
+      );
+    }
 
-        // Фильтр по категории
-        if (activeCategory) {
-            filtered = filtered.filter(s => s.category === activeCategory);
-        }
+    // Фильтр по категории
+    if (activeCategory) {
+      filtered = filtered.filter(s => s.category === activeCategory);
+    }
 
-        // Группировка
-        const groups: Record<string, ShortcutConfig[]> = {};
-        filtered.forEach(shortcut => {
-            const category = shortcut.category || 'general';
-            if (!groups[category]) groups[category] = [];
-            groups[category].push(shortcut);
-        });
+    // Группировка
+    const groups: Record<string, ShortcutConfig[]> = {};
+    filtered.forEach(shortcut => {
+      const category = shortcut.category || 'general';
+      if (!groups[category]) groups[category] = [];
+      groups[category].push(shortcut);
+    });
 
-        return groups;
-    }, [allShortcuts, searchQuery, activeCategory]);
+    return groups;
+  }, [allShortcuts, searchQuery, activeCategory]);
 
-    // Закрытие по Escape
-    React.useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && isOpen) {
-                onClose();
-            }
-        };
-        window.addEventListener('keydown', handleEscape);
-        return () => window.removeEventListener('keydown', handleEscape);
-    }, [isOpen, onClose]);
+  // Закрытие по Escape
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
 
-    return (
-        <AnimatePresence>
-            {isOpen && (
-                <motion.div
-                    className="shortcuts-help-overlay"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={onClose}
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="shortcuts-help-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        >
+          <motion.div
+            className="shortcuts-help-modal"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="shortcuts-help-header">
+              <div className="shortcuts-help-title">
+                <Keyboard size={24} />
+                <h2>Горячие клавиши</h2>
+              </div>
+              <button onClick={onClose} className="shortcuts-close-btn">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Search */}
+            <div className="shortcuts-search">
+              <Search size={16} className="shortcuts-search-icon" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Поиск команды..."
+                className="shortcuts-search-input"
+                autoFocus
+              />
+            </div>
+
+            {/* Category Tabs */}
+            <div className="shortcuts-categories">
+              <button
+                onClick={() => setActiveCategory(null)}
+                className={`shortcuts-category-btn ${!activeCategory ? 'active' : ''}`}
+              >
+                Все
+              </button>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id || null)}
+                  className={`shortcuts-category-btn ${activeCategory === cat.id ? 'active' : ''}`}
                 >
-                    <motion.div
-                        className="shortcuts-help-modal"
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {/* Header */}
-                        <div className="shortcuts-help-header">
-                            <div className="shortcuts-help-title">
-                                <Keyboard size={24} />
-                                <h2>Горячие клавиши</h2>
-                            </div>
-                            <button onClick={onClose} className="shortcuts-close-btn">
-                                <X size={20} />
-                            </button>
-                        </div>
+                  {cat.icon}
+                  <span>{cat.label}</span>
+                </button>
+              ))}
+            </div>
 
-                        {/* Search */}
-                        <div className="shortcuts-search">
-                            <Search size={16} className="shortcuts-search-icon" />
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Поиск команды..."
-                                className="shortcuts-search-input"
-                                autoFocus
-                            />
-                        </div>
+            {/* Shortcuts List */}
+            <div className="shortcuts-list">
+              {Object.entries(groupedShortcuts).map(([category, items]) => {
+                const categoryInfo = CATEGORIES.find(c => c.id === category);
 
-                        {/* Category Tabs */}
-                        <div className="shortcuts-categories">
-                            <button
-                                onClick={() => setActiveCategory(null)}
-                                className={`shortcuts-category-btn ${!activeCategory ? 'active' : ''}`}
-                            >
-                                Все
-                            </button>
-                            {CATEGORIES.map(cat => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => setActiveCategory(cat.id || null)}
-                                    className={`shortcuts-category-btn ${activeCategory === cat.id ? 'active' : ''}`}
-                                >
-                                    {cat.icon}
-                                    <span>{cat.label}</span>
-                                </button>
-                            ))}
-                        </div>
+                return (
+                  <div key={category} className="shortcuts-group">
+                    <h3 className="shortcuts-group-title">
+                      {categoryInfo?.icon}
+                      {categoryInfo?.label || category}
+                    </h3>
 
-                        {/* Shortcuts List */}
-                        <div className="shortcuts-list">
-                            {Object.entries(groupedShortcuts).map(([category, items]) => {
-                                const categoryInfo = CATEGORIES.find(c => c.id === category);
+                    <div className="shortcuts-items">
+                      {items.map((shortcut, index) => (
+                        <motion.div
+                          key={shortcut.key}
+                          className="shortcut-item"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.02 }}
+                        >
+                          <span className="shortcut-description">
+                            {shortcut.description}
+                          </span>
+                          <kbd className="shortcut-key">
+                            {formatShortcut(shortcut.key)}
+                          </kbd>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
 
-                                return (
-                                    <div key={category} className="shortcuts-group">
-                                        <h3 className="shortcuts-group-title">
-                                            {categoryInfo?.icon}
-                                            {categoryInfo?.label || category}
-                                        </h3>
+              {Object.keys(groupedShortcuts).length === 0 && (
+                <div className="shortcuts-empty">
+                  <p>Ничего не найдено</p>
+                  <button onClick={() => {
+                    setSearchQuery('');
+                    setActiveCategory(null);
+                  }}>
+                    Сбросить фильтры
+                  </button>
+                </div>
+              )}
+            </div>
 
-                                        <div className="shortcuts-items">
-                                            {items.map((shortcut, index) => (
-                                                <motion.div
-                                                    key={shortcut.key}
-                                                    className="shortcut-item"
-                                                    initial={{ opacity: 0, x: -10 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ delay: index * 0.02 }}
-                                                >
-                                                    <span className="shortcut-description">
-                                                        {shortcut.description}
-                                                    </span>
-                                                    <kbd className="shortcut-key">
-                                                        {formatShortcut(shortcut.key)}
-                                                    </kbd>
-                                                </motion.div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-
-                            {Object.keys(groupedShortcuts).length === 0 && (
-                                <div className="shortcuts-empty">
-                                    <p>Ничего не найдено</p>
-                                    <button onClick={() => {
-                                        setSearchQuery('');
-                                        setActiveCategory(null);
-                                    }}>
-                                        Сбросить фильтры
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Footer */}
-                        <div className="shortcuts-footer">
-                            <p>
-                                💡 Нажмите <kbd>?</kbd> или <kbd>Ctrl+/</kbd> чтобы открыть эту справку
-                            </p>
-                        </div>
-                    </motion.div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
+            {/* Footer */}
+            <div className="shortcuts-footer">
+              <p>
+                💡 Нажмите <kbd>?</kbd> или <kbd>Ctrl+/</kbd> чтобы открыть эту справку
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 };
 
 // ============================================

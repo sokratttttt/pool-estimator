@@ -1,11 +1,9 @@
 'use client';
 import { motion } from 'framer-motion';
 
-interface FiltrationHeaderProps {
+type FiltrationHeaderProps = object;
 
-}
-
-export default function FiltrationHeader({  }: FiltrationHeaderProps) {
+export default function FiltrationHeader({ }: FiltrationHeaderProps) {
     return (
         <motion.div
             initial={{ opacity: 0, x: -20 }}

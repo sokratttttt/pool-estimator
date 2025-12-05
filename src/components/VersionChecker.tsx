@@ -75,8 +75,6 @@ export default function VersionChecker() {
         // Listen for Electron updater events
         if (inElectron && (window as any).electron.onUpdateStatus) {
             (window as any).electron.onUpdateStatus(({ type, data }: { type: string; data: any }) => {
-                console.log('Update status:', type, data);
-
                 switch (type) {
                     case 'update-available':
                         setLatestVersion(data.version);
@@ -91,7 +89,6 @@ export default function VersionChecker() {
                         setUpdateProgress(100);
                         break;
                     case 'error':
-                        console.error('Update error:', data);
                         break;
                 }
             });

@@ -1,11 +1,9 @@
 'use client';
 import { motion } from 'framer-motion';
 
-interface AdditionalHeaderProps {
+type AdditionalHeaderProps = object;
 
-}
-
-export default function AdditionalHeader({  }: AdditionalHeaderProps) {
+export default function AdditionalHeader({ }: AdditionalHeaderProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: -20 }}

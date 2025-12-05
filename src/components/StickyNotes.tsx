@@ -14,9 +14,7 @@ const COLORS = [
     '#FFE57F', // Песочный
 ];
 
-interface StickyNotesProps {
-
-}
+type StickyNotesProps = object;
 
 export default function StickyNotes({ }: StickyNotesProps) {
     const [notes, setNotes] = useState<any[]>([]);

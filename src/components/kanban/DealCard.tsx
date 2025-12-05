@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Phone, Mail, Calendar } from 'lucide-react';
 
-import { Deal } from '@/types';
+import type { Deal } from '@/types';
 
 interface DealCardProps {
     deal: Deal;

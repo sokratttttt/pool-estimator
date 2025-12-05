@@ -1,17 +1,25 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface UserProfile {
+    id: string;
+    full_name: string | null;
+    email: string;
+    avatar_url: string | null;
+}
+
 interface UserSelectorProps {
     isOpen?: boolean;
     onClose?: () => void;
-    onSelect: (user: any) => void;
+    onSelect: (user: UserProfile) => void;
 }
 
 export default function UserSelector({ isOpen, onClose, onSelect }: UserSelectorProps) {
-    const [users, setUsers] = useState<any[]>([]);
+    const [users, setUsers] = useState<UserProfile[]>([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -42,6 +50,14 @@ export default function UserSelector({ isOpen, onClose, onSelect }: UserSelector
         (user.full_name || user.email || '').toLowerCase().includes(search.toLowerCase())
     );
 
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    };
+
+    const handleUserSelect = (user: UserProfile) => {
+        onSelect(user);
+    };
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -51,10 +67,17 @@ export default function UserSelector({ isOpen, onClose, onSelect }: UserSelector
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[80vh]"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Выбор пользователя для чата"
                     >
                         <div className="p-4 border-b border-gray-100 flex justify-between items-center">
                             <h3 className="font-bold text-lg">Новое сообщение</h3>
-                            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
+                            <button
+                                onClick={onClose}
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                                aria-label="Закрыть выбор пользователя"
+                            >
                                 <X size={20} className="text-gray-500" />
                             </button>
                         </div>
@@ -66,9 +89,10 @@ export default function UserSelector({ isOpen, onClose, onSelect }: UserSelector
                                     type="text"
                                     placeholder="Поиск людей..."
                                     value={search}
-                                    onChange={(e: React.ChangeEvent<any>) => setSearch(e.target.value)}
+                                    onChange={handleSearchChange}
                                     className="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-blue-500/20 outline-none"
                                     autoFocus
+                                    aria-label="Поиск пользователей"
                                 />
                             </div>
                         </div>
@@ -80,29 +104,44 @@ export default function UserSelector({ isOpen, onClose, onSelect }: UserSelector
                                 <div className="p-8 text-center text-gray-400">Никого не найдено</div>
                             ) : (
                                 <div className="space-y-1">
-                                    {filteredUsers.map(user => (
-                                        <button
-                                            key={user.id}
-                                            onClick={() => onSelect(user)}
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
-                                        >
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium shrink-0">
-                                                {user.avatar_url ? (
-                                                    <img src={user.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
-                                                ) : (
-                                                    (user.full_name || user.email || '?')[0].toUpperCase()
-                                                )}
-                                            </div>
-                                            <div className="min-w-0">
-                                                <p className="font-medium text-gray-900 truncate">
-                                                    {user.full_name || 'Без имени'}
-                                                </p>
-                                                <p className="text-sm text-gray-500 truncate">
-                                                    {user.email}
-                                                </p>
-                                            </div>
-                                        </button>
-                                    ))}
+                                    {filteredUsers.map(user => {
+                                        const userName = user.full_name || 'Без имени';
+                                        const userInitial = userName[0].toUpperCase();
+
+                                        return (
+                                            <button
+                                                key={user.id}
+                                                onClick={() => handleUserSelect(user)}
+                                                className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
+                                                aria-label={`Выбрать ${userName} для чата`}
+                                            >
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-medium shrink-0 overflow-hidden">
+                                                    {user.avatar_url ? (
+                                                        <Image
+                                                            src={user.avatar_url}
+                                                            alt={`Аватар ${userName}`}
+                                                            width={40}
+                                                            height={40}
+                                                            className="w-full h-full object-cover"
+                                                            style={{ objectFit: 'cover' }}
+                                                        />
+                                                    ) : (
+                                                        <span className="text-white font-medium">
+                                                            {userInitial}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="font-medium text-gray-900 truncate">
+                                                        {userName}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500 truncate">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

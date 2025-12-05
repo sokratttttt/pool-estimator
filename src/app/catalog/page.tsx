@@ -1,26 +1,41 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import type { ChangeEvent } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Package, Search, Plus, Edit2, Trash2, ArrowUpDown } from 'lucide-react';
-import AppleButton from '../../components/apple/AppleButton';
-import AppleCard from '../../components/apple/AppleCard';
-import AppleInput from '../../components/apple/AppleInput';
-
-import ProductForm from '../../components/ProductForm';
-import { useCatalog } from '../../context/CatalogContext';
+import AppleButton from '@/components/apple/AppleButton';
+import AppleCard from '@/components/apple/AppleCard';
+import AppleInput from '@/components/apple/AppleInput';
+import ProductForm from '@/components/ProductForm';
+import { useCatalog } from '@/context/CatalogContext';
+import type { Product } from '@/context/CatalogContext';
 import { toast } from 'sonner';
+
+interface PriceRange {
+    min: string;
+    max: string;
+}
+
+interface Category {
+    id: string;
+    label: string;
+}
+
+type SortOption = 'default' | 'price_asc' | 'price_desc';
 
 export default function CatalogPage() {
     const { products, deleteProduct, getProductsByCategory } = useCatalog();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [showProductForm, setShowProductForm] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
-    const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-    const [sortBy, setSortBy] = useState('default'); // default, price_asc, price_desc
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    const [showProductForm, setShowProductForm] = useState<boolean>(false);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [priceRange, setPriceRange] = useState<PriceRange>({ min: '', max: '' });
+    const [sortBy, setSortBy] = useState<SortOption>('default');
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const itemsPerPage = 24;
 
-    const categories = [
+    const categories: Category[] = [
         { id: 'all', label: 'Все' },
         { id: 'bowls', label: 'Чаши' },
         { id: 'filtration', label: 'Фильтрация' },
@@ -30,52 +45,101 @@ export default function CatalogPage() {
         { id: 'chemicals', label: 'Химия' },
     ];
 
-    const filteredProducts = getProductsByCategory(selectedCategory).filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    // Функция обработки изменения поиска
+    const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
+        setSearchQuery(e.target.value);
+    }, []);
 
-        const matchesPrice = (!priceRange.min || product.price >= parseFloat(priceRange.min)) &&
-            (!priceRange.max || product.price <= parseFloat(priceRange.max));
+    // Функция обработки изменения диапазона цен
+    const handlePriceRangeChange = useCallback((field: keyof PriceRange, value: string): void => {
+        setPriceRange(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    }, []);
 
-        return matchesSearch && matchesPrice;
-    });
+    // Функция обработки изменения сортировки
+    const handleSortChange = useCallback((e: ChangeEvent<HTMLSelectElement>): void => {
+        setSortBy(e.target.value as SortOption);
+    }, []);
 
-    const sortedProducts = [...filteredProducts].sort((a: any, b: any) => {
-        if (sortBy === 'price_asc') return a.price - b.price;
-        if (sortBy === 'price_desc') return b.price - a.price;
-        return 0;
-    });
+    // Фильтрация продуктов
+    const filteredProducts = useMemo(() => {
+        return getProductsByCategory(selectedCategory).filter((product: Product) => {
+            const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const handleEdit = (product: any) => {
+            const minPrice = priceRange.min ? parseFloat(priceRange.min) : -Infinity;
+            const maxPrice = priceRange.max ? parseFloat(priceRange.max) : Infinity;
+
+            const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
+
+            return matchesSearch && matchesPrice;
+        });
+    }, [selectedCategory, searchQuery, priceRange, getProductsByCategory]);
+
+    // Сортировка продуктов
+    const sortedProducts = useMemo(() => {
+        const sorted = [...filteredProducts];
+        switch (sortBy) {
+            case 'price_asc':
+                return sorted.sort((a, b) => a.price - b.price);
+            case 'price_desc':
+                return sorted.sort((a, b) => b.price - a.price);
+            default:
+                return sorted;
+        }
+    }, [filteredProducts, sortBy]);
+
+    // Пагинация
+    const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+    const currentProducts = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return sortedProducts.slice(startIndex, startIndex + itemsPerPage);
+    }, [sortedProducts, currentPage]);
+
+    // Сброс страницы при изменении фильтров
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, selectedCategory, priceRange]);
+
+    const handleEdit = useCallback((product: Product): void => {
         setEditingProduct(product);
         setShowProductForm(true);
-    };
+    }, []);
 
-    const handleDelete = (product: any) => {
+    const handleDelete = useCallback((product: Product): void => {
         if (confirm(`Удалить товар "${product.name}"?`)) {
             deleteProduct(product.id);
             toast.success('Товар удален');
         }
-    };
+    }, [deleteProduct]);
 
-    const handleAddNew = () => {
+    const handleAddNew = useCallback((): void => {
         setEditingProduct(null);
         setShowProductForm(true);
-    };
+    }, []);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 24;
+    const handlePageChange = useCallback((newPage: number): void => {
+        setCurrentPage(newPage);
+    }, []);
 
-    const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
-    const currentProducts = sortedProducts.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    const handleMinPriceChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        handlePriceRangeChange('min', e.target.value);
+    }, [handlePriceRangeChange]);
 
-    // Reset page when filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery, selectedCategory, priceRange]);
+    const handleMaxPriceChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        handlePriceRangeChange('max', e.target.value);
+    }, [handlePriceRangeChange]);
+
+    const handleCategoryClick = useCallback((categoryId: string) => {
+        setSelectedCategory(categoryId);
+    }, []);
+
+    const handleFormClose = useCallback(() => {
+        setShowProductForm(false);
+        setEditingProduct(null);
+    }, []);
 
     return (
         <div className="min-h-screen bg-apple-bg-primary">
@@ -109,7 +173,7 @@ export default function CatalogPage() {
                             <AppleInput
                                 placeholder="Поиск оборудования..."
                                 value={searchQuery}
-                                onChange={(e: React.ChangeEvent<any>) => setSearchQuery(e.target.value)}
+                                onChange={handleSearchChange}
                                 icon={<Search size={20} />}
                             />
                         </div>
@@ -121,8 +185,10 @@ export default function CatalogPage() {
                                     type="number"
                                     placeholder="Цена от"
                                     value={priceRange.min}
-                                    onChange={(e: React.ChangeEvent<any>) => setPriceRange({ ...priceRange, min: e.target.value })}
+                                    onChange={handleMinPriceChange}
                                     className="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition-all"
+                                    min="0"
+                                    step="0.01"
                                 />
                             </div>
                             <span className="text-slate-400">-</span>
@@ -131,8 +197,10 @@ export default function CatalogPage() {
                                     type="number"
                                     placeholder="до"
                                     value={priceRange.max}
-                                    onChange={(e: React.ChangeEvent<any>) => setPriceRange({ ...priceRange, max: e.target.value })}
+                                    onChange={handleMaxPriceChange}
                                     className="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition-all"
+                                    min="0"
+                                    step="0.01"
                                 />
                             </div>
                         </div>
@@ -141,22 +209,25 @@ export default function CatalogPage() {
                         <div className="relative min-w-[200px]">
                             <select
                                 value={sortBy}
-                                onChange={(e: React.ChangeEvent<any>) => setSortBy(e.target.value)}
+                                onChange={handleSortChange}
                                 className="w-full appearance-none px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500 transition-all cursor-pointer"
                             >
                                 <option value="default" className="bg-slate-800">По умолчанию</option>
                                 <option value="price_asc" className="bg-slate-800">Цена: по возрастанию</option>
                                 <option value="price_desc" className="bg-slate-800">Цена: по убыванию</option>
                             </select>
-                            <ArrowUpDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
+                            <ArrowUpDown
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                                size={16}
+                            />
                         </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                        {categories.map((category: any) => (
+                        {categories.map((category) => (
                             <button
                                 key={category.id}
-                                onClick={() => setSelectedCategory(category.id)}
+                                onClick={() => handleCategoryClick(category.id)}
                                 className={`px-4 py-2 rounded-full transition-all ${selectedCategory === category.id
                                     ? 'bg-apple-primary text-white'
                                     : 'bg-apple-bg-secondary text-apple-text-primary hover:bg-apple-bg-tertiary'
@@ -172,7 +243,7 @@ export default function CatalogPage() {
                 {currentProducts.length > 0 ? (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                            {currentProducts.map((product: any, index: number) => (
+                            {currentProducts.map((product, index) => (
                                 <motion.div
                                     key={product.id}
                                     initial={{ opacity: 0, y: 20 }}
@@ -195,7 +266,6 @@ export default function CatalogPage() {
                                                     <Package size={64} className="text-apple-text-tertiary" />
                                                 </div>
                                             )}
-
                                         </div>
 
                                         {/* Content */}
@@ -234,6 +304,7 @@ export default function CatalogPage() {
                                                         onClick={() => handleDelete(product)}
                                                         className="text-red-500 hover:bg-red-50"
                                                     >
+                                                        Удалить
                                                     </AppleButton>
                                                 </div>
                                             </div>
@@ -245,9 +316,9 @@ export default function CatalogPage() {
 
                         {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="flex justify-center gap-2">
+                            <div className="flex justify-center items-center gap-2">
                                 <button
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                                     disabled={currentPage === 1}
                                     className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
@@ -257,7 +328,7 @@ export default function CatalogPage() {
                                     Страница {currentPage} из {totalPages}
                                 </span>
                                 <button
-                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                                     disabled={currentPage === totalPages}
                                     className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
@@ -293,10 +364,7 @@ export default function CatalogPage() {
                 {showProductForm && (
                     <ProductForm
                         product={editingProduct}
-                        onClose={() => {
-                            setShowProductForm(false);
-                            setEditingProduct(null);
-                        }}
+                        onClose={handleFormClose}
                     />
                 )}
             </AnimatePresence>

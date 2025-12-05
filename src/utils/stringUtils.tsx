@@ -3,7 +3,7 @@
  * Helper functions for string manipulation
  */
 
-import { CharsetType, CyrillicMap } from '@/types/utils';
+import type { CharsetType, CyrillicMap } from '@/types/utils';
 
 /**
  * Generate random string

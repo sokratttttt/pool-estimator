@@ -1,14 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { useEstimate } from '@/context/EstimateContext';
 import { Cloud, LogIn, LogOut, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface CloudSyncProps {
-
-}
+type CloudSyncProps = object;
 
 export default function CloudSync({ }: CloudSyncProps) {
     const { selection } = useEstimate();

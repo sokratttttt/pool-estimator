@@ -1,7 +1,7 @@
 'use client';
 import { useState, useMemo, useCallback } from 'react';
 import { additionalOptions } from '@/data/additional';
-import {
+import type {
     UseAdditionalLogicReturn,
     AdditionalItem,
     AdditionalLogicConfig,
@@ -12,7 +12,11 @@ import {
     AdditionalLogicSummary
 } from '@/types/additional-logic';
 
-export function useAdditionalLogic(catalog: any, selection: any, updateSelection: (key: string, value: any) => void): UseAdditionalLogicReturn {
+export function useAdditionalLogic(
+    catalog: Record<string, any>,
+    selection: EstimateData,
+    updateSelection: (key: string, value: unknown) => void
+): UseAdditionalLogicReturn {
     // State
     const [config, setConfig] = useState<AdditionalLogicConfig>({
         autoAddItems: false,
@@ -24,17 +28,29 @@ export function useAdditionalLogic(catalog: any, selection: any, updateSelection
 
     // Memoize selected IDs
     const selectedIds = useMemo(() =>
-        selection.additional?.map((i: any) => i.id) || [],
+        selection.additional?.map((i) => i.id) || [],
         [selection.additional]);
 
     // Memoize display options (source of truth for available items)
     const additionalItems: AdditionalItem[] = useMemo(() => {
         const rawItems = catalog?.additional?.length > 0 ? catalog.additional : additionalOptions;
-        // Ensure they match AdditionalItem interface (adapt if necessary)
+        // Normalize items to AdditionalItem interface
         return rawItems.map((item: any) => ({
-            ...item,
+            id: item.id || '',
+            name: item.name || '',
+            category: item.category || 'other',
+            price: typeof item.price === 'number' ? item.price : 0,
+            description: item.description || '',
             taxable: item.taxable ?? true,
-            mandatory: item.mandatory ?? false
+            mandatory: item.mandatory ?? false,
+            quantity: item.quantity || 1,
+            unit: item.unit || 'шт',
+            installationPrice: item.installationPrice,
+            // Additional fields
+            section: item.section,
+            total: item.total,
+            source: item.source,
+            catalogArticle: item.catalogArticle
         }));
     }, [catalog?.additional]);
 
@@ -62,18 +78,22 @@ export function useAdditionalLogic(catalog: any, selection: any, updateSelection
         const item = additionalItems.find(i => i.id === itemId);
         if (!item) return;
 
-        const newItem = { ...item, quantity };
+        const newItem = {
+            ...item,
+            quantity,
+            unit: item.unit || 'шт'
+        };
         const newAdditional = [...(selection.additional || []), newItem];
         updateSelection('additional', newAdditional);
     }, [additionalItems, selection.additional, updateSelection]);
 
     const removeItem = useCallback((itemId: string) => {
-        const newAdditional = selection.additional?.filter((i: any) => i.id !== itemId) || [];
+        const newAdditional = selection.additional?.filter((i) => i.id !== itemId) || [];
         updateSelection('additional', newAdditional);
     }, [selection.additional, updateSelection]);
 
     const updateQuantity = useCallback((itemId: string, quantity: number) => {
-        const newAdditional = selection.additional?.map((i: any) =>
+        const newAdditional = selection.additional?.map((i) =>
             i.id === itemId ? { ...i, quantity } : i
         ) || [];
         updateSelection('additional', newAdditional);
@@ -196,7 +216,7 @@ export function useAdditionalLogic(catalog: any, selection: any, updateSelection
     return {
         additionalItems,
         selectedItems,
-        recommendations: [], // Mock empty for now or use getRecommendations result
+        recommendations: getRecommendations(selection),
         config,
         addItem,
         removeItem,

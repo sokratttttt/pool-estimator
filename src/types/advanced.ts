@@ -28,7 +28,7 @@ export type DeepPartial<T> = {
 export type ComponentProps<T extends React.ComponentType<any>> =
   T extends React.ComponentType<infer P> ? P : never;
 
-export type WithChildren<P = {}> = P & { children?: React.ReactNode };
+export type WithChildren<P = unknown> = P & { children?: React.ReactNode };
 
 // Runtime type validation
 export class ValidationError extends Error {

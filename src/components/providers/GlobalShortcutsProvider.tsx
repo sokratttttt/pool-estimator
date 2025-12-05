@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
-import { useGlobalShortcuts, ShortcutConfig } from '@/hooks/useGlobalShortcuts';
+import { useGlobalShortcuts } from '@/hooks/useGlobalShortcuts';
+import type { ShortcutConfig } from '@/hooks/useGlobalShortcuts';
 import { ShortcutsHelp } from '@/components/help/ShortcutsHelp';
 
 // ============================================

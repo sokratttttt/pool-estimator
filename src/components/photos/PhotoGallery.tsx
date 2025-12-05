@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePhotos } from '@/context/PhotoContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image as ImageIcon, Trash2, Filter } from 'lucide-react';
 import PhotoViewer from './PhotoViewer';
+import type { PhotoData } from '@/types/photo';
 
 const STAGES = [
     { value: 'all', label: 'Все этапы' },
@@ -20,42 +21,49 @@ const STAGES = [
 
 interface PhotoGalleryProps {
     estimateId?: string;
-    photo?: any;
 }
 
 export default function PhotoGallery({ estimateId }: PhotoGalleryProps) {
     const { photos, loading, getPhotos, deletePhoto, getPhotoUrl } = usePhotos();
-    const [selectedStage, setSelectedStage] = useState('all');
-    const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [selectedStage, setSelectedStage] = useState<string>('all');
+    const [selectedPhoto, setSelectedPhoto] = useState<PhotoData | null>(null);
     const [viewerOpen, setViewerOpen] = useState(false);
 
-    useEffect(() => {
+    const fetchPhotos = useCallback(async () => {
         if (estimateId) {
-            getPhotos(estimateId);
+            await getPhotos(estimateId);
         }
-    }, [estimateId]);
+    }, [estimateId, getPhotos]);
 
-    const filteredPhotos = selectedStage === 'all'
-        ? photos
-        : photos.filter(p => p.stage === selectedStage);
+    useEffect(() => {
+        fetchPhotos();
+    }, [fetchPhotos]);
 
-    const handleDelete = async (photoId: string, e: React.ChangeEvent<any>) => {
+    const handleDelete = useCallback(async (photoId: string, e: React.MouseEvent) => {
         e.stopPropagation();
 
         if (!confirm('Удалить это фото?')) return;
 
         await deletePhoto(photoId);
-    };
+    }, [deletePhoto]);
 
-    interface handlePhotoClickProps {
-        estimateId?: string;
-        photo?: any;
-    }
-
-    const handlePhotoClick = ({ photo }: handlePhotoClickProps) => {
+    const handlePhotoClick = useCallback((photo: PhotoData) => {
         setSelectedPhoto(photo);
         setViewerOpen(true);
-    };
+    }, []);
+
+    const handleCloseViewer = useCallback(() => {
+        setViewerOpen(false);
+        setSelectedPhoto(null);
+    }, []);
+
+    const handleStageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedStage(e.target.value);
+    }, []);
+
+    const filteredPhotos = selectedStage === 'all'
+        ? photos
+        : photos.filter(p => p.stage === selectedStage);
 
     if (loading && photos.length === 0) {
         return (
@@ -85,7 +93,7 @@ export default function PhotoGallery({ estimateId }: PhotoGalleryProps) {
                 <Filter size={16} className="text-apple-text-secondary" />
                 <select
                     value={selectedStage}
-                    onChange={(e: React.ChangeEvent<any>) => setSelectedStage(e.target.value)}
+                    onChange={handleStageChange}
                     className="px-3 py-1.5 bg-apple-bg-secondary border border-apple-border rounded-lg text-sm text-apple-text-primary focus:outline-none focus:border-apple-accent"
                 >
                     {STAGES.map(s => (
@@ -102,8 +110,9 @@ export default function PhotoGallery({ estimateId }: PhotoGalleryProps) {
             {/* Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <AnimatePresence mode="popLayout">
-                    {filteredPhotos.map((photo: any, index: number) => {
+                    {filteredPhotos.map((photo: PhotoData, index: number) => {
                         const photoUrl = getPhotoUrl(photo.file_path);
+                        const stageLabel = STAGES.find(s => s.value === photo.stage)?.label || photo.stage;
 
                         return (
                             <motion.div
@@ -136,8 +145,9 @@ export default function PhotoGallery({ estimateId }: PhotoGalleryProps) {
 
                                     {/* Delete button */}
                                     <button
-                                        onClick={(e: React.ChangeEvent<any>) => handleDelete(photo.id, e)}
+                                        onClick={(e) => handleDelete(photo.id, e)}
                                         className="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors"
+                                        aria-label="Удалить фото"
                                     >
                                         <Trash2 size={14} className="text-white" />
                                     </button>
@@ -146,7 +156,7 @@ export default function PhotoGallery({ estimateId }: PhotoGalleryProps) {
                                 {/* Stage badge */}
                                 <div className="absolute top-2 left-2">
                                     <span className="px-2 py-1 rounded-md bg-black/50 backdrop-blur-sm text-white text-xs font-medium">
-                                        {STAGES.find(s => s.value === photo.stage)?.label || photo.stage}
+                                        {stageLabel}
                                     </span>
                                 </div>
                             </motion.div>
@@ -160,10 +170,7 @@ export default function PhotoGallery({ estimateId }: PhotoGalleryProps) {
                 photos={filteredPhotos}
                 selectedPhoto={selectedPhoto}
                 isOpen={viewerOpen}
-                onClose={() => {
-                    setViewerOpen(false);
-                    setSelectedPhoto(null);
-                }}
+                onClose={handleCloseViewer}
             />
         </div>
     );

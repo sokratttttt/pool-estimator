@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useChat } from '@/context/ChatContext';
 import type { Channel } from '@/types/chat';
 import { MessageSquare, Plus } from 'lucide-react';
 import UserSelector from './UserSelector';
 
 interface ChatSidebarProps {
-
     channel?: any;
 }
 
@@ -44,6 +44,7 @@ export default function ChatSidebar({ }: ChatSidebarProps) {
                 <button
                     onClick={() => setShowUserSelector(true)}
                     className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    aria-label="Начать новый чат"
                 >
                     <Plus size={20} className="text-blue-600" />
                 </button>
@@ -59,26 +60,40 @@ export default function ChatSidebar({ }: ChatSidebarProps) {
                     <div className="space-y-1 p-2">
                         {channels.map(channel => {
                             const info = getChannelInfo(channel);
+                            const isActive = activeChannel?.id === channel.id;
+
                             return (
                                 <button
                                     key={channel.id}
                                     onClick={() => setActiveChannel(channel)}
-                                    className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors ${activeChannel?.id === channel.id
+                                    className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors ${isActive
                                         ? 'bg-blue-50 text-blue-700'
                                         : 'hover:bg-gray-50 text-gray-700'
                                         }`}
+                                    aria-label={`Открыть чат с ${info.name}`}
                                 >
                                     <div className="relative">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center overflow-hidden ${activeChannel?.id === channel.id ? 'bg-blue-100' : 'bg-gray-100'
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center overflow-hidden ${isActive ? 'bg-blue-100' : 'bg-gray-100'
                                             }`}>
                                             {info.avatar ? (
-                                                <img src={info.avatar} alt={info.name} className="w-full h-full object-cover" />
+                                                <Image
+                                                    src={info.avatar}
+                                                    alt={`Аватар ${info.name}`}
+                                                    width={40}
+                                                    height={40}
+                                                    className="w-full h-full object-cover"
+                                                    style={{ objectFit: 'cover' }}
+                                                    priority={isActive} // Prioritize active channel avatar
+                                                />
                                             ) : (
                                                 <span className="font-medium text-lg">{info.initials}</span>
                                             )}
                                         </div>
                                         {info.isOnline && (
-                                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                                            <div
+                                                className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"
+                                                aria-label="В сети"
+                                            />
                                         )}
                                     </div>
                                     <div className="min-w-0 flex-1">

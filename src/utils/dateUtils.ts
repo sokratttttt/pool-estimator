@@ -3,7 +3,7 @@
  * Extended date manipulation functions
  */
 
-import { DateInput } from '@/types/utils';
+import type { DateInput } from '@/types/utils';
 import { formatDate, formatDateTime } from './formatters';
 
 /**

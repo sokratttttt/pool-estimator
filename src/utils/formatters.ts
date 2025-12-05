@@ -3,7 +3,7 @@
  * Centralized formatting logic
  */
 
-import { DateInput, AddressData } from '@/types/utils';
+import type { DateInput, AddressData } from '@/types/utils';
 
 type DateFormatPattern = 'DD.MM.YYYY' | 'MM/DD/YYYY' | 'YYYY-MM-DD';
 

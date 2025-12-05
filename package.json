@@ -1,6 +1,6 @@
 {
     "name": "pool-estimator",
-    "version": "1.1.5",
+    "version": "2.1.0",
     "description": "Professional Pool Cost Estimator",
     "author": "Sokratttttt",
     "repository": {
@@ -37,6 +37,7 @@
         "@dnd-kit/core": "^6.3.1",
         "@dnd-kit/sortable": "^10.0.0",
         "@dnd-kit/utilities": "^3.2.2",
+        "@google/generative-ai": "^0.24.1",
         "@react-pdf/renderer": "^4.3.1",
         "@react-three/drei": "^10.7.7",
         "@react-three/fiber": "^9.4.2",
@@ -91,7 +92,7 @@
         "electron-builder": "^25.1.8",
         "electron-is-dev": "^3.0.1",
         "eslint": "^8.57.1",
-        "eslint-config-next": "^16.0.5",
+        "eslint-config-next": "^14.2.14",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-jsx-a11y": "^6.10.2",

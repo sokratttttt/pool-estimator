@@ -46,9 +46,11 @@ export function useAbortController(): any {
 /**
  * Hook combining useAsync with abort controller
  */
-export function useAbortableAsync(asyncFunction, immediate = false): any {
+import { useAsync } from './useAsync';
+
+export function useAbortableAsync(asyncFunction: any, immediate = false): any {
     const { signal, abort, reset: resetController } = useAbortController();
-    const { useAsync } = require('./useAsync');
+    // removed require using top level import
 
     const wrappedFunction = async (...args) => {
         return asyncFunction(signal, ...args);

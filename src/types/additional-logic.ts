@@ -7,6 +7,13 @@ export interface AdditionalItem {
     taxable: boolean;
     mandatory: boolean; // required for order
     quantity?: number; // recommended quantity
+    unit?: string; // Added for compatibility
+    installationPrice?: number; // Added for compatibility
+    // Additional fields for compatibility
+    section?: string;
+    total?: number;
+    source?: string;
+    catalogArticle?: string;
 }
 
 export interface AdditionalLogicConfig {
@@ -49,6 +56,7 @@ export interface EstimateData {
     poolType?: string;
     volume?: number;
     budget?: number;
+    additional?: AdditionalItem[];
 }
 
 export interface UseAdditionalLogicReturn {

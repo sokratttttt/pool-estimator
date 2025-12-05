@@ -12,7 +12,7 @@ const POOL_TYPES = [
     { value: 'infinity', label: 'Infinity', color: 'bg-purple-500' },
 ];
 
-import { MapFiltersState } from '@/types';
+import type { MapFiltersState } from '@/types';
 
 interface MapFiltersProps {
     filters: MapFiltersState;

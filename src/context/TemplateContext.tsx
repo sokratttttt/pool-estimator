@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { TemplateContextType, Template } from '@/types/template';
+import type { TemplateContextType, Template } from '@/types/template';
 
 const TemplateContext = createContext<TemplateContextType | null>(null);
 

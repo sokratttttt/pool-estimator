@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-import { Dimensions } from '@/types';
+import type { Dimensions } from '@/types';
 
 interface PoolVisualizerProps {
     dimensions?: Dimensions;

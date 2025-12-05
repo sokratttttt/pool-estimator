@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { ThemeContextType, ThemeColors, ThemeName } from '@/types/theme';
+import type { ThemeContextType, ThemeColors, ThemeName } from '@/types/theme';
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Gantt, ViewMode, Task } from 'gantt-task-react';
+import { Gantt, ViewMode, type Task } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
 import { calculateSchedule, getProjectDuration, detectStagesFromItems } from '@/utils/ganttUtils';
 import { Calendar, Download } from 'lucide-react';
@@ -42,7 +42,6 @@ export default function GanttChart({ items = [], startDate }: GanttChartProps) {
 
     const handleExportPDF = () => {
         // TODO: экспорт графика в PDF через html2canvas
-        console.log('Export to PDF');
     };
 
     if (!isClient) {

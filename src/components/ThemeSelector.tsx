@@ -3,7 +3,7 @@
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { ThemeName } from '@/types/theme';
+import type { ThemeName } from '@/types/theme';
 
 interface ThemeSelectorProps {
     onClose?: () => void;

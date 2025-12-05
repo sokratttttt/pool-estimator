@@ -3,11 +3,9 @@ import { Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 
-interface ThemeToggleProps {
+type ThemeToggleProps = object;
 
-}
-
-export default function ThemeToggle({  }: ThemeToggleProps) {
+export default function ThemeToggle({ }: ThemeToggleProps) {
     const { theme, toggleTheme } = useTheme();
     const isDark = theme === 'dark';
 

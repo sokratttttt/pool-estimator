@@ -1,0 +1,24 @@
+# Tasks
+
+- [x] Fix gemini.ts build error
+- [x] Fix ESLint errors in src/app/analytics/page.tsx
+- [x] Fix ESLint errors in src/app/api/clients/route.ts
+- [x] Fix ESLint errors in src/app/api/estimates/route.ts
+- [x] Fix ESLint errors in src/app/history/page.tsx
+- [x] Fix import errors in src/app/calculator/new/page.tsx
+- [x] Fix import errors in src/app/deals/page.tsx
+- [x] Fix import errors in src/app/map/page.tsx
+- [x] Fix lint errors in src/components/AIAssistant.tsx
+- [x] Fix lint errors in src/components/CloudSync.tsx
+- [x] Fix lint errors in src/components/accessibility/SkipLink.tsx
+- [x] Fix lint errors in src/components/chat/ChatWindow.tsx
+- [x] Fix lint errors in src/components/Configurator.tsx
+- [x] Fix lint errors in src/hooks/useAbortController.ts
+- [x] Fix lint errors in src/hooks/useStepNavigation.ts
+- [ ] Rename .js files to .ts/.tsx and fix types
+    - [x] Rename works.js to works.ts
+    - [ ] Rename src/data/*.js to .ts
+    - [ ] Rename src/context/*.js to .tsx
+    - [ ] Rename src/constants.js to .ts
+- [ ] Run build to verify fixes
+- [ ] Git add, commit, push, tag

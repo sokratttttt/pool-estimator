@@ -1,11 +1,9 @@
 'use client';
 import { motion } from 'framer-motion';
 
-interface HeatingHeaderProps {
+type HeatingHeaderProps = object;
 
-}
-
-export default function HeatingHeader({  }: HeatingHeaderProps) {
+export default function HeatingHeader({ }: HeatingHeaderProps) {
     return (
         <motion.div
             initial={{ opacity: 0, x: -20 }}

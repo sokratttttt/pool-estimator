@@ -1,65 +1,62 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import type { GenerativeModel } from '@google/generative-ai';
 import { AI_PROMPTS } from './prompts';
 
 // Interfaces
 export interface AIRequest {
-    agent: keyof typeof AI_PROMPTS;
-    data: any;
-    context?: any;
-    mock?: boolean;
+  agent: keyof typeof AI_PROMPTS;
+  data: unknown;
+  context?: unknown;
+  mock?: boolean;
 }
 
 export interface AIResponse {
-    success: boolean;
-    data?: any;
-    text?: string;
-    error?: string;
-    timestamp: string;
+  success: boolean;
+  data?: unknown;
+  text?: string;
+  error?: string;
+  timestamp: string;
 }
 
 // Configuration
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-const MOCK_DELAYS = {
-    fast: 1000,
-    medium: 2500,
-    slow: 4000
-};
-
 /**
  * Main AI Service Class
  */
 class AIService {
-    private model: any;
+  public model: GenerativeModel | null = null;
 
-    constructor() {
-        if (API_KEY) {
-            this.model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-        }
+  constructor() {
+    if (API_KEY) {
+      this.model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     }
+  }
 
-    /**
-     * Main entry point for AI requests
-     */
-    async processRequest(request: AIRequest): Promise<AIResponse> {
-        try {
-            // 1. Check for mock mode or missing key
-            if (request.mock || !API_KEY) {
-                console.log('[AI Service] Running in MOCK mode (No key provided or forced mock)');
-                return this.getMockResponse(request);
-            }
-
-            // 2. Prepare Prompt
-            const promptConfig = AI_PROMPTS[request.agent];
-            if (!promptConfig) {
-                throw new Error(\`Unknown agent: \${request.agent}\`);
+  /**
+   * Main entry point for AI requests
+   */
+  async processRequest(request: AIRequest): Promise<AIResponse> {
+    try {
+      // 1. Check for mock mode or missing key
+      if (request.mock || !API_KEY) {
+        return this.getMockResponse(request);
       }
 
-      const userContent = promptConfig.userTemplate(request.data, request.context);
-      const fullPrompt = \`\${promptConfig.system}\n\n---\n\n\${userContent}\`;
+      // 2. Prepare Prompt
+      const promptConfig = AI_PROMPTS[request.agent];
+      if (!promptConfig) {
+        throw new Error(`Unknown agent: ${request.agent}`);
+      }
+
+      const userContent = promptConfig.userTemplate(request.data as any, request.context);
+      const fullPrompt = `${promptConfig.system}\n\n---\n\n${userContent}`;
 
       // 3. Call API
+      if (!this.model) {
+        throw new Error('AI Model not initialized');
+      }
       const result = await this.model.generateContent(fullPrompt);
       const response = await result.response;
       const text = response.text();
@@ -105,7 +102,7 @@ class AIService {
    * Mock Responses for testing without API Cost
    */
   private async getMockResponse(request: AIRequest): Promise<AIResponse> {
-    await new Promise(resolve => setTimeout(resolve, MOCK_DELAYS.medium));
+    await new Promise(resolve => setTimeout(resolve, 2500));
 
     if (request.agent === 'estimator') {
       return {
@@ -155,10 +152,27 @@ class AIService {
     }
 
     if (request.agent === 'catalog') {
+      const parts = [
+        `**🔍 Найдены аналоги для: ${request.data}**`,
+        '',
+        '### 🥇 Лучший вариант',
+        ' - **Название:** Kripsol Koral KS-100',
+        ' - **Цена:** 32 000 ₽',
+        ' - **Плюсы:** Надежный, тихий, в наличии.',
+        '',
+        '### 🥈 Бюджетный вариант',
+        ' - **Название:** Aquaviva LX STP 100',
+        ' - **Цена:** 18 500 ₽',
+        '',
+        '### 🥉 Премиум вариант',
+        ' - **Название:** Speck Badu Magic II',
+        ' - **Цена:** 45 000 ₽'
+      ];
+
       return {
         success: true,
         timestamp: new Date().toISOString(),
-        text: `**🔍 Найдены аналоги для: ${ request.data } **\n\n### 🥇 Лучший вариант\n - ** Название:** Kripsol Koral KS - 100\n - ** Цена:** 32 000 ₽\n - ** Плюсы:** Надежный, тихий, в наличии.\n\n### 🥈 Бюджетный вариант\n - ** Название:** Aquaviva LX STP 100\n - ** Цена:** 18 500 ₽\n\n### 🥉 Премиум вариант\n - ** Название:** Speck Badu Magic II\n - ** Цена:** 45 000 ₽`
+        text: parts.join('\n')
       };
     }
 

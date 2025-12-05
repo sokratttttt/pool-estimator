@@ -1,11 +1,9 @@
 'use client';
 import { motion } from 'framer-motion';
 
-interface WorksHeaderProps {
+type WorksHeaderProps = object;
 
-}
-
-export default function WorksHeader({  }: WorksHeaderProps) {
+export default function WorksHeader({ }: WorksHeaderProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: -20 }}

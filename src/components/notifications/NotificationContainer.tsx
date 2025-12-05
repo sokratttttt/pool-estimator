@@ -8,9 +8,7 @@ import Alert from '../common/Alert';
  * Global notification container
  * Displays notifications from NotificationsContext
  */
-interface NotificationContainerProps {
-
-}
+type NotificationContainerProps = object;
 
 export default function NotificationContainer({ }: NotificationContainerProps) {
     const { notifications, removeNotification } = useNotifications();

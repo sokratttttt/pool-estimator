@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import { useHistory } from '@/context/HistoryContext';
 import { useTemplates } from '@/context/TemplateContext';
 import { toast } from 'sonner';
-import {
+import type {
     UseEstimateSaveReturn,
     EstimateSaveData,
     SaveOptions,

@@ -4,11 +4,9 @@ import { usePathname } from 'next/navigation';
 import { Calculator, Package, History, Settings, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-interface MainNavProps {
+type MainNavProps = object;
 
-}
-
-export default function MainNav({  }: MainNavProps) {
+export default function MainNav({ }: MainNavProps) {
     const pathname = usePathname();
 
     const navItems = [

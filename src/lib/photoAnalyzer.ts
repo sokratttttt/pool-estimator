@@ -1,6 +1,6 @@
 // Photo Analysis - Manual annotations for pool site photos
 // Future: Upgrade to YandexVision for automatic detection
-import {
+import type {
     PhotoData,
     PhotoAnnotations,
     PhotoAnalysis,

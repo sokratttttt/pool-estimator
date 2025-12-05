@@ -9,7 +9,7 @@ export const works = {
             unit: 'м³',
             category: 'earthworks',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 // Котлован = (длина + 1м) × (ширина + 1м) × (глубина + 0.3м)
                 const length = dimensions.length + 1;
                 const width = dimensions.width + 1;
@@ -25,7 +25,7 @@ export const works = {
             unit: 'м³',
             category: 'earthworks',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 // Примерно 30% от объема котлована
                 const excavationVolume = (dimensions.length + 1) * (dimensions.width + 1) * (parseFloat(dimensions.depth) + 0.3);
                 return excavationVolume * 0.3;
@@ -39,7 +39,7 @@ export const works = {
             unit: 'м³',
             category: 'earthworks',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 // Примерно 50% от объема котлована
                 const excavationVolume = (dimensions.length + 1) * (dimensions.width + 1) * (parseFloat(dimensions.depth) + 0.3);
                 return excavationVolume * 0.5;
@@ -53,7 +53,7 @@ export const works = {
             unit: 'м²',
             category: 'earthworks',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 return dimensions.length * dimensions.width;
             }
         }
@@ -68,7 +68,7 @@ export const works = {
             unit: 'м³',
             category: 'foundation',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 return dimensions.length * dimensions.width * 0.2;
             }
         },
@@ -80,7 +80,7 @@ export const works = {
             unit: 'м³',
             category: 'foundation',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 return dimensions.length * dimensions.width * 0.25;
             }
         },
@@ -92,7 +92,7 @@ export const works = {
             unit: 'м²',
             category: 'foundation',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 return dimensions.length * dimensions.width;
             }
         },
@@ -104,7 +104,7 @@ export const works = {
             unit: 'м²',
             category: 'foundation',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 return dimensions.length * dimensions.width;
             }
         }
@@ -129,7 +129,7 @@ export const works = {
             unit: 'час',
             category: 'installation',
             autoCalculate: true,
-            formula: (selection) => {
+            formula: (_dimensions: any, selection: any) => {
                 // Базовое время + время на каждую единицу оборудования
                 let hours = 4; // Базовое время
                 if (selection.heating) hours += 2;
@@ -189,7 +189,7 @@ export const works = {
             unit: 'м',
             category: 'finishing',
             autoCalculate: true,
-            formula: (dimensions) => {
+            formula: (dimensions: any) => {
                 return (dimensions.length + dimensions.width) * 2;
             }
         },
@@ -279,14 +279,14 @@ export const workCategories = {
 };
 
 // Helper function to calculate all auto-calculated works
-export function calculateAutoWorks(selection) {
-    const results = {};
+export function calculateAutoWorks(selection: any) {
+    const results: Record<string, any> = {};
     const dimensions = selection.dimensions || selection.bowl;
 
     if (!dimensions) return results;
 
-    Object.entries(works).forEach(([category, items]) => {
-        Object.entries(items).forEach(([key, work]) => {
+    Object.entries(works).forEach(([_category, items]) => {
+        Object.entries(items).forEach(([_key, work]: [string, any]) => {
             if (work.autoCalculate && work.formula) {
                 try {
                     const quantity = work.formula(dimensions, selection);

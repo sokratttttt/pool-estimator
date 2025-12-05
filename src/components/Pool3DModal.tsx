@@ -11,7 +11,7 @@ import { toast } from 'sonner';
  * @param {function} onClose - Close callback
  * @param {object} poolData - Pool configuration from estimate
  */
-import { Dimensions } from '@/types';
+import type { Dimensions } from '@/types';
 
 interface PoolData extends Dimensions {
     shape: string;

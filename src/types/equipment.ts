@@ -1,4 +1,4 @@
-import { Product } from './catalog';
+import type { Product } from './catalog';
 
 export interface EquipmentItem extends Product {
     article?: string;

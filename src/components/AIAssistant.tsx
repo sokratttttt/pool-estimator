@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Brain, X, ThumbsUp, ThumbsDown, HelpCircle, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateRecommendations, getRecommendationReason } from '@/lib/aiAssistant';
-import { Recommendation } from '@/types/ai';
+import type { Recommendation } from '@/types/ai';
 
 const PRIORITY_COLORS: Record<string, string> = {
     critical: 'bg-red-500',
@@ -15,9 +15,9 @@ const PRIORITY_COLORS: Record<string, string> = {
 };
 
 interface AIAssistantProps {
-    estimate?: any;
-    recommendation?: any;
-    action?: any;
+    estimate?: Record<string, unknown>;
+    recommendation?: Recommendation;
+    action?: string;
 }
 
 export default function AIAssistant({ estimate }: AIAssistantProps) {
@@ -37,14 +37,14 @@ export default function AIAssistant({ estimate }: AIAssistantProps) {
         }
     }, [estimate]);
 
-    interface handleFeedbackProps {
-        estimate?: any;
-        recommendation?: any;
-        action?: any;
+    interface HandleFeedbackProps {
+        recommendation: Recommendation;
+        action: 'accepted' | 'rejected' | string;
     }
 
-    const handleFeedback = ({ recommendation, action }: handleFeedbackProps) => {
+    const handleFeedback = ({ recommendation, action }: HandleFeedbackProps) => {
         // Track feedback (could save to Supabase)
+        // eslint-disable-next-line no-console
         console.log('Feedback:', recommendation.title, action);
 
         // Remove recommendation after feedback
@@ -109,7 +109,7 @@ export default function AIAssistant({ estimate }: AIAssistantProps) {
                                     <p className="text-sm mt-1">Добавьте параметры в смету</p>
                                 </div>
                             ) : (
-                                recommendations.map((rec: any, index: number) => (
+                                recommendations.map((rec: Recommendation, index: number) => (
                                     <motion.div
                                         key={index}
                                         initial={{ opacity: 0, y: 20 }}

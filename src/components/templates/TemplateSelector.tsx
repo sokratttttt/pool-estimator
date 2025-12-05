@@ -4,8 +4,8 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Star, Clock, Ruler, X, Check, ChevronRight } from 'lucide-react';
 import {
-  PoolTemplate,
-  PoolCategory,
+  type PoolTemplate,
+  type PoolCategory,
   POOL_TEMPLATES,
   getPopularTemplates,
   getTemplatesByCategory,

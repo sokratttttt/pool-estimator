@@ -1,8 +1,8 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { toast } from 'sonner';
-import {
+import type {
     BackupContextType,
     BackupData,
     BackupSchedule,
@@ -45,7 +45,7 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
         nextScheduled: null
     });
 
-    const getAllData = () => {
+    const getAllData = useCallback(() => {
         if (typeof window === 'undefined') return {};
         return {
             estimates: JSON.parse(localStorage.getItem('mos-pool-history') || '[]'),
@@ -58,9 +58,9 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
             timestamp: new Date().toISOString(),
             version: '3.0'
         };
-    };
+    }, []);
 
-    const createBackup = async (
+    const createBackup = useCallback(async (
         type: BackupType = 'full',
         options?: {
             name?: string;
@@ -140,9 +140,9 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setIsBackingUp(false);
         }
-    };
+    }, [getAllData]);
 
-    const restoreBackup = async (backupId: string, _options?: RestoreOptions): Promise<RestoreResult> => {
+    const restoreBackup = useCallback(async (backupId: string, _options?: RestoreOptions): Promise<RestoreResult> => {
         if (!supabase) {
             toast.error('Supabase не настроен');
             return { success: false, restored: { estimates: 0, clients: 0, projects: 0, templates: 0 }, errors: ['Supabase not configured'], warnings: [], totalTime: 0 };
@@ -215,9 +215,9 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setIsRestoring(false);
         }
-    };
+    }, []);
 
-    const deleteBackup = async (backupId: string, deleteFromCloud: boolean = true): Promise<boolean> => {
+    const deleteBackup = useCallback(async (backupId: string, deleteFromCloud: boolean = true): Promise<boolean> => {
         if (!supabase) return false;
 
         try {
@@ -237,9 +237,9 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
             toast.error('Ошибка удаления backup');
             return false;
         }
-    };
+    }, []);
 
-    const listBackups = async () => {
+    const listBackups = useCallback(async () => {
         if (!supabase) return [];
 
         try {
@@ -281,9 +281,9 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
             toast.error('Ошибка загрузки списка backup');
             return [];
         }
-    };
+    }, []);
 
-    const toggleBackup = (enabled: boolean) => {
+    const toggleBackup = useCallback((enabled: boolean) => {
         setSchedule(prev => ({ ...prev, enabled }));
         localStorage.setItem('backup-enabled', String(enabled));
 
@@ -293,9 +293,9 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
         } else {
             toast.info('Автобэкап выключен');
         }
-    };
+    }, [createBackup]);
 
-    const downloadLocalBackup = () => {
+    const downloadLocalBackup = useCallback(() => {
         const data = getAllData();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -307,9 +307,9 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         toast.success('Backup скачан');
-    };
+    }, [getAllData]);
 
-    const uploadLocalBackup = async (file: File): Promise<boolean> => {
+    const uploadLocalBackup = useCallback(async (file: File): Promise<boolean> => {
         try {
             const text = await file.text();
             const backup = JSON.parse(text);
@@ -338,7 +338,7 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
             toast.error('Ошибка загрузки backup');
             return false;
         }
-    };
+    }, []);
 
     // Auto-backup effect
     useEffect(() => {
@@ -374,57 +374,81 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
             return () => clearInterval(interval);
         }
         return undefined;
-    }, [isBackingUp]); // Added isBackingUp dependency to avoid closure staleness if needed, though mostly safe
+    }, [isBackingUp, createBackup]); // Added createBackup dependency
 
     // Placeholder implementations for new interface methods
-    const validateBackup = async (_backupId: string) => ({ valid: true, issues: [], canRestore: true });
-    const updateSchedule = async (newSchedule: Partial<BackupSchedule>) => setSchedule(prev => ({ ...prev, ...newSchedule }));
-    const runScheduledBackup = async () => createBackup();
-    const cancelCurrentBackup = () => false; // Not implemented
-    const createRestorePoint = async (_description?: string) => 'mock-point-id';
-    const restoreToPoint = async (_pointId: string) => ({ success: true, restored: { estimates: 0, clients: 0, projects: 0, templates: 0 }, errors: [], warnings: [], totalTime: 0 });
-    const cleanupOldBackups = async (_keepLast?: number) => ({ deleted: 0, freedSpace: 0 });
-    const exportBackupInfo = async (_backupId: string) => ({ success: true });
-    const importBackup = async (file: File, _options?: ImportOptions) => {
+    const validateBackup = useCallback(async (_backupId: string) =>
+        ({ valid: true, issues: [], canRestore: true }), []);
+
+    const updateSchedule = useCallback(async (newSchedule: Partial<BackupSchedule>) =>
+        setSchedule(prev => ({ ...prev, ...newSchedule })), []);
+
+    const runScheduledBackup = useCallback(async () =>
+        createBackup(), [createBackup]);
+
+    const cancelCurrentBackup = useCallback(() =>
+        false, []); // Not implemented
+
+    const createRestorePoint = useCallback(async (_description?: string) =>
+        'mock-point-id', []);
+
+    const restoreToPoint = useCallback(async (_pointId: string) =>
+        ({ success: true, restored: { estimates: 0, clients: 0, projects: 0, templates: 0 }, errors: [], warnings: [], totalTime: 0 }), []);
+
+    const cleanupOldBackups = useCallback(async (_keepLast?: number) =>
+        ({ deleted: 0, freedSpace: 0 }), []);
+
+    const exportBackupInfo = useCallback(async (_backupId: string) =>
+        ({ success: true }), []);
+
+    const importBackup = useCallback(async (file: File, _options?: ImportOptions) => {
         const success = await uploadLocalBackup(file);
         return success ? lastBackup : null;
+    }, [uploadLocalBackup, lastBackup]);
+
+    const getBackupSize = useCallback(async (_includeCloud?: boolean) =>
+        0, []);
+
+    const estimateBackupTime = useCallback((_type: BackupType) =>
+        0, []);
+
+    const checkIntegrity = useCallback(async (_backupId: string) =>
+        ({ valid: true, issues: [] }), []);
+
+    const value: BackupContextType = {
+        backups,
+        isBackingUp,
+        isRestoring,
+        lastBackup,
+        lastRestore,
+        schedule,
+        error,
+        warning,
+        supabaseConfigured: !!supabase,
+        stats,
+        createBackup,
+        restoreBackup,
+        deleteBackup,
+        validateBackup,
+        updateSchedule,
+        runScheduledBackup,
+        cancelCurrentBackup,
+        createRestorePoint,
+        restoreToPoint,
+        cleanupOldBackups,
+        exportBackupInfo,
+        importBackup,
+        getBackupSize,
+        estimateBackupTime,
+        checkIntegrity,
+        toggleBackup,
+        downloadLocalBackup,
+        uploadLocalBackup,
+        listBackups
     };
-    const getBackupSize = async (_includeCloud?: boolean) => 0;
-    const estimateBackupTime = (_type: BackupType) => 0;
-    const checkIntegrity = async (_backupId: string) => ({ valid: true, issues: [] });
 
     return (
-        <BackupContext.Provider value={{
-            backups,
-            isBackingUp,
-            isRestoring,
-            lastBackup,
-            lastRestore,
-            schedule,
-            error,
-            warning,
-            supabaseConfigured: !!supabase,
-            stats,
-            createBackup,
-            restoreBackup,
-            deleteBackup,
-            validateBackup,
-            updateSchedule,
-            runScheduledBackup,
-            cancelCurrentBackup,
-            createRestorePoint,
-            restoreToPoint,
-            cleanupOldBackups,
-            exportBackupInfo,
-            importBackup,
-            getBackupSize,
-            estimateBackupTime,
-            checkIntegrity,
-            toggleBackup,
-            downloadLocalBackup,
-            uploadLocalBackup,
-            listBackups
-        }}>
+        <BackupContext.Provider value={value}>
             {children}
         </BackupContext.Provider>
     );

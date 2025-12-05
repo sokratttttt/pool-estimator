@@ -1,13 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePhotos } from '@/context/PhotoContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 
+interface Photo {
+    id: string;
+    file_path: string;
+    caption?: string;
+    uploaded_at: string;
+}
+
 interface PhotoViewerProps {
-    photos: any[];
-    selectedPhoto: any;
+    photos: Photo[];
+    selectedPhoto: Photo | null;
     isOpen: boolean;
     onClose: () => void;
 }
@@ -31,45 +38,23 @@ export default function PhotoViewer({ photos, selectedPhoto, isOpen, onClose }: 
         setZoom(1);
     }, [currentIndex]);
 
-    useEffect(() => {
-        if (!isOpen) return;
+    const handlePrev = useCallback(() => {
+        setCurrentIndex((prev: number) => (prev > 0 ? prev - 1 : photos.length - 1));
+    }, [photos.length]);
 
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                onClose();
-            } else if (e.key === 'ArrowLeft') {
-                handlePrev();
-            } else if (e.key === 'ArrowRight') {
-                handleNext();
-            }
-        };
+    const handleNext = useCallback(() => {
+        setCurrentIndex((prev: number) => (prev < photos.length - 1 ? prev + 1 : 0));
+    }, [photos.length]);
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, currentIndex]);
-
-    if (!isOpen || photos.length === 0) return null;
-
-    const currentPhoto = photos[currentIndex];
-    const photoUrl = getPhotoUrl(currentPhoto?.file_path);
-
-    const handlePrev = () => {
-        setCurrentIndex((prev: any) => (prev > 0 ? prev - 1 : photos.length - 1));
-    };
-
-    const handleNext = () => {
-        setCurrentIndex((prev: any) => (prev < photos.length - 1 ? prev + 1 : 0));
-    };
-
-    const handleZoomIn = () => {
+    const handleZoomIn = useCallback(() => {
         setZoom(prev => Math.min(prev + 0.5, 3));
-    };
+    }, []);
 
-    const handleZoomOut = () => {
+    const handleZoomOut = useCallback(() => {
         setZoom(prev => Math.max(prev - 0.5, 1));
-    };
+    }, []);
 
-    const formatDate = (dateString: string) => {
+    const formatDate = useCallback((dateString: string) => {
         const date = new Date(dateString);
         return new Intl.DateTimeFormat('ru-RU', {
             day: 'numeric',
@@ -78,7 +63,53 @@ export default function PhotoViewer({ photos, selectedPhoto, isOpen, onClose }: 
             hour: '2-digit',
             minute: '2-digit'
         }).format(date);
-    };
+    }, []);
+
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+            onClose();
+        } else if (e.key === 'ArrowLeft') {
+            handlePrev();
+        } else if (e.key === 'ArrowRight') {
+            handleNext();
+        }
+    }, [onClose, handlePrev, handleNext]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, handleKeyDown]);
+
+    const handlePrevClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        handlePrev();
+    }, [handlePrev]);
+
+    const handleNextClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        handleNext();
+    }, [handleNext]);
+
+    const handleZoomOutClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        handleZoomOut();
+    }, [handleZoomOut]);
+
+    const handleZoomInClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        handleZoomIn();
+    }, [handleZoomIn]);
+
+    const handleImageClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+    }, []);
+
+    if (!isOpen || photos.length === 0) return null;
+
+    const currentPhoto = photos[currentIndex];
+    const photoUrl = getPhotoUrl(currentPhoto?.file_path);
 
     return (
         <AnimatePresence>
@@ -94,6 +125,7 @@ export default function PhotoViewer({ photos, selectedPhoto, isOpen, onClose }: 
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+                        aria-label="Закрыть просмотрщик"
                     >
                         <X className="text-white" />
                     </button>
@@ -102,20 +134,16 @@ export default function PhotoViewer({ photos, selectedPhoto, isOpen, onClose }: 
                     {photos.length > 1 && (
                         <>
                             <button
-                                onClick={(e: React.MouseEvent<any>) => {
-                                    e.stopPropagation();
-                                    handlePrev();
-                                }}
+                                onClick={handlePrevClick}
                                 className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+                                aria-label="Предыдущее фото"
                             >
                                 <ChevronLeft className="text-white" size={24} />
                             </button>
                             <button
-                                onClick={(e: React.MouseEvent<any>) => {
-                                    e.stopPropagation();
-                                    handleNext();
-                                }}
+                                onClick={handleNextClick}
                                 className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+                                aria-label="Следующее фото"
                             >
                                 <ChevronRight className="text-white" size={24} />
                             </button>
@@ -125,12 +153,10 @@ export default function PhotoViewer({ photos, selectedPhoto, isOpen, onClose }: 
                     {/* Zoom controls */}
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 z-10">
                         <button
-                            onClick={(e: React.MouseEvent<any>) => {
-                                e.stopPropagation();
-                                handleZoomOut();
-                            }}
+                            onClick={handleZoomOutClick}
                             disabled={zoom <= 1}
                             className="w-8 h-8 rounded-full hover:bg-white/20 flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Уменьшить масштаб"
                         >
                             <ZoomOut className="text-white" size={18} />
                         </button>
@@ -138,12 +164,10 @@ export default function PhotoViewer({ photos, selectedPhoto, isOpen, onClose }: 
                             {Math.round(zoom * 100)}%
                         </span>
                         <button
-                            onClick={(e: React.MouseEvent<any>) => {
-                                e.stopPropagation();
-                                handleZoomIn();
-                            }}
+                            onClick={handleZoomInClick}
                             disabled={zoom >= 3}
                             className="w-8 h-8 rounded-full hover:bg-white/20 flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Увеличить масштаб"
                         >
                             <ZoomIn className="text-white" size={18} />
                         </button>
@@ -152,7 +176,7 @@ export default function PhotoViewer({ photos, selectedPhoto, isOpen, onClose }: 
                     {/* Image */}
                     <div
                         className="flex items-center justify-center w-full h-full p-16"
-                        onClick={(e: React.MouseEvent<any>) => e.stopPropagation()}
+                        onClick={handleImageClick}
                     >
                         <motion.img
                             key={currentPhoto?.id}
@@ -174,7 +198,7 @@ export default function PhotoViewer({ photos, selectedPhoto, isOpen, onClose }: 
                             <p className="font-medium mb-2">{currentPhoto.caption}</p>
                         )}
                         <p className="text-sm text-white/70">
-                            {formatDate(currentPhoto?.uploaded_at)}
+                            {currentPhoto?.uploaded_at ? formatDate(currentPhoto.uploaded_at) : ''}
                         </p>
                         {photos.length > 1 && (
                             <p className="text-xs text-white/50 mt-2">

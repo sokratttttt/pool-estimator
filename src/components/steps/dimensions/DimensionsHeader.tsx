@@ -1,11 +1,9 @@
 'use client';
 import { motion } from 'framer-motion';
 
-interface DimensionsHeaderProps {
+type DimensionsHeaderProps = object;
 
-}
-
-export default function DimensionsHeader({  }: DimensionsHeaderProps) {
+export default function DimensionsHeader({ }: DimensionsHeaderProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: -20 }}

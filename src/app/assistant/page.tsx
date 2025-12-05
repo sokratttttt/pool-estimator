@@ -1,21 +1,61 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { generateManagerInsights, generateDailyDigest } from '@/lib/managerAssistant';
-import { TrendingUp, AlertCircle, CheckCircle, Clock, DollarSign, Target } from 'lucide-react';
+import { TrendingUp, AlertCircle, CheckCircle, Clock, DollarSign, Target, type LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+interface Task {
+    title: string;
+    priority: 'high' | 'medium' | 'low';
+}
+
+interface Action {
+    label: string;
+    type?: string;
+    data?: any;
+}
+
+interface Insight {
+    type: 'alert' | 'success' | 'tasks' | 'forecast' | 'analytics';
+    priority: 'high' | 'medium' | 'low';
+    icon?: string;
+    title: string;
+    description: string;
+    tasks?: Task[];
+    action?: Action;
+}
+
+interface DigestSummary {
+    newRequests: number;
+    closedDeals: number;
+    revenue: number;
+    activeDeals: number;
+}
+
+interface DailyDigest {
+    summary: DigestSummary;
+}
+
 export default function AssistantPage() {
-    const [insights, setInsights] = useState<any[]>([]);
-    const [digest, setDigest] = useState<any>(null);
+    const [insights, setInsights] = useState<Insight[]>([]);
+    const [digest, setDigest] = useState<DailyDigest | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadData();
+    const getDefaultIcon = useCallback((type: string): string => {
+        const icons: Record<string, string> = {
+            'alert': '⚠️',
+            'success': '✅',
+            'tasks': '📋',
+            'forecast': '📊',
+            'analytics': '📈',
+            'default': '🎯'
+        };
+        return icons[type] || icons['default'];
     }, []);
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
             // Fetch deals
             const { data: deals } = await supabase
@@ -32,16 +72,41 @@ export default function AssistantPage() {
             const generatedInsights = generateManagerInsights(deals || [], requests || []);
             const dailyDigest = generateDailyDigest(deals || [], requests || []);
 
-            setInsights(generatedInsights);
-            setDigest(dailyDigest);
+            // Приведение типов с преобразованием и фильтрацией
+            const typedInsights: Insight[] = generatedInsights.map(insight => {
+                const insightType = insight.type as string;
+                let validType: Insight['type'] = 'analytics';
+
+                if (insightType === 'alert' || insightType === 'success' || insightType === 'tasks' ||
+                    insightType === 'forecast' || insightType === 'analytics') {
+                    validType = insightType as Insight['type'];
+                }
+
+                return {
+                    type: validType,
+                    priority: insight.priority === 'info' ? 'low' : insight.priority as 'high' | 'medium' | 'low',
+                    icon: insight.icon || getDefaultIcon(validType),
+                    title: insight.title,
+                    description: insight.description,
+                    tasks: insight.tasks as Task[] || [],
+                    action: insight.action
+                };
+            }).filter(insight => insight.type !== undefined);
+
+            setInsights(typedInsights);
+            setDigest(dailyDigest as DailyDigest);
         } catch (error) {
             console.error('Error loading assistant data:', error);
         } finally {
             setLoading(false);
         }
-    };
+    }, [getDefaultIcon]);
 
-    const getIconForType = (type: any) => {
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+    const getIconForType = useCallback((type: string): LucideIcon => {
         switch (type) {
             case 'alert': return AlertCircle;
             case 'success': return CheckCircle;
@@ -50,16 +115,16 @@ export default function AssistantPage() {
             case 'analytics': return TrendingUp;
             default: return Target;
         }
-    };
+    }, []);
 
-    const getPriorityColor = (priority: any) => {
+    const getPriorityColor = useCallback((priority: string) => {
         switch (priority) {
             case 'high': return 'border-l-red-500 bg-red-50';
             case 'medium': return 'border-l-yellow-500 bg-yellow-50';
             case 'low': return 'border-l-blue-500 bg-blue-50';
             default: return 'border-l-gray-500 bg-gray-50';
         }
-    };
+    }, []);
 
     if (loading) {
         return (
@@ -112,8 +177,10 @@ export default function AssistantPage() {
 
             {/* Insights */}
             <div className="grid gap-6">
-                {insights.map((insight: any, index: number) => {
+                {insights.map((insight: Insight, index: number) => {
                     const Icon = getIconForType(insight.type);
+                    const displayIcon = insight.icon || getDefaultIcon(insight.type);
+
                     return (
                         <motion.div
                             key={index}
@@ -128,15 +195,15 @@ export default function AssistantPage() {
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-2xl">{insight.icon}</span>
+                                        <span className="text-2xl">{displayIcon}</span>
                                         <h3 className="text-lg font-semibold text-gray-900">{insight.title}</h3>
                                     </div>
                                     <p className="text-gray-700 mb-4">{insight.description}</p>
 
                                     {/* Tasks */}
-                                    {insight.tasks && (
+                                    {insight.tasks && insight.tasks.length > 0 && (
                                         <div className="space-y-2">
-                                            {insight.tasks.slice(0, 5).map((task: any, i: number) => (
+                                            {insight.tasks.slice(0, 5).map((task: Task, i: number) => (
                                                 <div key={i} className="flex items-center gap-2 text-sm">
                                                     <input type="checkbox" className="rounded" />
                                                     <span className="text-gray-800">{task.title}</span>

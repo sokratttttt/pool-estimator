@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useChat } from '@/context/ChatContext';
 import { Send, Paperclip, Smile, MoreVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import FileMessage from './FileMessage';
 import { toast } from 'sonner';
 
-interface ChatWindowProps {
-
-}
+type ChatWindowProps = object;
 
 export default function ChatWindow({ }: ChatWindowProps) {
     const { activeChannel, messages, sendMessage, uploadFile, currentUser, profiles, onlineUsers } = useChat();
@@ -26,7 +25,7 @@ export default function ChatWindow({ }: ChatWindowProps) {
         scrollToBottom();
     }, [messages]);
 
-    const handleSend = async (e: React.ChangeEvent<any>) => {
+    const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMessage.trim()) return;
 
@@ -34,7 +33,7 @@ export default function ChatWindow({ }: ChatWindowProps) {
         setNewMessage('');
     };
 
-    const handleFileSelect = async (e: React.ChangeEvent<any>) => {
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -49,7 +48,7 @@ export default function ChatWindow({ }: ChatWindowProps) {
                 toast.dismiss();
                 toast.success('Файл отправлен!');
             }
-        } catch (error) {
+        } catch {
             toast.dismiss();
             toast.error('Ошибка отправки файла');
         } finally {
@@ -100,7 +99,7 @@ export default function ChatWindow({ }: ChatWindowProps) {
                         </p>
                     )}
                 </div>
-                <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500">
+                <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500" aria-label="Дополнительные действия">
                     <MoreVertical size={20} />
                 </button>
             </div>
@@ -111,6 +110,7 @@ export default function ChatWindow({ }: ChatWindowProps) {
                     const isMe = msg.user_id === currentUser?.id;
                     const showAvatar = !isMe && (index === 0 || messages[index - 1].user_id !== msg.user_id);
                     const profile = profiles[msg.user_id];
+                    const profileInitial = (profile?.full_name || '?')[0];
 
                     return (
                         <motion.div
@@ -124,10 +124,17 @@ export default function ChatWindow({ }: ChatWindowProps) {
                                     {showAvatar ? (
                                         <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
                                             {profile?.avatar_url ? (
-                                                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                                                <Image
+                                                    src={profile.avatar_url}
+                                                    alt={`Аватар ${profile.full_name || 'пользователя'}`}
+                                                    width={32}
+                                                    height={32}
+                                                    className="w-full h-full object-cover"
+                                                    style={{ objectFit: 'cover' }}
+                                                />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-xs font-medium text-gray-500">
-                                                    {(profile?.full_name || '?')[0]}
+                                                    {profileInitial}
                                                 </div>
                                             )}
                                         </div>
@@ -175,23 +182,29 @@ export default function ChatWindow({ }: ChatWindowProps) {
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
                         className={`p-2 rounded-full transition-colors ${isUploading ? 'text-gray-300' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}`}
+                        aria-label="Прикрепить файл"
                     >
                         <Paperclip size={20} />
                     </button>
                     <input
                         type="text"
                         value={newMessage}
-                        onChange={(e: React.ChangeEvent<any>) => setNewMessage(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value)}
                         placeholder="Напишите сообщение..."
                         className="flex-1 bg-transparent border-none focus:ring-0 text-gray-800 placeholder-gray-500"
                     />
-                    <button type="button" className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors">
+                    <button
+                        type="button"
+                        className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
+                        aria-label="Добавить смайлик"
+                    >
                         <Smile size={20} />
                     </button>
                     <button
                         type="submit"
                         disabled={!newMessage.trim()}
                         className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                        aria-label="Отправить сообщение"
                     >
                         <Send size={20} />
                     </button>

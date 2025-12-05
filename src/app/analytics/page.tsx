@@ -15,17 +15,18 @@ import {
 import KPICard from '@/components/analytics/KPICard';
 import SalesChart from '@/components/analytics/SalesChart';
 import TopEquipment from '@/components/analytics/TopEquipment';
-import CategoryPie from '@/components/analytics/CategoryPie';
+import CategoryPie, { CategoryData } from '@/components/analytics/CategoryPie';
 import { TrendingUp, DollarSign, FileText, Target, Calendar, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AppleButton from '@/components/apple/AppleButton';
+import type { SalesData as SalesChartData } from '@/components/analytics/SalesChart';
+import type { EquipmentData } from '@/components/analytics/TopEquipment';
 
 export default function AnalyticsPage() {
     const { estimates } = useHistory();
     const [loading, setLoading] = useState(true);
 
-    // Фильтры
-    const [dateRange, setDateRange] = useState('month'); // 'week', 'month', 'quarter', 'year', 'all'
+    const [dateRange, setDateRange] = useState('month');
     const [selectedManager] = useState('all');
     const [selectedStatus, setSelectedStatus] = useState('all');
 
@@ -33,14 +34,12 @@ export default function AnalyticsPage() {
         setLoading(false);
     }, []);
 
-    // Фильтрация данных
     const filteredEstimates = useMemo(() => {
         let filtered = estimates;
 
-        // Фильтр по дате
         if (dateRange !== 'all') {
             const now = new Date();
-            let startDate = new Date();
+            const startDate = new Date();
 
             switch (dateRange) {
                 case 'week':
@@ -60,21 +59,32 @@ export default function AnalyticsPage() {
             filtered = filterByDateRange(filtered, startDate, now);
         }
 
-        // Фильтр по менеджеру
         filtered = filterByManager(filtered, selectedManager);
-
-        // Фильтр по статусу
         filtered = filterByStatus(filtered, selectedStatus);
 
         return filtered;
     }, [estimates, dateRange, selectedManager, selectedStatus]);
 
-    // Расчет метрик
     const kpis = useMemo(() => calculateKPIs(filteredEstimates), [filteredEstimates]);
-    const salesByMonth = useMemo(() => getSalesByMonth(filteredEstimates), [filteredEstimates]);
-    const topEquipment = useMemo(() => getTopEquipment(filteredEstimates, 10), [filteredEstimates]);
-    const categoryData = useMemo(() => getSalesByCategory(filteredEstimates), [filteredEstimates]);
 
+    const salesByMonth: SalesChartData[] = useMemo(() =>
+        getSalesByMonth(filteredEstimates) as SalesChartData[],
+        [filteredEstimates]
+    );
+
+    const topEquipment: EquipmentData[] = useMemo(() =>
+        getTopEquipment(filteredEstimates, 10) as EquipmentData[],
+        [filteredEstimates]
+    );
+
+    const categoryData: CategoryData[] = useMemo(() => {
+        const categoryDataItems = getSalesByCategory(filteredEstimates);
+        return categoryDataItems.map((item: CategoryData) => ({
+            name: item.name,
+            value: item.value,
+            count: item.count
+        }));
+    }, [filteredEstimates]);
 
     if (loading) {
         return (
@@ -90,7 +100,6 @@ export default function AnalyticsPage() {
     return (
         <div className="min-h-screen bg-apple-bg-primary">
             <div className="apple-container apple-section">
-                {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -102,7 +111,6 @@ export default function AnalyticsPage() {
                     </p>
                 </motion.div>
 
-                {/* Фильтры */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -113,7 +121,7 @@ export default function AnalyticsPage() {
                         <Calendar size={20} className="text-apple-text-tertiary" />
                         <select
                             value={dateRange}
-                            onChange={(e: React.ChangeEvent<any>) => setDateRange(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDateRange(e.target.value)}
                             className="apple-input w-auto"
                         >
                             <option value="week">Последняя неделя</option>
@@ -127,7 +135,7 @@ export default function AnalyticsPage() {
                     <div className="flex items-center gap-2">
                         <User size={20} className="text-apple-text-tertiary" />
                         <select
-                            onChange={(e: React.ChangeEvent<any>) => setSelectedStatus(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedStatus(e.target.value)}
                             className="apple-input w-auto"
                         >
                             <option value="all">Все статусы</option>
@@ -139,7 +147,6 @@ export default function AnalyticsPage() {
                     </div>
                 </motion.div>
 
-                {/* KPI Cards */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -169,7 +176,6 @@ export default function AnalyticsPage() {
                     />
                 </motion.div>
 
-                {/* Графики */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -183,7 +189,6 @@ export default function AnalyticsPage() {
                     <CategoryPie data={categoryData} />
                 </motion.div>
 
-                {/* Пустое состояние */}
                 {
                     filteredEstimates.length === 0 && (
                         <motion.div
@@ -202,7 +207,7 @@ export default function AnalyticsPage() {
                         </motion.div>
                     )
                 }
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }

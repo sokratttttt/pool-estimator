@@ -3,20 +3,10 @@
 import { motion } from 'framer-motion';
 import { FileText, TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import AppleCard from '../apple/AppleCard';
-
-interface RequestStatsData {
-    total_requests: number;
-    new_requests: number;
-    in_progress_requests: number;
-    completed_requests: number;
-    hot_leads: number;
-    warm_leads: number;
-    conversion_rate: number;
-    converted_to_estimates: number;
-}
+import { RequestStats as RequestStatsType } from '@/types/request';
 
 interface RequestStatsProps {
-    stats: RequestStatsData | null;
+    stats: RequestStatsType | null;
     loading?: boolean;
 }
 
@@ -34,53 +24,53 @@ export default function RequestStats({ stats, loading }: RequestStatsProps) {
     const statsCards = [
         {
             label: 'Всего заявок',
-            value: stats?.total_requests || 0,
+            value: stats?.total || 0,
             icon: FileText,
             color: 'cyan',
             gradient: 'from-blue-500 to-cyan-500'
         },
         {
             label: 'Новые',
-            value: stats?.new_requests || 0,
+            value: stats?.new_count || 0,
             icon: Clock,
             color: 'blue',
             gradient: 'from-blue-600 to-blue-400'
         },
         {
             label: 'В работе',
-            value: stats?.in_progress_requests || 0,
+            value: stats?.in_progress_count || 0,
             icon: AlertCircle,
             color: 'yellow',
             gradient: 'from-yellow-600 to-yellow-400'
         },
         {
             label: 'Завершено',
-            value: stats?.completed_requests || 0,
+            value: stats?.completed_count || 0,
             icon: CheckCircle2,
             color: 'green',
             gradient: 'from-green-600 to-green-400'
         },
         {
             label: 'Горячие лиды',
-            value: stats?.hot_leads || 0,
+            value: stats?.hot_count || 0,
             icon: TrendingUp,
             color: 'red',
             gradient: 'from-red-600 to-orange-500'
         },
         {
             label: 'Теплые лиды',
-            value: stats?.warm_leads || 0,
+            value: stats?.warm_count || 0,
             icon: TrendingUp,
             color: 'orange',
             gradient: 'from-orange-600 to-orange-400'
         },
         {
-            label: 'Конверсия в сметы',
-            value: `${stats?.conversion_rate || 0}%`,
+            label: 'Конверсия',
+            value: stats?.total ? `${Math.round((stats.completed_count / stats.total) * 100)}%` : '0%',
             icon: CheckCircle2,
             color: 'purple',
             gradient: 'from-purple-600 to-pink-500',
-            subtext: `${stats?.converted_to_estimates || 0} из ${stats?.total_requests || 0}`
+            subtext: `${stats?.completed_count || 0} из ${stats?.total || 0}`
         }
     ];
 

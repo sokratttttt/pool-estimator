@@ -1,6 +1,7 @@
 'use client';
 
-import React, { InputHTMLAttributes, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
+import type { InputHTMLAttributes } from 'react';
 
 export interface ProInputProps extends InputHTMLAttributes<HTMLInputElement> {
     label?: string;
