@@ -2,119 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Premium Design System */
+/* Professional Design System */
+@import '../styles/professional-tokens.css';
+@import '../styles/professional-components.css';
+
+/* Legacy Apple Design System */
 @import '../styles/apple.css';
 
-/* Base Styles */
-body {
-    font-family: var(--font-sans);
-    background: var(--color-bg-primary);
-    color: var(--color-text-primary);
-}
+/* ============================================
+   BASE STYLES
+   ============================================ */
 
-/* Ensure smooth scrolling */
 html {
     scroll-behavior: smooth;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Remove default margins */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Links */
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-/* Images */
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-/* Buttons */
-button {
-    font-family: inherit;
-    cursor: pointer;
-}
-
-/* Import Premium Design System */
-@import '../styles/apple.css';
-
-/* Base Styles */
 body {
-    font-family: var(--font-sans);
-    background: var(--color-bg-primary);
-    color: var(--color-text-primary);
+    font-family: var(--pro-font-sans, 'Inter', system-ui, sans-serif);
+    background: var(--pro-bg-app, #0f172a);
+    color: var(--pro-text-primary, #f8fafc);
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-/* Ensure smooth scrolling */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Remove default margins */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Links */
 a {
     color: inherit;
     text-decoration: none;
 }
 
-/* Images */
 img {
     max-width: 100%;
     height: auto;
 }
 
-/* Buttons */
 button {
     font-family: inherit;
     cursor: pointer;
+    border: none;
+    background: none;
 }
 
-/* Inputs */
 input,
 textarea,
 select {
     font-family: inherit;
 }
 
-/* Custom Scrollbars */
+/* ============================================
+   SCROLLBARS (Professional Dark)
+   ============================================ */
+
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--pro-bg-surface, #1e293b);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--pro-border, #334155);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--pro-border-light, #475569);
+}
+
+/* Selection */
+::selection {
+    background-color: var(--pro-selected, rgba(14, 165, 233, 0.2));
+}
+
+/* Focus Ring */
+*:focus-visible {
+    outline: 2px solid var(--pro-accent, #0ea5e9);
+    outline-offset: 2px;
 }
 
 /* ============================================
-   ПЛАНШЕТНЫЙ РЕЖИМ (768px - 1024px)
+   TABLET RESPONSIVE (768px - 1024px)
    ============================================ */
 
 @media (min-width: 768px) and (max-width: 1024px) {
 
-    /* Увеличенные тач-таргеты для кнопок */
     button:not(.no-tablet-resize),
     a.apple-button,
     .apple-button {
@@ -123,7 +104,6 @@ select {
         font-size: 17px;
     }
 
-    /* Крупнее input поля */
     input[type="text"],
     input[type="number"],
     input[type="email"],
@@ -135,68 +115,17 @@ select {
         padding: 14px 16px;
     }
 
-    /* Увеличенные чекбоксы и радио кнопки */
     input[type="checkbox"],
     input[type="radio"] {
         width: 24px;
         height: 24px;
-        min-width: 24px;
-        min-height: 24px;
-    }
-
-    /* Крупнее типографика */
-    body {
-        font-size: 17px;
-        line-height: 1.6;
-    }
-
-    h1,
-    .apple-heading-1 {
-        font-size: 42px;
-    }
-
-    h2,
-    .apple-heading-2 {
-        font-size: 32px;
-    }
-
-    h3,
-    .apple-heading-3 {
-        font-size: 24px;
-    }
-
-    /* Больше отступов в карточках */
-    .apple-card {
-        padding: 24px;
-    }
-
-    /* Увеличенные gap для контейнеров */
-    .apple-container {
-        padding: 24px;
-    }
-
-    /* Крупнее иконки */
-    svg:not(.no-tablet-resize) {
-        width: 24px;
-        height: 24px;
     }
 }
 
-/* Планшет в портретной ориентации */
-@media (orientation: portrait) and (min-width: 768px) and (max-width: 1024px) {
-    .calculator-grid {
-        grid-template-columns: 1fr;
-    }
-}
+/* ============================================
+   TOUCH DEVICES
+   ============================================ */
 
-/* Планшет в альбомной ориентации */
-@media (orientation: landscape) and (min-width: 768px) and (max-width: 1024px) {
-    .calculator-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* Тач-устройства - увеличенные области нажатия */
 @media (hover: none) and (pointer: coarse) {
 
     button,
@@ -207,9 +136,22 @@ select {
         min-width: 44px;
         min-height: 44px;
     }
+}
 
-    /* Убрать hover эффекты на тач-устройствах */
-    *:hover {
-        transition: none !important;
+/* ============================================
+   ANIMATION UTILITIES
+   ============================================ */
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
     }
 }

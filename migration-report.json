@@ -1,0 +1,1277 @@
+[
+  {
+    "file": "src\\utils\\a11yUtils.js",
+    "newFile": "src\\utils\\a11yUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\a11yUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 3,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 150
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\analyticsUtils.js",
+    "newFile": "src\\utils\\analyticsUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\analyticsUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 224
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\animationVariants.js",
+    "newFile": "src\\utils\\animationVariants.ts",
+    "analysis": {
+      "filePath": "src\\utils\\animationVariants.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 150
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\api.js",
+    "newFile": "src\\utils\\api.ts",
+    "analysis": {
+      "filePath": "src\\utils\\api.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 1,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 206
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\arrayUtils.js",
+    "newFile": "src\\utils\\arrayUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\arrayUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 164
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\cache.js",
+    "newFile": "src\\utils\\cache.ts",
+    "analysis": {
+      "filePath": "src\\utils\\cache.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 2,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 146
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\calculators.js",
+    "newFile": "src\\utils\\calculators.ts",
+    "analysis": {
+      "filePath": "src\\utils\\calculators.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 197
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\colorUtils.js",
+    "newFile": "src\\utils\\colorUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\colorUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 134
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\comparisonUtils.js",
+    "newFile": "src\\utils\\comparisonUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\comparisonUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 92
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\contractUtils.js",
+    "newFile": "src\\utils\\contractUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\contractUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 143
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\dateUtils.js",
+    "newFile": "src\\utils\\dateUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\dateUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 176
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\domUtils.js",
+    "newFile": "src\\utils\\domUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\domUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 3,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 158
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\estimateUtils.js",
+    "newFile": "src\\utils\\estimateUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\estimateUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 197
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\exportUtils.js",
+    "newFile": "src\\utils\\exportUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\exportUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 2,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 296
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\fileUtils.js",
+    "newFile": "src\\utils\\fileUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\fileUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 170
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\formatters.js",
+    "newFile": "src\\utils\\formatters.ts",
+    "analysis": {
+      "filePath": "src\\utils\\formatters.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 166
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\ganttUtils.js",
+    "newFile": "src\\utils\\ganttUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\ganttUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 226
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\importUtils.js",
+    "newFile": "src\\utils\\importUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\importUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 57
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\index.js",
+    "newFile": "src\\utils\\index.ts",
+    "analysis": {
+      "filePath": "src\\utils\\index.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 74
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\lazyLoading.js",
+    "newFile": "src\\utils\\lazyLoading.ts",
+    "analysis": {
+      "filePath": "src\\utils\\lazyLoading.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 86
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\logger.js",
+    "newFile": "src\\utils\\logger.ts",
+    "analysis": {
+      "filePath": "src\\utils\\logger.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 1,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 131
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\memoization.js",
+    "newFile": "src\\utils\\memoization.ts",
+    "analysis": {
+      "filePath": "src\\utils\\memoization.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 76
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\numberUtils.js",
+    "newFile": "src\\utils\\numberUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\numberUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 92
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\objectUtils.js",
+    "newFile": "src\\utils\\objectUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\objectUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 180
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\parsers.js",
+    "newFile": "src\\utils\\parsers.ts",
+    "analysis": {
+      "filePath": "src\\utils\\parsers.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 234
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\performance.js",
+    "newFile": "src\\utils\\performance.ts",
+    "analysis": {
+      "filePath": "src\\utils\\performance.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 3,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 156
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\proposalUtils.js",
+    "newFile": "src\\utils\\proposalUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\proposalUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 280
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\security.js",
+    "newFile": "src\\utils\\security.ts",
+    "analysis": {
+      "filePath": "src\\utils\\security.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 206
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\stringUtils.js",
+    "newFile": "src\\utils\\stringUtils.tsx",
+    "analysis": {
+      "filePath": "src\\utils\\stringUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": true,
+      "lines": 140
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\urlUtils.js",
+    "newFile": "src\\utils\\urlUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\urlUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 112
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\validation.js",
+    "newFile": "src\\utils\\validation.ts",
+    "analysis": {
+      "filePath": "src\\utils\\validation.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 182
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\validators.js",
+    "newFile": "src\\utils\\validators.ts",
+    "analysis": {
+      "filePath": "src\\utils\\validators.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 157
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\whatsappUtils.js",
+    "newFile": "src\\utils\\whatsappUtils.ts",
+    "analysis": {
+      "filePath": "src\\utils\\whatsappUtils.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 96
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\utils\\__tests__\\estimateUtils.test.js",
+    "newFile": "src\\utils\\__tests__\\estimateUtils.test.ts",
+    "analysis": {
+      "filePath": "src\\utils\\__tests__\\estimateUtils.test.js",
+      "hasReact": false,
+      "hasExports": false,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 63
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\aiAssistant.js",
+    "newFile": "src\\lib\\aiAssistant.ts",
+    "analysis": {
+      "filePath": "src\\lib\\aiAssistant.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 7,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 288
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\contractGenerator.js",
+    "newFile": "src\\lib\\contractGenerator.tsx",
+    "analysis": {
+      "filePath": "src\\lib\\contractGenerator.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 12,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": true,
+      "lines": 284
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\db.js",
+    "newFile": "src\\lib\\db.ts",
+    "analysis": {
+      "filePath": "src\\lib\\db.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 137
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\dealPredictor.js",
+    "newFile": "src\\lib\\dealPredictor.ts",
+    "analysis": {
+      "filePath": "src\\lib\\dealPredictor.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 7,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 200
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\descriptionGenerator.js",
+    "newFile": "src\\lib\\descriptionGenerator.ts",
+    "analysis": {
+      "filePath": "src\\lib\\descriptionGenerator.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 12,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 287
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\managerAssistant.js",
+    "newFile": "src\\lib\\managerAssistant.ts",
+    "analysis": {
+      "filePath": "src\\lib\\managerAssistant.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 8,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 303
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\photoAnalyzer.js",
+    "newFile": "src\\lib\\photoAnalyzer.ts",
+    "analysis": {
+      "filePath": "src\\lib\\photoAnalyzer.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 9,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 259
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\smartSearch.js",
+    "newFile": "src\\lib\\smartSearch.ts",
+    "analysis": {
+      "filePath": "src\\lib\\smartSearch.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 8,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 227
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\lib\\supabase.js",
+    "newFile": "src\\lib\\supabase.ts",
+    "analysis": {
+      "filePath": "src\\lib\\supabase.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 24
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\index.js",
+    "newFile": "src\\hooks\\index.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\index.js",
+      "hasReact": false,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 61
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useAbortController.js",
+    "newFile": "src\\hooks\\useAbortController.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useAbortController.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 2,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 70
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useAdditionalLogic.js",
+    "newFile": "src\\hooks\\useAdditionalLogic.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useAdditionalLogic.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 47
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useAdvancedHooks.js",
+    "newFile": "src\\hooks\\useAdvancedHooks.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useAdvancedHooks.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 6,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 212
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useAnimations.js",
+    "newFile": "src\\hooks\\useAnimations.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useAnimations.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 4,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 105
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useArray.js",
+    "newFile": "src\\hooks\\useArray.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useArray.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 69
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useAsync.js",
+    "newFile": "src\\hooks\\useAsync.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useAsync.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 3,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 78
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useBowlFiltering.js",
+    "newFile": "src\\hooks\\useBowlFiltering.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useBowlFiltering.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 103
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useBrowserAPIs.js",
+    "newFile": "src\\hooks\\useBrowserAPIs.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useBrowserAPIs.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 4,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 155
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useClientData.js",
+    "newFile": "src\\hooks\\useClientData.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useClientData.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 45
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useClientInfo.js",
+    "newFile": "src\\hooks\\useClientInfo.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useClientInfo.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 39
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useCopyToClipboard.js",
+    "newFile": "src\\hooks\\useCopyToClipboard.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useCopyToClipboard.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 35
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useCustomItems.js",
+    "newFile": "src\\hooks\\useCustomItems.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useCustomItems.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 53
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useDebounce.js",
+    "newFile": "src\\hooks\\useDebounce.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useDebounce.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 26
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useDelivery.js",
+    "newFile": "src\\hooks\\useDelivery.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useDelivery.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 50
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useDevice.js",
+    "newFile": "src\\hooks\\useDevice.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useDevice.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 71
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useDimensionsLogic.js",
+    "newFile": "src\\hooks\\useDimensionsLogic.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useDimensionsLogic.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 66
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useDocument.js",
+    "newFile": "src\\hooks\\useDocument.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useDocument.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 4,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 71
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useDragAndDrop.js",
+    "newFile": "src\\hooks\\useDragAndDrop.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useDragAndDrop.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 2,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 130
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useEstimateExport.js",
+    "newFile": "src\\hooks\\useEstimateExport.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useEstimateExport.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 88
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useEstimateSave.js",
+    "newFile": "src\\hooks\\useEstimateSave.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useEstimateSave.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 60
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useFiltrationLogic.js",
+    "newFile": "src\\hooks\\useFiltrationLogic.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useFiltrationLogic.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 47
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useForm.js",
+    "newFile": "src\\hooks\\useForm.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useForm.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 138
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useHeatingLogic.js",
+    "newFile": "src\\hooks\\useHeatingLogic.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useHeatingLogic.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 21
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useIntersectionObserver.js",
+    "newFile": "src\\hooks\\useIntersectionObserver.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useIntersectionObserver.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 56
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useInterval.js",
+    "newFile": "src\\hooks\\useInterval.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useInterval.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 2,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 53
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useKeyboardNavigation.js",
+    "newFile": "src\\hooks\\useKeyboardNavigation.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useKeyboardNavigation.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 41
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useKeyPress.js",
+    "newFile": "src\\hooks\\useKeyPress.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useKeyPress.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 3,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 48
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useLocalStorage.js",
+    "newFile": "src\\hooks\\useLocalStorage.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useLocalStorage.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 5,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 106
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useMaterialLogic.js",
+    "newFile": "src\\hooks\\useMaterialLogic.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useMaterialLogic.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 17
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useMediaQuery.js",
+    "newFile": "src\\hooks\\useMediaQuery.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useMediaQuery.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 4,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 52
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useModalManager.js",
+    "newFile": "src\\hooks\\useModalManager.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useModalManager.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 34
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useModals.js",
+    "newFile": "src\\hooks\\useModals.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useModals.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 62
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useOnClickOutside.js",
+    "newFile": "src\\hooks\\useOnClickOutside.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useOnClickOutside.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 31
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\usePartsLogic.js",
+    "newFile": "src\\hooks\\usePartsLogic.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\usePartsLogic.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 19
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\usePrevious.js",
+    "newFile": "src\\hooks\\usePrevious.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\usePrevious.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 17
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useStateHooks.js",
+    "newFile": "src\\hooks\\useStateHooks.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useStateHooks.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 5,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 151
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useStepNavigation.js",
+    "newFile": "src\\hooks\\useStepNavigation.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useStepNavigation.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 0,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 99
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useToggle.js",
+    "newFile": "src\\hooks\\useToggle.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useToggle.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 25
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useVirtualization.js",
+    "newFile": "src\\hooks\\useVirtualization.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useVirtualization.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 2,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 78
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useWindowSize.js",
+    "newFile": "src\\hooks\\useWindowSize.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useWindowSize.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 2,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 43
+    },
+    "status": "success"
+  },
+  {
+    "file": "src\\hooks\\useWorksLogic.js",
+    "newFile": "src\\hooks\\useWorksLogic.ts",
+    "analysis": {
+      "filePath": "src\\hooks\\useWorksLogic.js",
+      "hasReact": true,
+      "hasExports": true,
+      "hasFunctions": 1,
+      "hasClasses": 0,
+      "hasPropTypes": false,
+      "hasJSX": false,
+      "lines": 113
+    },
+    "status": "success"
+  }
+]

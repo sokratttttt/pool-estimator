@@ -1,0 +1,210 @@
+/**
+ * ============================================
+ * PROFESSIONAL DESIGN SYSTEM TOKENS
+ * Pool Estimator - Desktop-class UI
+ * ============================================
+ */
+
+/* ============================================
+   DARK THEME (Default)
+   ============================================ */
+:root,
+:root[data-theme="dark"],
+:root[data-theme="professional-dark"] {
+    /* === BACKGROUNDS === */
+    --pro-bg-app: #0f172a;
+    /* Main app background */
+    --pro-bg-surface: #1e293b;
+    /* Cards, panels, sidebar */
+    --pro-bg-elevated: #334155;
+    /* Dropdowns, tooltips */
+    --pro-bg-inset: #0f172a;
+    /* Inputs, nested areas */
+    --pro-bg-overlay: rgba(0, 0, 0, 0.6);
+
+    /* === ACCENT COLORS (Water/Pool Theme) === */
+    --pro-accent: #0ea5e9;
+    /* Primary accent - sky blue */
+    --pro-accent-hover: #38bdf8;
+    /* Lighter on hover */
+    --pro-accent-active: #0284c7;
+    /* Darker on active */
+    --pro-accent-subtle: rgba(14, 165, 233, 0.15);
+
+    --pro-accent-secondary: #06b6d4;
+    /* Cyan - secondary */
+    --pro-accent-tertiary: #3b82f6;
+    /* Blue - tertiary */
+
+    /* === SEMANTIC COLORS === */
+    --pro-success: #10b981;
+    --pro-success-subtle: rgba(16, 185, 129, 0.15);
+    --pro-warning: #f59e0b;
+    --pro-warning-subtle: rgba(245, 158, 11, 0.15);
+    --pro-danger: #ef4444;
+    --pro-danger-subtle: rgba(239, 68, 68, 0.15);
+    --pro-info: #8b5cf6;
+    --pro-info-subtle: rgba(139, 92, 246, 0.15);
+
+    /* === TEXT COLORS === */
+    --pro-text-primary: #f8fafc;
+    --pro-text-secondary: #cbd5e1;
+    --pro-text-tertiary: #94a3b8;
+    --pro-text-disabled: #64748b;
+    --pro-text-inverse: #0f172a;
+    --pro-text-link: var(--pro-accent);
+
+    /* === BORDERS === */
+    --pro-border: #334155;
+    --pro-border-light: #475569;
+    --pro-border-heavy: #1e293b;
+    --pro-border-focus: var(--pro-accent);
+
+    /* === INTERACTIVE STATES === */
+    --pro-hover: rgba(148, 163, 184, 0.1);
+    --pro-active: rgba(148, 163, 184, 0.2);
+    --pro-selected: rgba(14, 165, 233, 0.2);
+    --pro-focus-ring: 0 0 0 2px var(--pro-accent-subtle);
+
+    /* === SHADOWS === */
+    --pro-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --pro-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+    --pro-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+    --pro-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+
+    /* === TYPOGRAPHY === */
+    --pro-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --pro-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+
+    /* Font Sizes - Compact for data density */
+    --pro-text-2xs: 0.625rem;
+    /* 10px */
+    --pro-text-xs: 0.75rem;
+    /* 12px */
+    --pro-text-sm: 0.8125rem;
+    /* 13px */
+    --pro-text-base: 0.875rem;
+    /* 14px - default */
+    --pro-text-lg: 1rem;
+    /* 16px */
+    --pro-text-xl: 1.125rem;
+    /* 18px */
+    --pro-text-2xl: 1.25rem;
+    /* 20px */
+    --pro-text-3xl: 1.5rem;
+    /* 24px */
+    --pro-text-4xl: 2rem;
+    /* 32px */
+
+    /* Line Heights */
+    --pro-leading-none: 1;
+    --pro-leading-tight: 1.25;
+    --pro-leading-snug: 1.375;
+    --pro-leading-normal: 1.5;
+    --pro-leading-relaxed: 1.625;
+
+    /* Font Weights */
+    --pro-font-normal: 400;
+    --pro-font-medium: 500;
+    --pro-font-semibold: 600;
+    --pro-font-bold: 700;
+
+    /* === SPACING === */
+    --pro-space-0: 0;
+    --pro-space-px: 1px;
+    --pro-space-0-5: 0.125rem;
+    /* 2px */
+    --pro-space-1: 0.25rem;
+    /* 4px */
+    --pro-space-1-5: 0.375rem;
+    /* 6px */
+    --pro-space-2: 0.5rem;
+    /* 8px */
+    --pro-space-2-5: 0.625rem;
+    /* 10px */
+    --pro-space-3: 0.75rem;
+    /* 12px */
+    --pro-space-4: 1rem;
+    /* 16px */
+    --pro-space-5: 1.25rem;
+    /* 20px */
+    --pro-space-6: 1.5rem;
+    /* 24px */
+    --pro-space-8: 2rem;
+    /* 32px */
+    --pro-space-10: 2.5rem;
+    /* 40px */
+    --pro-space-12: 3rem;
+    /* 48px */
+    --pro-space-16: 4rem;
+    /* 64px */
+
+    /* === BORDER RADIUS === */
+    --pro-radius-none: 0;
+    --pro-radius-sm: 2px;
+    --pro-radius-md: 4px;
+    --pro-radius-lg: 6px;
+    --pro-radius-xl: 8px;
+    --pro-radius-2xl: 12px;
+    --pro-radius-full: 9999px;
+
+    /* === TRANSITIONS === */
+    --pro-transition-fast: 75ms ease-out;
+    --pro-transition-normal: 150ms ease-out;
+    --pro-transition-slow: 250ms ease-out;
+    --pro-transition-bounce: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* === Z-INDEX SCALE === */
+    --pro-z-base: 0;
+    --pro-z-dropdown: 100;
+    --pro-z-sticky: 200;
+    --pro-z-modal: 300;
+    --pro-z-popover: 400;
+    --pro-z-tooltip: 500;
+    --pro-z-toast: 600;
+
+    /* === LAYOUT SIZES === */
+    --pro-menubar-height: 32px;
+    --pro-toolbar-height: 40px;
+    --pro-statusbar-height: 24px;
+    --pro-activitybar-width: 48px;
+    --pro-sidebar-width: 260px;
+    --pro-properties-width: 280px;
+    --pro-tabs-height: 36px;
+}
+
+/* ============================================
+   LIGHT THEME
+   ============================================ */
+:root[data-theme="light"],
+:root[data-theme="professional-light"] {
+    /* === BACKGROUNDS === */
+    --pro-bg-app: #ffffff;
+    --pro-bg-surface: #f8fafc;
+    --pro-bg-elevated: #ffffff;
+    --pro-bg-inset: #f1f5f9;
+    --pro-bg-overlay: rgba(0, 0, 0, 0.4);
+
+    /* === TEXT COLORS === */
+    --pro-text-primary: #0f172a;
+    --pro-text-secondary: #475569;
+    --pro-text-tertiary: #64748b;
+    --pro-text-disabled: #94a3b8;
+    --pro-text-inverse: #ffffff;
+
+    /* === BORDERS === */
+    --pro-border: #e2e8f0;
+    --pro-border-light: #f1f5f9;
+    --pro-border-heavy: #cbd5e1;
+
+    /* === INTERACTIVE STATES === */
+    --pro-hover: rgba(15, 23, 42, 0.05);
+    --pro-active: rgba(15, 23, 42, 0.1);
+    --pro-selected: rgba(14, 165, 233, 0.15);
+
+    /* === SHADOWS === */
+    --pro-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --pro-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --pro-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --pro-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,22 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "strictPropertyInitialization": true,
+        "noImplicitThis": true,
+        "exactOptionalPropertyTypes": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules",
+        "src/lib/aiAssistant.ts",
+        "src/lib/dealPredictor.ts",
+        "src/lib/photoAnalyzer.ts",
+        "src/components/**/*.tsx"
+    ]
+}

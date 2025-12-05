@@ -1,0 +1,556 @@
+{
+  "generated": "2025-11-30T11:36:10.806Z",
+  "totalComponents": 50,
+  "components": [
+    {
+      "file": "src\\components\\accessibility\\index.js",
+      "priority": 1,
+      "metrics": {
+        "lines": 6,
+        "complexity": 0,
+        "dependencies": 0,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\animations\\index.js",
+      "priority": 2,
+      "metrics": {
+        "lines": 6,
+        "complexity": 0,
+        "dependencies": 0,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\ui\\index.js",
+      "priority": 3,
+      "metrics": {
+        "lines": 6,
+        "complexity": 0,
+        "dependencies": 0,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\accessibility\\SkipLink.js",
+      "priority": 4,
+      "metrics": {
+        "lines": 14,
+        "complexity": 0,
+        "dependencies": 0,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\filtration\\FiltrationHeader.js",
+      "priority": 5,
+      "metrics": {
+        "lines": 15,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\heating\\HeatingHeader.js",
+      "priority": 6,
+      "metrics": {
+        "lines": 15,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\parts\\PartsHeader.js",
+      "priority": 7,
+      "metrics": {
+        "lines": 15,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\StepLayout.js",
+      "priority": 8,
+      "metrics": {
+        "lines": 16,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\additional\\AdditionalHeader.js",
+      "priority": 9,
+      "metrics": {
+        "lines": 18,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\dimensions\\DimensionsHeader.js",
+      "priority": 10,
+      "metrics": {
+        "lines": 18,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\material\\MaterialHeader.js",
+      "priority": 11,
+      "metrics": {
+        "lines": 18,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\bowl\\BowlHeader.js",
+      "priority": 12,
+      "metrics": {
+        "lines": 20,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\works\\WorksHeader.js",
+      "priority": 13,
+      "metrics": {
+        "lines": 20,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\SkeletonCard.js",
+      "priority": 14,
+      "metrics": {
+        "lines": 22,
+        "complexity": 0,
+        "dependencies": 0,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\works\\WorksSummary.js",
+      "priority": 15,
+      "metrics": {
+        "lines": 23,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\heating\\HeatingGrid.js",
+      "priority": 16,
+      "metrics": {
+        "lines": 24,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\parts\\PartsGrid.js",
+      "priority": 17,
+      "metrics": {
+        "lines": 24,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\bowl\\BowlGrid.js",
+      "priority": 18,
+      "metrics": {
+        "lines": 33,
+        "complexity": 0,
+        "dependencies": 3,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\configurator\\ConfiguratorStepRenderer.js",
+      "priority": 19,
+      "metrics": {
+        "lines": 36,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\additional\\AdditionalGrid.js",
+      "priority": 20,
+      "metrics": {
+        "lines": 36,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\dimensions\\DimensionsVisualizer.js",
+      "priority": 21,
+      "metrics": {
+        "lines": 39,
+        "complexity": 0,
+        "dependencies": 3,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\common\\Badge.js",
+      "priority": 22,
+      "metrics": {
+        "lines": 45,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\common\\index.js",
+      "priority": 23,
+      "metrics": {
+        "lines": 46,
+        "complexity": 0,
+        "dependencies": 0,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\material\\MaterialInfo.js",
+      "priority": 24,
+      "metrics": {
+        "lines": 51,
+        "complexity": 0,
+        "dependencies": 3,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\common\\SearchInput.js",
+      "priority": 25,
+      "metrics": {
+        "lines": 54,
+        "complexity": 0,
+        "dependencies": 3,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\configurator\\ConfiguratorFooter.js",
+      "priority": 26,
+      "metrics": {
+        "lines": 55,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\premium\\ProgressIndicator.js",
+      "priority": 27,
+      "metrics": {
+        "lines": 59,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\bowl\\BowlList.js",
+      "priority": 28,
+      "metrics": {
+        "lines": 59,
+        "complexity": 0,
+        "dependencies": 3,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\common\\Checkbox.js",
+      "priority": 29,
+      "metrics": {
+        "lines": 60,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\filtration\\FiltrationCalculator.js",
+      "priority": 30,
+      "metrics": {
+        "lines": 60,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\analytics\\KPICard.js",
+      "priority": 31,
+      "metrics": {
+        "lines": 63,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\kanban\\DealStats.js",
+      "priority": 32,
+      "metrics": {
+        "lines": 64,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\premium\\PremiumButton.js",
+      "priority": 33,
+      "metrics": {
+        "lines": 64,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\common\\Switch.js",
+      "priority": 34,
+      "metrics": {
+        "lines": 65,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\common\\Spinner.js",
+      "priority": 35,
+      "metrics": {
+        "lines": 70,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\ProgressBar.js",
+      "priority": 36,
+      "metrics": {
+        "lines": 72,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\material\\MaterialGrid.js",
+      "priority": 37,
+      "metrics": {
+        "lines": 75,
+        "complexity": 0,
+        "dependencies": 3,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\ui\\EmptyState.js",
+      "priority": 38,
+      "metrics": {
+        "lines": 76,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\summary\\SummaryClientInfo.js",
+      "priority": 39,
+      "metrics": {
+        "lines": 81,
+        "complexity": 0,
+        "dependencies": 6,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\common\\ProgressBar.js",
+      "priority": 40,
+      "metrics": {
+        "lines": 83,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\dimensions\\DimensionsForm.js",
+      "priority": 41,
+      "metrics": {
+        "lines": 89,
+        "complexity": 0,
+        "dependencies": 4,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\common\\Skeletons.js",
+      "priority": 42,
+      "metrics": {
+        "lines": 91,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\3d\\Lighting.js",
+      "priority": 43,
+      "metrics": {
+        "lines": 93,
+        "complexity": 0,
+        "dependencies": 0,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\animations\\AnimationWrappers.js",
+      "priority": 44,
+      "metrics": {
+        "lines": 116,
+        "complexity": 0,
+        "dependencies": 1,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\map\\MapView.js",
+      "priority": 45,
+      "metrics": {
+        "lines": 121,
+        "complexity": 0,
+        "dependencies": 4,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\summary\\SummaryActions.js",
+      "priority": 46,
+      "metrics": {
+        "lines": 134,
+        "complexity": 0,
+        "dependencies": 3,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\bowl\\BowlFilters.js",
+      "priority": 47,
+      "metrics": {
+        "lines": 162,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\steps\\works\\WorksCategory.js",
+      "priority": 48,
+      "metrics": {
+        "lines": 166,
+        "complexity": 0,
+        "dependencies": 2,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\premium\\OptionCard.js",
+      "priority": 49,
+      "metrics": {
+        "lines": 170,
+        "complexity": 0,
+        "dependencies": 4,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    },
+    {
+      "file": "src\\components\\effects\\index.js",
+      "priority": 50,
+      "metrics": {
+        "lines": 6,
+        "complexity": 1,
+        "dependencies": 0,
+        "hasPropTypes": false,
+        "hasTests": false
+      }
+    }
+  ]
+}

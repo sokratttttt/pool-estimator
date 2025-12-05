@@ -1,0 +1,1291 @@
+{
+  "totalFiles": 324,
+  "totalAnyCount": 1677,
+  "filesWithAny": 201,
+  "cleanFiles": 123,
+  "categoryStats": {
+    "types": {
+      "files": 32,
+      "anyCount": 33
+    },
+    "contexts": {
+      "files": 18,
+      "anyCount": 37
+    },
+    "components": {
+      "files": 150,
+      "anyCount": 673
+    },
+    "lib": {
+      "files": 14,
+      "anyCount": 43
+    },
+    "utils": {
+      "files": 36,
+      "anyCount": 454
+    },
+    "hooks": {
+      "files": 43,
+      "anyCount": 256
+    },
+    "other": {
+      "files": 31,
+      "anyCount": 181
+    }
+  },
+  "topOffenders": [
+    {
+      "path": "utils\\analyticsUtils.ts",
+      "anyCount": 43,
+      "lines": 224,
+      "category": "utils",
+      "locations": [
+        {
+          "line": 10,
+          "content": "export const calculateKPIs = (estimates: any) => {"
+        },
+        {
+          "line": 10,
+          "content": "export const calculateKPIs = (estimates: any) => {"
+        },
+        {
+          "line": 21,
+          "content": "const totalAmount = estimates.reduce((sum: any, est: any) => sum + (est.total ||"
+        },
+        {
+          "line": 21,
+          "content": "const totalAmount = estimates.reduce((sum: any, est: any) => sum + (est.total ||"
+        },
+        {
+          "line": 43,
+          "content": "export const getSalesByMonth = (estimates: any) => {"
+        },
+        {
+          "line": 43,
+          "content": "export const getSalesByMonth = (estimates: any) => {"
+        },
+        {
+          "line": 47,
+          "content": "const grouped = estimates.reduce((acc: any, est: any) => {"
+        },
+        {
+          "line": 47,
+          "content": "const grouped = estimates.reduce((acc: any, est: any) => {"
+        },
+        {
+          "line": 67,
+          "content": "return Object.values(grouped).sort((a: any, b: any) => {"
+        },
+        {
+          "line": 67,
+          "content": "return Object.values(grouped).sort((a: any, b: any) => {"
+        },
+        {
+          "line": 87,
+          "content": "const grouped = allItems.reduce((acc: any, item: any) => {"
+        },
+        {
+          "line": 87,
+          "content": "const grouped = allItems.reduce((acc: any, item: any) => {"
+        },
+        {
+          "line": 107,
+          "content": ".sort((a: any, b: any) => b.count - a.count)"
+        },
+        {
+          "line": 107,
+          "content": ".sort((a: any, b: any) => b.count - a.count)"
+        },
+        {
+          "line": 116,
+          "content": "export const getSalesByCategory = (estimates: any) => {"
+        },
+        {
+          "line": 116,
+          "content": "export const getSalesByCategory = (estimates: any) => {"
+        },
+        {
+          "line": 123,
+          "content": "const grouped = allItems.reduce((acc: any, item: any) => {"
+        },
+        {
+          "line": 123,
+          "content": "const grouped = allItems.reduce((acc: any, item: any) => {"
+        },
+        {
+          "line": 140,
+          "content": "return Object.values(grouped).sort((a: any, b: any) => b.value - a.value);"
+        },
+        {
+          "line": 140,
+          "content": "return Object.values(grouped).sort((a: any, b: any) => b.value - a.value);"
+        },
+        {
+          "line": 150,
+          "content": "export const filterByDateRange = (estimates: any, startDate: any, endDate: any) "
+        },
+        {
+          "line": 150,
+          "content": "export const filterByDateRange = (estimates: any, startDate: any, endDate: any) "
+        },
+        {
+          "line": 163,
+          "content": "export const filterByManager = (estimates: any, managerName: any) => {"
+        },
+        {
+          "line": 163,
+          "content": "export const filterByManager = (estimates: any, managerName: any) => {"
+        },
+        {
+          "line": 179,
+          "content": "export const filterByStatus = (estimates: any, status: any) => {"
+        },
+        {
+          "line": 179,
+          "content": "export const filterByStatus = (estimates: any, status: any) => {"
+        },
+        {
+          "line": 189,
+          "content": "export const getManagers = (estimates: any) => {"
+        },
+        {
+          "line": 189,
+          "content": "export const getManagers = (estimates: any) => {"
+        },
+        {
+          "line": 208,
+          "content": "export const formatCurrency = (amount: any) => {"
+        },
+        {
+          "line": 208,
+          "content": "export const formatCurrency = (amount: any) => {"
+        },
+        {
+          "line": 221,
+          "content": "export const formatPercent = (value: any) => {"
+        },
+        {
+          "line": 221,
+          "content": "export const formatPercent = (value: any) => {"
+        }
+      ]
+    },
+    {
+      "path": "utils\\validation.ts",
+      "anyCount": 42,
+      "lines": 182,
+      "category": "utils",
+      "locations": [
+        {
+          "line": 5,
+          "content": "required: (value: any) => {"
+        },
+        {
+          "line": 5,
+          "content": "required: (value: any) => {"
+        },
+        {
+          "line": 13,
+          "content": "email: (value: any) => {"
+        },
+        {
+          "line": 13,
+          "content": "email: (value: any) => {"
+        },
+        {
+          "line": 23,
+          "content": "phone: (value: any) => {"
+        },
+        {
+          "line": 23,
+          "content": "phone: (value: any) => {"
+        },
+        {
+          "line": 38,
+          "content": "price: (value: any) => {"
+        },
+        {
+          "line": 38,
+          "content": "price: (value: any) => {"
+        },
+        {
+          "line": 54,
+          "content": "quantity: (value: any) => {"
+        },
+        {
+          "line": 54,
+          "content": "quantity: (value: any) => {"
+        },
+        {
+          "line": 73,
+          "content": "minLength: (min: any) => (value: any) => {"
+        },
+        {
+          "line": 73,
+          "content": "minLength: (min: any) => (value: any) => {"
+        },
+        {
+          "line": 82,
+          "content": "maxLength: (max: any) => (value: any) => {"
+        },
+        {
+          "line": 82,
+          "content": "maxLength: (max: any) => (value: any) => {"
+        },
+        {
+          "line": 91,
+          "content": "range: (min: any, max: any) => (value: any) => {"
+        },
+        {
+          "line": 91,
+          "content": "range: (min: any, max: any) => (value: any) => {"
+        },
+        {
+          "line": 104,
+          "content": "url: (value: any) => {"
+        },
+        {
+          "line": 104,
+          "content": "url: (value: any) => {"
+        },
+        {
+          "line": 115,
+          "content": "pattern: (regex: any, message: any) => (value: any) => {"
+        },
+        {
+          "line": 115,
+          "content": "pattern: (regex: any, message: any) => (value: any) => {"
+        },
+        {
+          "line": 125,
+          "content": "export const combineValidators = (...validatorFns) => (value: any) => {"
+        },
+        {
+          "line": 125,
+          "content": "export const combineValidators = (...validatorFns) => (value: any) => {"
+        },
+        {
+          "line": 134,
+          "content": "export const validateForm = (formData: any, validationRules: any) => {"
+        },
+        {
+          "line": 134,
+          "content": "export const validateForm = (formData: any, validationRules: any) => {"
+        },
+        {
+          "line": 156,
+          "content": "export const formatPhone = (value: any) => {"
+        },
+        {
+          "line": 156,
+          "content": "export const formatPhone = (value: any) => {"
+        },
+        {
+          "line": 169,
+          "content": "export const sanitizeInput = (value: any) => {"
+        },
+        {
+          "line": 169,
+          "content": "export const sanitizeInput = (value: any) => {"
+        },
+        {
+          "line": 177,
+          "content": "export const validateAndSanitize = (value: any, validatorFn: any) => {"
+        },
+        {
+          "line": 177,
+          "content": "export const validateAndSanitize = (value: any, validatorFn: any) => {"
+        }
+      ]
+    },
+    {
+      "path": "utils\\fileUtils.ts",
+      "anyCount": 38,
+      "lines": 172,
+      "category": "utils",
+      "locations": [
+        {
+          "line": 9,
+          "content": "export const readFileAsText = (file: any) => {"
+        },
+        {
+          "line": 9,
+          "content": "export const readFileAsText = (file: any) => {"
+        },
+        {
+          "line": 10,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 10,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 21,
+          "content": "export const readFileAsDataURL = (file: any) => {"
+        },
+        {
+          "line": 21,
+          "content": "export const readFileAsDataURL = (file: any) => {"
+        },
+        {
+          "line": 22,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 22,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 33,
+          "content": "export const readFileAsArrayBuffer = (file: any) => {"
+        },
+        {
+          "line": 33,
+          "content": "export const readFileAsArrayBuffer = (file: any) => {"
+        },
+        {
+          "line": 34,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 34,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 45,
+          "content": "export const formatFileSize = (bytes: any) => {"
+        },
+        {
+          "line": 45,
+          "content": "export const formatFileSize = (bytes: any) => {"
+        },
+        {
+          "line": 58,
+          "content": "export const getFileExtension = (filename: any) => {"
+        },
+        {
+          "line": 58,
+          "content": "export const getFileExtension = (filename: any) => {"
+        },
+        {
+          "line": 65,
+          "content": "export const validateFileType = (file: any, allowedTypes: any) => {"
+        },
+        {
+          "line": 65,
+          "content": "export const validateFileType = (file: any, allowedTypes: any) => {"
+        },
+        {
+          "line": 78,
+          "content": "export const validateFileSize = (file: any, maxSize: any) => {"
+        },
+        {
+          "line": 78,
+          "content": "export const validateFileSize = (file: any, maxSize: any) => {"
+        },
+        {
+          "line": 85,
+          "content": "export const compressImage = (file: any, maxWidth = 1920, maxHeight = 1080, qual"
+        },
+        {
+          "line": 86,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 86,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 119,
+          "content": "(blob: any) => resolve(new File([blob], file.name, { type: file.type })),"
+        },
+        {
+          "line": 119,
+          "content": "(blob: any) => resolve(new File([blob], file.name, { type: file.type })),"
+        },
+        {
+          "line": 137,
+          "content": "export const downloadFile = (blob: any, filename: any) => {"
+        },
+        {
+          "line": 137,
+          "content": "export const downloadFile = (blob: any, filename: any) => {"
+        },
+        {
+          "line": 151,
+          "content": "export const dataURLtoBlob = (dataURL: any) => {"
+        },
+        {
+          "line": 151,
+          "content": "export const dataURLtoBlob = (dataURL: any) => {"
+        },
+        {
+          "line": 168,
+          "content": "export const createTextFile = (text: any, filename: any, type = 'text/plain') =>"
+        }
+      ]
+    },
+    {
+      "path": "components\\analytics\\CategoryPie.tsx",
+      "anyCount": 33,
+      "lines": 147,
+      "category": "components",
+      "locations": [
+        {
+          "line": 11,
+          "content": "data?: any;"
+        },
+        {
+          "line": 12,
+          "content": "active?: any;"
+        },
+        {
+          "line": 13,
+          "content": "payload?: any;"
+        },
+        {
+          "line": 14,
+          "content": "cx?: any;"
+        },
+        {
+          "line": 15,
+          "content": "cy?: any;"
+        },
+        {
+          "line": 16,
+          "content": "midAngle?: any;"
+        },
+        {
+          "line": 17,
+          "content": "innerRadius?: any;"
+        },
+        {
+          "line": 18,
+          "content": "outerRadius?: any;"
+        },
+        {
+          "line": 19,
+          "content": "percent?: any;"
+        },
+        {
+          "line": 38,
+          "content": "data?: any;"
+        },
+        {
+          "line": 39,
+          "content": "active?: any;"
+        },
+        {
+          "line": 40,
+          "content": "payload?: any;"
+        },
+        {
+          "line": 41,
+          "content": "cx?: any;"
+        },
+        {
+          "line": 42,
+          "content": "cy?: any;"
+        },
+        {
+          "line": 43,
+          "content": "midAngle?: any;"
+        },
+        {
+          "line": 44,
+          "content": "innerRadius?: any;"
+        },
+        {
+          "line": 45,
+          "content": "outerRadius?: any;"
+        },
+        {
+          "line": 46,
+          "content": "percent?: any;"
+        },
+        {
+          "line": 52,
+          "content": "const total = data.reduce((sum: any, d: any) => sum + d.value, 0);"
+        },
+        {
+          "line": 52,
+          "content": "const total = data.reduce((sum: any, d: any) => sum + d.value, 0);"
+        },
+        {
+          "line": 76,
+          "content": "data?: any;"
+        },
+        {
+          "line": 77,
+          "content": "active?: any;"
+        },
+        {
+          "line": 78,
+          "content": "payload?: any;"
+        },
+        {
+          "line": 79,
+          "content": "cx?: any;"
+        },
+        {
+          "line": 80,
+          "content": "cy?: any;"
+        },
+        {
+          "line": 81,
+          "content": "midAngle?: any;"
+        },
+        {
+          "line": 82,
+          "content": "innerRadius?: any;"
+        },
+        {
+          "line": 83,
+          "content": "outerRadius?: any;"
+        },
+        {
+          "line": 84,
+          "content": "percent?: any;"
+        },
+        {
+          "line": 131,
+          "content": "{data.map((_: any, index: number) => ("
+        },
+        {
+          "line": 139,
+          "content": "formatter={(value: any) => <span style={{ color: '#1f2937', fontSize: '12px' }}>"
+        },
+        {
+          "line": 139,
+          "content": "formatter={(value: any) => <span style={{ color: '#1f2937', fontSize: '12px' }}>"
+        }
+      ]
+    },
+    {
+      "path": "utils\\objectUtils.ts",
+      "anyCount": 33,
+      "lines": 180,
+      "category": "utils",
+      "locations": [
+        {
+          "line": 9,
+          "content": "export const deepClone = (obj: any) => {"
+        },
+        {
+          "line": 9,
+          "content": "export const deepClone = (obj: any) => {"
+        },
+        {
+          "line": 48,
+          "content": "export const pick = (obj: any, keys: any) => {"
+        },
+        {
+          "line": 48,
+          "content": "export const pick = (obj: any, keys: any) => {"
+        },
+        {
+          "line": 49,
+          "content": "return keys.reduce((result: any, key: any) => {"
+        },
+        {
+          "line": 49,
+          "content": "return keys.reduce((result: any, key: any) => {"
+        },
+        {
+          "line": 60,
+          "content": "export const omit = (obj: any, keys: any) => {"
+        },
+        {
+          "line": 60,
+          "content": "export const omit = (obj: any, keys: any) => {"
+        },
+        {
+          "line": 69,
+          "content": "export const isEmpty = (obj: any) => {"
+        },
+        {
+          "line": 69,
+          "content": "export const isEmpty = (obj: any) => {"
+        },
+        {
+          "line": 91,
+          "content": "export const set = (obj: any, path: any, value: any) => {"
+        },
+        {
+          "line": 91,
+          "content": "export const set = (obj: any, path: any, value: any) => {"
+        },
+        {
+          "line": 111,
+          "content": "return Object.keys(obj).reduce((acc: any, key: any) => {"
+        },
+        {
+          "line": 111,
+          "content": "return Object.keys(obj).reduce((acc: any, key: any) => {"
+        },
+        {
+          "line": 128,
+          "content": "export const invert = (obj: any) => {"
+        },
+        {
+          "line": 128,
+          "content": "export const invert = (obj: any) => {"
+        },
+        {
+          "line": 138,
+          "content": "export const mapValues = (obj: any, fn: any) => {"
+        },
+        {
+          "line": 138,
+          "content": "export const mapValues = (obj: any, fn: any) => {"
+        },
+        {
+          "line": 148,
+          "content": "export const filterEntries = (obj: any, fn: any) => {"
+        },
+        {
+          "line": 148,
+          "content": "export const filterEntries = (obj: any, fn: any) => {"
+        },
+        {
+          "line": 160,
+          "content": "export const isEqual = (obj1: any, obj2: any) => {"
+        },
+        {
+          "line": 160,
+          "content": "export const isEqual = (obj1: any, obj2: any) => {"
+        },
+        {
+          "line": 167,
+          "content": "export const deepFreeze = (obj: any) => {"
+        },
+        {
+          "line": 167,
+          "content": "export const deepFreeze = (obj: any) => {"
+        }
+      ]
+    },
+    {
+      "path": "utils\\performance.ts",
+      "anyCount": 33,
+      "lines": 156,
+      "category": "utils",
+      "locations": [
+        {
+          "line": 9,
+          "content": "export const debounce = (func: any, wait: any) => {"
+        },
+        {
+          "line": 9,
+          "content": "export const debounce = (func: any, wait: any) => {"
+        },
+        {
+          "line": 26,
+          "content": "export const throttle = (func: any, limit: any) => {"
+        },
+        {
+          "line": 26,
+          "content": "export const throttle = (func: any, limit: any) => {"
+        },
+        {
+          "line": 41,
+          "content": "export const memoize = (func: any) => {"
+        },
+        {
+          "line": 41,
+          "content": "export const memoize = (func: any) => {"
+        },
+        {
+          "line": 60,
+          "content": "export const lazyLoadImage = (img: any, src: any) => {"
+        },
+        {
+          "line": 60,
+          "content": "export const lazyLoadImage = (img: any, src: any) => {"
+        },
+        {
+          "line": 62,
+          "content": "const observer = new IntersectionObserver((entries: any) => {"
+        },
+        {
+          "line": 62,
+          "content": "const observer = new IntersectionObserver((entries: any) => {"
+        },
+        {
+          "line": 81,
+          "content": "export const preloadImages = (urls: any) => {"
+        },
+        {
+          "line": 81,
+          "content": "export const preloadImages = (urls: any) => {"
+        },
+        {
+          "line": 84,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 84,
+          "content": "return new Promise((resolve: any, reject: any) => {"
+        },
+        {
+          "line": 97,
+          "content": "export const runWhenIdle = (callback: any) => {"
+        },
+        {
+          "line": 97,
+          "content": "export const runWhenIdle = (callback: any) => {"
+        },
+        {
+          "line": 108,
+          "content": "export const batchDOMUpdates = (updates: any) => {"
+        },
+        {
+          "line": 108,
+          "content": "export const batchDOMUpdates = (updates: any) => {"
+        },
+        {
+          "line": 117,
+          "content": "export const measurePerformance = (name: any, fn: any) => {"
+        },
+        {
+          "line": 117,
+          "content": "export const measurePerformance = (name: any, fn: any) => {"
+        },
+        {
+          "line": 130,
+          "content": "export const createVirtualScroll = (totalItems: any, itemHeight: any, containerH"
+        },
+        {
+          "line": 130,
+          "content": "export const createVirtualScroll = (totalItems: any, itemHeight: any, containerH"
+        },
+        {
+          "line": 131,
+          "content": "return (scrollTop: any) => {"
+        },
+        {
+          "line": 131,
+          "content": "return (scrollTop: any) => {"
+        },
+        {
+          "line": 146,
+          "content": "export const raf = (callback: any) => {"
+        },
+        {
+          "line": 146,
+          "content": "export const raf = (callback: any) => {"
+        }
+      ]
+    },
+    {
+      "path": "components\\dashboard\\StatsDonut.tsx",
+      "anyCount": 31,
+      "lines": 125,
+      "category": "components",
+      "locations": [
+        {
+          "line": 6,
+          "content": "data?: any;"
+        },
+        {
+          "line": 7,
+          "content": "active?: any;"
+        },
+        {
+          "line": 8,
+          "content": "payload?: any;"
+        },
+        {
+          "line": 9,
+          "content": "cx?: any;"
+        },
+        {
+          "line": 10,
+          "content": "cy?: any;"
+        },
+        {
+          "line": 11,
+          "content": "midAngle?: any;"
+        },
+        {
+          "line": 12,
+          "content": "innerRadius?: any;"
+        },
+        {
+          "line": 13,
+          "content": "outerRadius?: any;"
+        },
+        {
+          "line": 14,
+          "content": "percent?: any;"
+        },
+        {
+          "line": 26,
+          "content": "data?: any;"
+        },
+        {
+          "line": 27,
+          "content": "active?: any;"
+        },
+        {
+          "line": 28,
+          "content": "payload?: any;"
+        },
+        {
+          "line": 29,
+          "content": "cx?: any;"
+        },
+        {
+          "line": 30,
+          "content": "cy?: any;"
+        },
+        {
+          "line": 31,
+          "content": "midAngle?: any;"
+        },
+        {
+          "line": 32,
+          "content": "innerRadius?: any;"
+        },
+        {
+          "line": 33,
+          "content": "outerRadius?: any;"
+        },
+        {
+          "line": 34,
+          "content": "percent?: any;"
+        },
+        {
+          "line": 52,
+          "content": "data?: any;"
+        },
+        {
+          "line": 53,
+          "content": "active?: any;"
+        },
+        {
+          "line": 54,
+          "content": "payload?: any;"
+        },
+        {
+          "line": 55,
+          "content": "cx?: any;"
+        },
+        {
+          "line": 56,
+          "content": "cy?: any;"
+        },
+        {
+          "line": 57,
+          "content": "midAngle?: any;"
+        },
+        {
+          "line": 58,
+          "content": "innerRadius?: any;"
+        },
+        {
+          "line": 59,
+          "content": "outerRadius?: any;"
+        },
+        {
+          "line": 60,
+          "content": "percent?: any;"
+        },
+        {
+          "line": 107,
+          "content": "{data.map((entry: any, index: number) => ("
+        },
+        {
+          "line": 116,
+          "content": "formatter={(value: any, _entry: any) => ("
+        },
+        {
+          "line": 116,
+          "content": "formatter={(value: any, _entry: any) => ("
+        }
+      ]
+    },
+    {
+      "path": "stores\\estimate-store.ts",
+      "anyCount": 31,
+      "lines": 157,
+      "category": "other",
+      "locations": [
+        {
+          "line": 10,
+          "content": "material?: any;"
+        },
+        {
+          "line": 11,
+          "content": "dimensions?: any;"
+        },
+        {
+          "line": 12,
+          "content": "bowl?: any;"
+        },
+        {
+          "line": 13,
+          "content": "filtration?: any;"
+        },
+        {
+          "line": 14,
+          "content": "heating?: any;"
+        },
+        {
+          "line": 15,
+          "content": "parts?: any;"
+        },
+        {
+          "line": 16,
+          "content": "additional?: any[];"
+        },
+        {
+          "line": 16,
+          "content": "additional?: any[];"
+        },
+        {
+          "line": 27,
+          "content": "allItems: any[];"
+        },
+        {
+          "line": 27,
+          "content": "allItems: any[];"
+        },
+        {
+          "line": 36,
+          "content": "updateSelection: (key: string, value: any) => void;"
+        },
+        {
+          "line": 36,
+          "content": "updateSelection: (key: string, value: any) => void;"
+        },
+        {
+          "line": 37,
+          "content": "setAllItems: (items: any[]) => void;"
+        },
+        {
+          "line": 37,
+          "content": "setAllItems: (items: any[]) => void;"
+        },
+        {
+          "line": 67,
+          "content": "(set: any, get: any) => ({"
+        },
+        {
+          "line": 67,
+          "content": "(set: any, get: any) => ({"
+        },
+        {
+          "line": 70,
+          "content": "allItems: [] as any[],"
+        },
+        {
+          "line": 70,
+          "content": "allItems: [] as any[],"
+        },
+        {
+          "line": 77,
+          "content": "updateSelection: (key: string, value: any) => {"
+        },
+        {
+          "line": 77,
+          "content": "updateSelection: (key: string, value: any) => {"
+        },
+        {
+          "line": 78,
+          "content": "set((state: any) => {"
+        },
+        {
+          "line": 78,
+          "content": "set((state: any) => {"
+        },
+        {
+          "line": 99,
+          "content": "setAllItems: (items: any[]) => {"
+        },
+        {
+          "line": 99,
+          "content": "setAllItems: (items: any[]) => {"
+        },
+        {
+          "line": 105,
+          "content": "set((state: any) => {"
+        },
+        {
+          "line": 105,
+          "content": "set((state: any) => {"
+        },
+        {
+          "line": 118,
+          "content": "set((state: any) => {"
+        },
+        {
+          "line": 118,
+          "content": "set((state: any) => {"
+        },
+        {
+          "line": 145,
+          "content": "partialize: (state: any) => ({"
+        },
+        {
+          "line": 145,
+          "content": "partialize: (state: any) => ({"
+        }
+      ]
+    },
+    {
+      "path": "utils\\parsers.ts",
+      "anyCount": 31,
+      "lines": 234,
+      "category": "utils",
+      "locations": [
+        {
+          "line": 9,
+          "content": "export const parsePrice = (priceString: any) => {"
+        },
+        {
+          "line": 9,
+          "content": "export const parsePrice = (priceString: any) => {"
+        },
+        {
+          "line": 23,
+          "content": "export const parsePhone = (phoneString: any) => {"
+        },
+        {
+          "line": 23,
+          "content": "export const parsePhone = (phoneString: any) => {"
+        },
+        {
+          "line": 44,
+          "content": "export const parseDate = (dateString: any) => {"
+        },
+        {
+          "line": 44,
+          "content": "export const parseDate = (dateString: any) => {"
+        },
+        {
+          "line": 64,
+          "content": "export const parseDimensions = (dimensionsString: any) => {"
+        },
+        {
+          "line": 64,
+          "content": "export const parseDimensions = (dimensionsString: any) => {"
+        },
+        {
+          "line": 80,
+          "content": "export const parseMeasurement = (measurementString: any) => {"
+        },
+        {
+          "line": 80,
+          "content": "export const parseMeasurement = (measurementString: any) => {"
+        },
+        {
+          "line": 99,
+          "content": "export const parseBoolean = (value: any) => {"
+        },
+        {
+          "line": 99,
+          "content": "export const parseBoolean = (value: any) => {"
+        },
+        {
+          "line": 116,
+          "content": "export const parseJSON = (jsonString: string, fallback: any = null) => {"
+        },
+        {
+          "line": 127,
+          "content": "export const parseQueryParams = (url: any) => {"
+        },
+        {
+          "line": 127,
+          "content": "export const parseQueryParams = (url: any) => {"
+        },
+        {
+          "line": 128,
+          "content": "const params: any = {};"
+        },
+        {
+          "line": 131,
+          "content": "urlObj.searchParams.forEach((value: any, key: any) => {"
+        },
+        {
+          "line": 131,
+          "content": "urlObj.searchParams.forEach((value: any, key: any) => {"
+        },
+        {
+          "line": 166,
+          "content": "export const parseFullName = (fullName: any) => {"
+        },
+        {
+          "line": 166,
+          "content": "export const parseFullName = (fullName: any) => {"
+        },
+        {
+          "line": 179,
+          "content": "export const parseEmailDomain = (email: any) => {"
+        },
+        {
+          "line": 179,
+          "content": "export const parseEmailDomain = (email: any) => {"
+        },
+        {
+          "line": 187,
+          "content": "export const parseFileExtension = (filename: any) => {"
+        },
+        {
+          "line": 187,
+          "content": "export const parseFileExtension = (filename: any) => {"
+        },
+        {
+          "line": 195,
+          "content": "export const parseHexToRGB = (hex: any) => {"
+        },
+        {
+          "line": 195,
+          "content": "export const parseHexToRGB = (hex: any) => {"
+        },
+        {
+          "line": 208,
+          "content": "export const parseAddress = (addressString: any) => {"
+        },
+        {
+          "line": 208,
+          "content": "export const parseAddress = (addressString: any) => {"
+        },
+        {
+          "line": 223,
+          "content": "export const parseDuration = (durationString: any) => {"
+        },
+        {
+          "line": 223,
+          "content": "export const parseDuration = (durationString: any) => {"
+        }
+      ]
+    },
+    {
+      "path": "components\\contracts\\ContractEditor.tsx",
+      "anyCount": 29,
+      "lines": 230,
+      "category": "components",
+      "locations": [
+        {
+          "line": 13,
+          "content": "template?: any;"
+        },
+        {
+          "line": 15,
+          "content": "section?: any;"
+        },
+        {
+          "line": 16,
+          "content": "index?: any;"
+        },
+        {
+          "line": 17,
+          "content": "onChange?: (index: number, section: any) => void;"
+        },
+        {
+          "line": 17,
+          "content": "onChange?: (index: number, section: any) => void;"
+        },
+        {
+          "line": 19,
+          "content": "event?: any;"
+        },
+        {
+          "line": 20,
+          "content": "newSection?: any;"
+        },
+        {
+          "line": 43,
+          "content": "onChange={(e: any) => onChange?.(index, { ...section, type: e.target.value })}"
+        },
+        {
+          "line": 43,
+          "content": "onChange={(e: any) => onChange?.(index, { ...section, type: e.target.value })}"
+        },
+        {
+          "line": 55,
+          "content": "onChange={(e: any) => onChange?.(index, { ...section, alignment: e.target.value "
+        },
+        {
+          "line": 55,
+          "content": "onChange={(e: any) => onChange?.(index, { ...section, alignment: e.target.value "
+        },
+        {
+          "line": 68,
+          "content": "onChange={(e: any) => onChange?.(index, { ...section, level: parseInt(e.target.v"
+        },
+        {
+          "line": 68,
+          "content": "onChange={(e: any) => onChange?.(index, { ...section, level: parseInt(e.target.v"
+        },
+        {
+          "line": 81,
+          "content": "onChange={(e: any) => onChange?.(index, { ...section, text: e.target.value })}"
+        },
+        {
+          "line": 81,
+          "content": "onChange={(e: any) => onChange?.(index, { ...section, text: e.target.value })}"
+        },
+        {
+          "line": 107,
+          "content": "template?: any;"
+        },
+        {
+          "line": 108,
+          "content": "onSave?: (data: any) => void;"
+        },
+        {
+          "line": 108,
+          "content": "onSave?: (data: any) => void;"
+        },
+        {
+          "line": 123,
+          "content": "const handleDragEnd = (event: any) => {"
+        },
+        {
+          "line": 123,
+          "content": "const handleDragEnd = (event: any) => {"
+        },
+        {
+          "line": 127,
+          "content": "setSections((items: any) => {"
+        },
+        {
+          "line": 127,
+          "content": "setSections((items: any) => {"
+        },
+        {
+          "line": 135,
+          "content": "const handleSectionChange = (index: number, newSection: any) => {"
+        },
+        {
+          "line": 135,
+          "content": "const handleSectionChange = (index: number, newSection: any) => {"
+        },
+        {
+          "line": 142,
+          "content": "setSections(sections.filter((_: any, i: number) => i !== index));"
+        },
+        {
+          "line": 169,
+          "content": "onChange={(e: React.ChangeEvent<any>) => setName(e.target.value)}"
+        },
+        {
+          "line": 174,
+          "content": "onChange={(e: React.ChangeEvent<any>) => setDescription(e.target.value)}"
+        },
+        {
+          "line": 194,
+          "content": "items={sections.map((_: any, i: number) => `section-${i}`)}"
+        },
+        {
+          "line": 197,
+          "content": "{sections.map((section: any, index: number) => ("
+        }
+      ]
+    }
+  ],
+  "estimatedCoverage": 89.64814814814815
+}

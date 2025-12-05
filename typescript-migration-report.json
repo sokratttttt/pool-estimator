@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-11-30T15:30:44.536Z",
+  "stats": {
+    "tsFiles": 278,
+    "jsFiles": 26,
+    "totalFiles": 304,
+    "migrationProgress": 91
+  },
+  "directories": {
+    "src/utils": {
+      "tsFiles": 36,
+      "jsFiles": 0,
+      "progress": 100
+    },
+    "src/components": {
+      "tsFiles": 150,
+      "jsFiles": 0,
+      "progress": 100
+    },
+    "src/hooks": {
+      "tsFiles": 43,
+      "jsFiles": 0,
+      "progress": 100
+    },
+    "src/lib": {
+      "tsFiles": 14,
+      "jsFiles": 0,
+      "progress": 100
+    },
+    "src/app": {
+      "tsFiles": 28,
+      "jsFiles": 0,
+      "progress": 100
+    }
+  },
+  "recommendations": []
+}
