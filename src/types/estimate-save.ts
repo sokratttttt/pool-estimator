@@ -170,7 +170,7 @@ export interface UseEstimateSaveReturn {
     };
 
     // Legacy / Template support
-    saveTemplate: (name: string, description: string, data: any) => Promise<void>;
+    saveTemplate: (name: string, description: string, data: unknown) => Promise<void>;
 
     // Events (optional in interface, implemented as callbacks or effects)
     onSaveStart?: () => void;

@@ -5,7 +5,7 @@ import { parseExcelCatalog } from '@/utils/importUtils';
 import { useEstimate } from '@/context/EstimateContext';
 
 interface CatalogImporterProps {
-    type?: any;
+    type?: 'bowls' | 'equipment';
 }
 
 export default function CatalogImporter({ type = 'equipment' }: CatalogImporterProps) { // type: 'bowls' | 'equipment'
@@ -16,9 +16,9 @@ export default function CatalogImporter({ type = 'equipment' }: CatalogImporterP
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { updateCatalog } = useEstimate();
 
-    const handleFileChange = async (e: React.ChangeEvent<any>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
         const file = e.target.files[0];
-        if (!file) return;
 
         setIsLoading(true);
         setStatus(null);
@@ -41,7 +41,7 @@ export default function CatalogImporter({ type = 'equipment' }: CatalogImporterP
 
         } catch (error) {
             console.error('Import error:', error);
-            setStatus({ type: 'error', message: (error as any).message || 'Ошибка при чтении файла' });
+            setStatus({ type: 'error', message: (error as Error).message || 'Ошибка при чтении файла' });
         } finally {
             setIsLoading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
@@ -70,7 +70,7 @@ export default function CatalogImporter({ type = 'equipment' }: CatalogImporterP
                             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Источник</label>
                             <select
                                 value={source}
-                                onChange={(e: React.ChangeEvent<any>) => setSource(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSource(e.target.value)}
                                 className="w-full p-2 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b4d8] bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                             >
                                 <option value="aquapolis">Aquapolis.ru</option>

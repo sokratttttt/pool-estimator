@@ -1,54 +1,72 @@
 'use client';
 
-/**
- * Lighting - Scene lighting configuration with time of day support
- * @param {string} preset - Lighting preset: 'day' | 'sunset' | 'night'
- */
-interface LightingProps {
-  preset?: any;
+type LightingPreset = 'day' | 'sunset' | 'night';
+
+interface SunConfig {
+    intensity: number;
+    position: [number, number, number];
+    color: string;
 }
 
-export default function Lighting({  preset = 'day'  }: LightingProps) {
-    const configs = {
-        day: {
-            ambient: 0.6,
-            sun: {
-                intensity: 1.5,
-                position: [10, 20, 10],
-                color: '#ffffff'
-            },
-            fill: {
-                intensity: 0.4,
-                color: '#e6f2ff'
-            }
-        },
-        sunset: {
-            ambient: 0.4,
-            sun: {
-                intensity: 1.2,
-                position: [15, 8, 5],
-                color: '#ffaa66'
-            },
-            fill: {
-                intensity: 0.5,
-                color: '#ff8844'
-            }
-        },
-        night: {
-            ambient: 0.2,
-            sun: {
-                intensity: 0.3,
-                position: [5, 15, 5],
-                color: '#aaccff'
-            },
-            fill: {
-                intensity: 0.6,
-                color: '#6688aa'
-            }
-        }
-    };
+interface FillConfig {
+    intensity: number;
+    color: string;
+}
 
-    const config = configs[preset] || configs.day;
+interface LightingConfig {
+    ambient: number;
+    sun: SunConfig;
+    fill: FillConfig;
+}
+
+interface LightingProps {
+    preset?: LightingPreset;
+}
+
+const configs: Record<LightingPreset, LightingConfig> = {
+    day: {
+        ambient: 0.6,
+        sun: {
+            intensity: 1.5,
+            position: [10, 20, 10],
+            color: '#ffffff'
+        },
+        fill: {
+            intensity: 0.4,
+            color: '#e6f2ff'
+        }
+    },
+    sunset: {
+        ambient: 0.4,
+        sun: {
+            intensity: 1.2,
+            position: [15, 8, 5],
+            color: '#ffaa66'
+        },
+        fill: {
+            intensity: 0.5,
+            color: '#ff8844'
+        }
+    },
+    night: {
+        ambient: 0.2,
+        sun: {
+            intensity: 0.3,
+            position: [5, 15, 5],
+            color: '#aaccff'
+        },
+        fill: {
+            intensity: 0.6,
+            color: '#6688aa'
+        }
+    }
+};
+
+/**
+ * Lighting - Scene lighting configuration with time of day support
+ */
+export default function Lighting({ preset = 'day' }: LightingProps) {
+    const config = configs[preset];
 
     return (
         <>

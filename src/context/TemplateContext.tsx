@@ -1,6 +1,7 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { TemplateContextType, Template } from '@/types/template';
+import type { Selection } from '@/types/estimate-utils';
 
 const TemplateContext = createContext<TemplateContextType | null>(null);
 
@@ -38,7 +39,7 @@ export function TemplateProvider({ children }: { children: React.ReactNode }) {
         }
     }, [templates, isMounted]);
 
-    const saveTemplate = useCallback((name: string, description: string, config: Record<string, any>): Template => {
+    const saveTemplate = useCallback((name: string, description: string, config: Selection): Template => {
         const newTemplate: Template = {
             id: `template_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             name,

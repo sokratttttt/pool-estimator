@@ -4,43 +4,56 @@ import { motion } from 'framer-motion';
 import { Calendar, CheckCircle } from 'lucide-react';
 import AppleCard from './apple/AppleCard';
 
+type PlanKey = 'full' | 'standard' | 'extended';
 
-interface PaymentScheduleProps {
-    totalAmount?: any;
+interface PaymentStage {
+    name: string;
+    percent: number;
+    timing: string;
 }
 
-export default function PaymentSchedule({ totalAmount }: PaymentScheduleProps) {
-    const [selectedPlan, setSelectedPlan] = useState('standard');
+interface PaymentPlan {
+    name: string;
+    discount: number;
+    stages: PaymentStage[];
+}
 
-    const plans = {
-        full: {
-            name: 'Полная оплата',
-            discount: 5,
-            stages: [
-                { name: 'Полная оплата', percent: 100, timing: 'При заказе' }
-            ]
-        },
-        standard: {
-            name: 'Стандартный',
-            discount: 0,
-            stages: [
-                { name: 'Аванс', percent: 30, timing: 'При заказе' },
-                { name: 'Промежуточный', percent: 40, timing: 'Начало работ' },
-                { name: 'Финальный', percent: 30, timing: 'Завершение' }
-            ]
-        },
-        extended: {
-            name: 'Расширенный',
-            discount: -3,
-            stages: [
-                { name: 'Аванс', percent: 20, timing: 'При заказе' },
-                { name: 'Этап 1', percent: 20, timing: 'Подготовка' },
-                { name: 'Этап 2', percent: 20, timing: 'Монтаж' },
-                { name: 'Этап 3', percent: 20, timing: 'Оборудование' },
-                { name: 'Финальный', percent: 20, timing: 'Завершение' }
-            ]
-        }
-    };
+interface PaymentScheduleProps {
+    totalAmount: number;
+}
+
+const plans: Record<PlanKey, PaymentPlan> = {
+    full: {
+        name: 'Полная оплата',
+        discount: 5,
+        stages: [
+            { name: 'Полная оплата', percent: 100, timing: 'При заказе' }
+        ]
+    },
+    standard: {
+        name: 'Стандартный',
+        discount: 0,
+        stages: [
+            { name: 'Аванс', percent: 30, timing: 'При заказе' },
+            { name: 'Промежуточный', percent: 40, timing: 'Начало работ' },
+            { name: 'Финальный', percent: 30, timing: 'Завершение' }
+        ]
+    },
+    extended: {
+        name: 'Расширенный',
+        discount: -3,
+        stages: [
+            { name: 'Аванс', percent: 20, timing: 'При заказе' },
+            { name: 'Этап 1', percent: 20, timing: 'Подготовка' },
+            { name: 'Этап 2', percent: 20, timing: 'Монтаж' },
+            { name: 'Этап 3', percent: 20, timing: 'Оборудование' },
+            { name: 'Финальный', percent: 20, timing: 'Завершение' }
+        ]
+    }
+};
+
+export default function PaymentSchedule({ totalAmount }: PaymentScheduleProps) {
+    const [selectedPlan, setSelectedPlan] = useState<PlanKey>('standard');
 
     const currentPlan = plans[selectedPlan];
     const discountMultiplier = 1 + (currentPlan.discount / 100);
@@ -63,7 +76,7 @@ export default function PaymentSchedule({ totalAmount }: PaymentScheduleProps) {
 
                 {/* Plan Selection */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {Object.entries(plans).map(([key, plan]) => (
+                    {(Object.entries(plans) as [PlanKey, PaymentPlan][]).map(([key, plan]) => (
                         <button
                             key={key}
                             onClick={() => setSelectedPlan(key)}
@@ -93,7 +106,7 @@ export default function PaymentSchedule({ totalAmount }: PaymentScheduleProps) {
 
                 {/* Payment Stages */}
                 <div className="space-y-3">
-                    {currentPlan.stages.map((stage: any, index: number) => {
+                    {currentPlan.stages.map((stage: PaymentStage, index: number) => {
                         const amount = (finalAmount * stage.percent) / 100;
                         return (
                             <motion.div

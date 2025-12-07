@@ -216,7 +216,7 @@ function calculateTimeline(estimate: EstimateData) {
     };
 }
 
-function generateWorkStages(_estimate: EstimateData, _timeline: any) {
+function generateWorkStages(_estimate: EstimateData, _timeline: { weeks: number; days: number; estimate: string }) {
     const stages = [
         '1. Подготовительные работы (3-5 дней)',
         '2. Земляные работы и котлован (5-7 дней)',
@@ -257,6 +257,8 @@ function numberToWords(number: number) {
     return number.toString();
 }
 
+// ... (omitted)
+
 /**
  * Generate contract appendix with detailed estimate
  */
@@ -272,11 +274,11 @@ export function generateContractAppendix(estimate: EstimateData) {
 `;
 
     let total = 0;
-    items.forEach((item: any, index: number) => {
+    items.forEach((item, index: number) => {
         const itemTotal = (item.quantity || 1) * (item.price || 0);
         total += itemTotal;
 
-        appendix += `${index + 1}\t${item.name}\t${item.unit}\t${item.quantity}\t${item.price.toLocaleString('ru-RU')}\t${itemTotal.toLocaleString('ru-RU')}\n`;
+        appendix += `${index + 1}\t${item.name}\t${item.unit || 'шт.'}\t${item.quantity || 1}\t${(item.price || 0).toLocaleString('ru-RU')}\t${itemTotal.toLocaleString('ru-RU')}\n`;
     });
 
     appendix += `\n\nИТОГО: ${total.toLocaleString('ru-RU')} руб.`;

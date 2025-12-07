@@ -5,10 +5,12 @@ import { useState, useCallback } from 'react';
  * Custom hook to copy text to clipboard
  * @returns {[Function, boolean]} [copy function, isCopied state]
  */
-export function useCopyToClipboard(): any {
+type CopyFn = (text: string) => Promise<boolean>;
+
+export function useCopyToClipboard(): [CopyFn, boolean] {
     const [isCopied, setIsCopied] = useState(false);
 
-    const copy = useCallback(async (text: any) => {
+    const copy = useCallback(async (text: string) => {
         if (!navigator?.clipboard) {
             console.warn('Clipboard not supported');
             return false;

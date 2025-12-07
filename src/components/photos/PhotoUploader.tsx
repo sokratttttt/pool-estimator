@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { usePhotos } from '@/context/PhotoContext';
 import { motion } from 'framer-motion';
 import { Upload, X } from 'lucide-react';
+import Image from 'next/image';
 import AppleButton from '../apple/AppleButton';
 
 const STAGES = [
@@ -17,9 +18,11 @@ const STAGES = [
     { value: 'other', label: 'Другое' },
 ];
 
+import { PhotoData } from '@/types/photo';
+
 interface PhotoUploaderProps {
     estimateId?: string;
-    onUploadComplete?: (result: any) => void;
+    onUploadComplete?: (result: PhotoData | null) => void;
     onClose?: () => void;
 }
 
@@ -171,11 +174,12 @@ export default function PhotoUploader({ estimateId, onUploadComplete, onClose }:
                     className="space-y-4"
                 >
                     {/* Preview */}
-                    <div className="relative rounded-xl overflow-hidden border border-apple-border">
-                        <img
+                    <div className="relative rounded-xl overflow-hidden border border-apple-border h-64">
+                        <Image
                             src={preview || ''}
                             alt="Preview"
-                            className="w-full h-64 object-cover"
+                            fill
+                            className="object-cover"
                         />
                         <button
                             onClick={() => {
@@ -196,7 +200,7 @@ export default function PhotoUploader({ estimateId, onUploadComplete, onClose }:
                         <input
                             type="text"
                             value={caption}
-                            onChange={(e: React.ChangeEvent<any>) => setCaption(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCaption(e.target.value)}
                             placeholder="Например: Подготовка котлована"
                             className="w-full px-4 py-2 bg-apple-bg-secondary border border-apple-border rounded-lg text-apple-text-primary placeholder:text-apple-text-tertiary focus:outline-none focus:border-apple-accent"
                         />
@@ -209,7 +213,7 @@ export default function PhotoUploader({ estimateId, onUploadComplete, onClose }:
                         </label>
                         <select
                             value={stage}
-                            onChange={(e: React.ChangeEvent<any>) => setStage(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStage(e.target.value)}
                             className="w-full px-4 py-2 bg-apple-bg-secondary border border-apple-border rounded-lg text-apple-text-primary focus:outline-none focus:border-apple-accent"
                         >
                             {STAGES.map(s => (

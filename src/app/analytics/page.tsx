@@ -35,7 +35,7 @@ export default function AnalyticsPage() {
     }, []);
 
     const filteredEstimates = useMemo(() => {
-        let filtered = estimates;
+        let filtered = estimates as unknown[];
 
         if (dateRange !== 'all') {
             const now = new Date();
@@ -56,34 +56,34 @@ export default function AnalyticsPage() {
                     break;
             }
 
-            filtered = filterByDateRange(filtered, startDate, now);
+            filtered = filterByDateRange(filtered as Parameters<typeof filterByDateRange>[0], startDate, now);
         }
 
-        filtered = filterByManager(filtered, selectedManager);
-        filtered = filterByStatus(filtered, selectedStatus);
+        filtered = filterByManager(filtered as Parameters<typeof filterByManager>[0], selectedManager);
+        filtered = filterByStatus(filtered as Parameters<typeof filterByStatus>[0], selectedStatus);
 
         return filtered;
     }, [estimates, dateRange, selectedManager, selectedStatus]);
 
-    const kpis = useMemo(() => calculateKPIs(filteredEstimates), [filteredEstimates]);
+    const kpis = useMemo(() => calculateKPIs(filteredEstimates as Parameters<typeof calculateKPIs>[0]), [filteredEstimates]);
 
     const salesByMonth: SalesChartData[] = useMemo(() =>
-        getSalesByMonth(filteredEstimates) as SalesChartData[],
+        getSalesByMonth(filteredEstimates as Parameters<typeof getSalesByMonth>[0]) as SalesChartData[],
         [filteredEstimates]
     );
 
     const topEquipment: EquipmentData[] = useMemo(() =>
-        getTopEquipment(filteredEstimates, 10) as EquipmentData[],
+        getTopEquipment(filteredEstimates as Parameters<typeof getTopEquipment>[0], 10) as EquipmentData[],
         [filteredEstimates]
     );
 
     const categoryData: CategoryData[] = useMemo(() => {
-        const categoryDataItems = getSalesByCategory(filteredEstimates);
-        return categoryDataItems.map((item: CategoryData) => ({
+        const categoryDataItems = getSalesByCategory(filteredEstimates as Parameters<typeof getSalesByCategory>[0]);
+        return categoryDataItems.map((item) => ({
             name: item.name,
             value: item.value,
             count: item.count
-        }));
+        } as CategoryData));
     }, [filteredEstimates]);
 
     if (loading) {

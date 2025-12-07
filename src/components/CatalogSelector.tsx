@@ -10,10 +10,12 @@ import { useCatalog } from '@/context/CatalogContext';
 import { toast } from 'sonner';
 
 interface CatalogSelectorProps {
-    category?: any;
-    onSelect?: (product: any) => void;
+    category?: string;
+    onSelect?: (product: Product) => void;
     onClose?: () => void;
 }
+
+import type { Product } from '@/types/index';
 
 export default function CatalogSelector({ category, onSelect, onClose }: CatalogSelectorProps) {
     const { getProductsByCategory } = useCatalog();
@@ -21,7 +23,7 @@ export default function CatalogSelector({ category, onSelect, onClose }: Catalog
     const [priceRange, setPriceRange] = useState({ min: '', max: '' });
     const [sortBy, setSortBy] = useState('default'); // default, price_asc, price_desc
 
-    const products = getProductsByCategory(category).filter(product => {
+    const products = getProductsByCategory(category || 'all').filter((product: Product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             product.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -31,13 +33,13 @@ export default function CatalogSelector({ category, onSelect, onClose }: Catalog
         return product.inStock && matchesSearch && matchesPrice;
     });
 
-    const sortedProducts = [...products].sort((a: any, b: any) => {
+    const sortedProducts = [...products].sort((a: Product, b: Product) => {
         if (sortBy === 'price_asc') return a.price - b.price;
         if (sortBy === 'price_desc') return b.price - a.price;
         return 0;
     });
 
-    const handleSelect = (product: any) => {
+    const handleSelect = (product: Product) => {
         if (onSelect) onSelect(product);
         toast.success(`${product.name} добавлен в смету`);
         if (onClose) onClose();
@@ -72,7 +74,7 @@ export default function CatalogSelector({ category, onSelect, onClose }: Catalog
                     <AppleInput
                         placeholder="Поиск товаров..."
                         value={searchQuery}
-                        onChange={(e: React.ChangeEvent<any>) => setSearchQuery(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                         icon={<Search size={20} />}
                     />
 
@@ -84,7 +86,7 @@ export default function CatalogSelector({ category, onSelect, onClose }: Catalog
                                     type="number"
                                     placeholder="Цена от"
                                     value={priceRange.min}
-                                    onChange={(e: React.ChangeEvent<any>) => setPriceRange({ ...priceRange, min: e.target.value })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPriceRange({ ...priceRange, min: e.target.value })}
                                     className="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition-all"
                                 />
                             </div>
@@ -94,7 +96,7 @@ export default function CatalogSelector({ category, onSelect, onClose }: Catalog
                                     type="number"
                                     placeholder="до"
                                     value={priceRange.max}
-                                    onChange={(e: React.ChangeEvent<any>) => setPriceRange({ ...priceRange, max: e.target.value })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPriceRange({ ...priceRange, max: e.target.value })}
                                     className="w-full px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition-all"
                                 />
                             </div>
@@ -104,7 +106,7 @@ export default function CatalogSelector({ category, onSelect, onClose }: Catalog
                         <div className="relative min-w-[200px]">
                             <select
                                 value={sortBy}
-                                onChange={(e: React.ChangeEvent<any>) => setSortBy(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value)}
                                 className="w-full appearance-none px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500 transition-all cursor-pointer"
                             >
                                 <option value="default" className="bg-slate-800">По умолчанию</option>
@@ -120,7 +122,7 @@ export default function CatalogSelector({ category, onSelect, onClose }: Catalog
                 <div className="flex-1 overflow-y-auto p-6">
                     {sortedProducts.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {sortedProducts.map((product: any, index: number) => (
+                            {sortedProducts.map((product: Product, index: number) => (
                                 <motion.div
                                     key={product.id}
                                     initial={{ opacity: 0, y: 20 }}

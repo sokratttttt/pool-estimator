@@ -8,7 +8,7 @@ interface Estimate {
     id: string;
     createdAt: string;
     updatedAt: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 interface Client {
@@ -20,7 +20,7 @@ interface Client {
     address?: string;
     website?: string;
     estimates?: Estimate[];
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 interface Data {

@@ -9,13 +9,16 @@ import { lazy, useState, useEffect, type ComponentType } from 'react';
 /**
  * Lazy load component with retry logic
  */
-export const lazyWithRetry = (componentImport: () => Promise<{ default: ComponentType<any> }>, retries = 3, interval = 1000) => {
+/**
+ * Lazy load component with retry logic
+ */
+export const lazyWithRetry = <P extends object>(componentImport: () => Promise<{ default: ComponentType<P> }>, retries = 3, interval = 1000) => {
     return lazy(() => {
-        return new Promise<{ default: ComponentType<any> }>((resolve, reject) => {
+        return new Promise<{ default: ComponentType<P> }>((resolve, reject) => {
             const attemptLoad = (attemptNumber: number) => {
                 componentImport()
                     .then(resolve)
-                    .catch((error: any) => {
+                    .catch((error: unknown) => {
                         if (attemptNumber >= retries) {
                             reject(error);
                         } else {
@@ -35,7 +38,7 @@ export const lazyWithRetry = (componentImport: () => Promise<{ default: Componen
 /**
  * Preload component
  */
-export const preloadComponent = (componentImport: () => Promise<any>) => {
+export const preloadComponent = (componentImport: () => Promise<unknown>) => {
     componentImport();
 };
 
@@ -45,7 +48,7 @@ export const preloadComponent = (componentImport: () => Promise<any>) => {
 export const useLazyImage = (src: string) => {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<any>(null);
+    const [error, setError] = useState<unknown>(null);
 
     useEffect(() => {
         const img = new Image();
@@ -73,14 +76,14 @@ export const useLazyImage = (src: string) => {
 /**
  * Create route-based code splitting
  */
-export const createLazyRoute = (importFunc: () => Promise<{ default: ComponentType<any> }>) => {
+export const createLazyRoute = <P extends object>(importFunc: () => Promise<{ default: ComponentType<P> }>) => {
     return lazyWithRetry(importFunc);
 };
 
 /**
  * Prefetch route
  */
-export const prefetchRoute = (importFunc: () => Promise<any>) => {
+export const prefetchRoute = (importFunc: () => Promise<unknown>) => {
     // Start loading the route in the background
     importFunc();
 };

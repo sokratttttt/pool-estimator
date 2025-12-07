@@ -1,19 +1,31 @@
 // TODO: Add proper TypeScript types for state
-import { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 
 /**
  * useDragAndDrop hook
  * Handle drag and drop functionality
  */
+interface DragAndDropProps {
+    onDrop?: (files: File[], e: React.DragEvent) => void;
+    onDragOver?: (e: React.DragEvent) => void;
+    acceptedTypes?: string[];
+}
+
+interface DragAndDropReturn {
+    isDragging: boolean;
+    dragProps: {
+        onDragEnter: (e: React.DragEvent) => void;
+        onDragLeave: (e: React.DragEvent) => void;
+        onDragOver: (e: React.DragEvent) => void;
+        onDrop: (e: React.DragEvent) => void;
+    };
+}
+
 export function useDragAndDrop({
     onDrop,
     onDragOver,
     acceptedTypes = []
-}: {
-    onDrop?: (files: File[], e: React.DragEvent) => void;
-    onDragOver?: (e: React.DragEvent) => void;
-    acceptedTypes?: string[];
-}): any {
+}: DragAndDropProps): DragAndDropReturn {
     const [isDragging, setIsDragging] = useState(false);
     const dragCounter = useRef(0);
 
@@ -82,12 +94,24 @@ export function useDragAndDrop({
  * useSortable hook
  * Handle sortable lists with drag and drop
  */
-export function useSortable(initialItems: any[]): any {
-    const [items, setItems] = useState<any[]>(initialItems);
-    const [draggedItem, setDraggedItem] = useState<{ item: any; index: number } | null>(null);
+export function useSortable<T>(initialItems: T[]): {
+    items: T[];
+    setItems: React.Dispatch<React.SetStateAction<T[]>>;
+    draggedItem: { item: T; index: number } | null;
+    draggedOverItem: number | null;
+    getSortableProps: (item: T, index: number) => {
+        draggable: boolean;
+        onDragStart: () => void;
+        onDragEnter: () => void;
+        onDragEnd: () => void;
+        onDragOver: (e: React.DragEvent) => void;
+    };
+} {
+    const [items, setItems] = useState<T[]>(initialItems);
+    const [draggedItem, setDraggedItem] = useState<{ item: T; index: number } | null>(null);
     const [draggedOverItem, setDraggedOverItem] = useState<number | null>(null);
 
-    const handleDragStart = useCallback((item: any, index: number) => {
+    const handleDragStart = useCallback((item: T, index: number) => {
         setDraggedItem({ item, index });
     }, []);
 
@@ -116,7 +140,7 @@ export function useSortable(initialItems: any[]): any {
         setDraggedOverItem(null);
     }, [items, draggedItem, draggedOverItem]);
 
-    const getSortableProps = useCallback((item: any, index: number) => ({
+    const getSortableProps = useCallback((item: T, index: number) => ({
         draggable: true,
         onDragStart: () => handleDragStart(item, index),
         onDragEnter: () => handleDragEnter(index),

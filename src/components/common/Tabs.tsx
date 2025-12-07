@@ -5,8 +5,13 @@ import { motion } from 'framer-motion';
 /**
  * Tabs component for organizing content
  */
+interface TabData {
+    label: string;
+    content: React.ReactNode;
+}
+
 interface TabsProps {
-    tabs: any[];
+    tabs: TabData[];
     defaultTab?: number;
     onChange?: (index: number) => void;
     variant?: 'default' | 'pills';
@@ -38,7 +43,7 @@ export default function Tabs({
                 flex gap-1
                 ${variant === 'pills' ? 'bg-white/5 p-1 rounded-lg' : 'border-b border-white/10'}
             `}>
-                {tabs.map((tab: any, index: number) => (
+                {tabs.map((tab: TabData, index: number) => (
                     <button
                         key={index}
                         onClick={() => handleTabChange({ index })}
@@ -76,7 +81,7 @@ export default function Tabs({
 
             {/* Tab content */}
             <div className="mt-4">
-                {tabs.map((tab: any, index: number) => (
+                {tabs.map((tab: TabData, index: number) => (
                     <div
                         key={index}
                         id={`tabpanel-${index}`}

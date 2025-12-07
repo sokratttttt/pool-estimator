@@ -2,11 +2,11 @@ import { useEffect, useRef } from 'react';
 
 /**
  * Custom hook for setInterval with automatic cleanup
- * @param {Function} callback - Function to call on each interval
- * @param {number|null} delay - Delay in milliseconds (null to pause)
+ * @param callback - Function to call on each interval
+ * @param delay - Delay in milliseconds (null to pause)
  */
-export function useInterval(callback, delay): any {
-    const savedCallback = useRef<any>(null);
+export function useInterval(callback: () => void, delay: number | null): void {
+    const savedCallback = useRef<() => void>(() => { });
 
     // Remember the latest callback
     useEffect(() => {
@@ -28,11 +28,11 @@ export function useInterval(callback, delay): any {
 
 /**
  * Custom hook for setTimeout with automatic cleanup
- * @param {Function} callback - Function to call after timeout
- * @param {number|null} delay - Delay in milliseconds (null to cancel)
+ * @param callback - Function to call after timeout
+ * @param delay - Delay in milliseconds (null to cancel)
  */
-export function useTimeout(callback, delay): any {
-    const savedCallback = useRef<any>(null);
+export function useTimeout(callback: () => void, delay: number | null): void {
+    const savedCallback = useRef<() => void>(() => { });
 
     // Remember the latest callback
     useEffect(() => {

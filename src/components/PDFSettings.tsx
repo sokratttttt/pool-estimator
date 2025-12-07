@@ -6,7 +6,8 @@ import AppleButton from './apple/AppleButton';
 import AppleInput from './apple/AppleInput';
 import { toast } from 'sonner';
 
-type PDFSettingsProps = object;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface PDFSettingsProps { }
 
 export default function PDFSettings({ }: PDFSettingsProps) {
     interface Settings {
@@ -146,17 +147,17 @@ export default function PDFSettings({ }: PDFSettingsProps) {
                     <AppleInput
                         label="Название компании"
                         value={settings.companyName}
-                        onChange={(e: React.ChangeEvent<any>) => setSettings({ ...settings, companyName: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({ ...settings, companyName: e.target.value })}
                     />
                     <AppleInput
                         label="Телефон"
                         value={settings.phone}
-                        onChange={(e: React.ChangeEvent<any>) => setSettings({ ...settings, phone: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({ ...settings, phone: e.target.value })}
                     />
                     <AppleInput
                         label="Email"
                         value={settings.email}
-                        onChange={(e: React.ChangeEvent<any>) => setSettings({ ...settings, email: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({ ...settings, email: e.target.value })}
                     />
                 </div>
 
@@ -170,13 +171,13 @@ export default function PDFSettings({ }: PDFSettingsProps) {
                             <input
                                 type="color"
                                 value={settings.primaryColor}
-                                onChange={(e: React.ChangeEvent<any>) => setSettings({ ...settings, primaryColor: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({ ...settings, primaryColor: e.target.value })}
                                 className="h-10 w-20 rounded-lg cursor-pointer border border-apple-border"
                             />
                             <input
                                 type="text"
                                 value={settings.primaryColor}
-                                onChange={(e: React.ChangeEvent<any>) => setSettings({ ...settings, primaryColor: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({ ...settings, primaryColor: e.target.value })}
                                 className="apple-input flex-1"
                                 placeholder="#00b4d8"
                             />
@@ -191,13 +192,13 @@ export default function PDFSettings({ }: PDFSettingsProps) {
                             <input
                                 type="color"
                                 value={settings.secondaryColor}
-                                onChange={(e: React.ChangeEvent<any>) => setSettings({ ...settings, secondaryColor: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({ ...settings, secondaryColor: e.target.value })}
                                 className="h-10 w-20 rounded-lg cursor-pointer border border-apple-border"
                             />
                             <input
                                 type="text"
                                 value={settings.secondaryColor}
-                                onChange={(e: React.ChangeEvent<any>) => setSettings({ ...settings, secondaryColor: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({ ...settings, secondaryColor: e.target.value })}
                                 className="apple-input flex-1"
                                 placeholder="#003366"
                             />
@@ -210,7 +211,7 @@ export default function PDFSettings({ }: PDFSettingsProps) {
                     <AppleInput
                         label="Текст в подвале"
                         value={settings.footerText}
-                        onChange={(e: React.ChangeEvent<any>) => setSettings({ ...settings, footerText: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSettings({ ...settings, footerText: e.target.value })}
                         placeholder="Спасибо за сотрудничество!"
                     />
                 </div>

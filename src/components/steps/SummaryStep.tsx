@@ -14,7 +14,10 @@ import AppleInput from '../apple/AppleInput';
 import ClientSelector from '../ClientSelector';
 import DeliveryCalculator from '../DeliveryCalculator';
 import PaymentSchedule from '../PaymentSchedule';
+import SmartRecommendations from '../SmartRecommendations';
 import { toast } from 'sonner';
+import { EstimateItem } from '@/types';
+import { EstimateSaveData } from '@/types/estimate-save';
 
 // New components
 import SummaryActions from './summary/SummaryActions';
@@ -27,7 +30,7 @@ export default function SummaryStep() {
     const { customItems, addCustomItem } = useCustomItems();
     const { deliveryItem, calculateDelivery } = useDelivery();
 
-    const [allItems, setAllItems] = useState<any[]>([]);
+    const [allItems, setAllItems] = useState<EstimateItem[]>([]);
     const [editedPrices, setEditedPrices] = useState<Record<string, number>>({});
     const [isEditing, setIsEditing] = useState(false);
 
@@ -46,15 +49,15 @@ export default function SummaryStep() {
         if (deliveryItem) {
             items.push(deliveryItem);
         }
-        setAllItems(items);
+        setAllItems(items as EstimateItem[]);
     }, [selection, customItems, deliveryItem]);
 
-    interface getPriceProps {
+    interface GetPriceProps {
         id: string;
         originalPrice: number;
     }
 
-    const getPrice = ({ id, originalPrice }: getPriceProps) => {
+    const getPrice = ({ id, originalPrice }: GetPriceProps) => {
         return editedPrices[id] !== undefined ? editedPrices[id] : originalPrice;
     };
 
@@ -70,12 +73,11 @@ export default function SummaryStep() {
             return;
         }
 
-        const saveData: any = {
+        const saveData: EstimateSaveData = {
             title: estimateName,
             items: allItems,
             calculations: { total: totalSum },
-            // Add other necessary fields for EstimateSaveData if needed
-            clientId: (clientInfo as any).id || 'temp-client',
+            clientId: clientInfo.clientId || clientInfo.id || 'temp-client',
             status: 'draft',
             version: 1,
             metadata: {
@@ -92,7 +94,7 @@ export default function SummaryStep() {
                 vatRate: 0,
                 showPrices: true
             }
-        };
+        } as unknown as EstimateSaveData;
 
         const result = await saveHook.saveEstimate(saveData);
         if (result.success) {
@@ -118,7 +120,7 @@ export default function SummaryStep() {
         setTemplateDescription('');
     };
 
-    const handleReorder = (section: string, reorderedItems: any[]) => {
+    const handleReorder = (section: string, reorderedItems: EstimateItem[]) => {
         const otherItems = allItems.filter(item => (item.section || item.category) !== section);
         const newAllItems = [...otherItems, ...reorderedItems];
         setAllItems(newAllItems);
@@ -173,13 +175,13 @@ export default function SummaryStep() {
                                             label="Имя"
                                             placeholder="Иван Иванов"
                                             value={clientInfo.name}
-                                            onChange={(e: React.ChangeEvent<any>) => updateClientInfo('name', e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateClientInfo('name', e.target.value)}
                                         />
                                         <AppleInput
                                             label="Телефон"
                                             placeholder="+7 (999) 000-00-00"
                                             value={clientInfo.phone}
-                                            onChange={(e: React.ChangeEvent<any>) => updateClientInfo('phone', e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateClientInfo('phone', e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -190,12 +192,12 @@ export default function SummaryStep() {
                                         <AppleInput
                                             label="Имя менеджера"
                                             value={clientInfo.managerName}
-                                            onChange={(e: React.ChangeEvent<any>) => updateClientInfo('managerName', e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateClientInfo('managerName', e.target.value)}
                                         />
                                         <AppleInput
                                             label="Телефон менеджера"
                                             value={clientInfo.managerPhone}
-                                            onChange={(e: React.ChangeEvent<any>) => updateClientInfo('managerPhone', e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateClientInfo('managerPhone', e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -220,6 +222,30 @@ export default function SummaryStep() {
                     >
                         <PaymentSchedule totalAmount={totalSum} />
                     </motion.div>
+
+                    {/* Smart Recommendations */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.5 }}
+                    >
+                        <SmartRecommendations
+                            selection={selection as unknown as Parameters<typeof SmartRecommendations>[0]['selection']}
+                            dimensions={selection.dimensions || { length: 8, width: 4, depth: 1.5 }}
+                            volume={selection.dimensions ?
+                                (selection.dimensions.length || 8) *
+                                (selection.dimensions.width || 4) *
+                                (selection.dimensions.depth || 1.5) : 48}
+                            onAddItem={(item) => {
+                                addCustomItem({
+                                    name: item.name,
+                                    price: item.price || 0,
+                                    quantity: 1
+                                });
+                                toast.success(`Добавлено: ${item.name}`);
+                            }}
+                        />
+                    </motion.div>
                 </div>
 
                 {/* Right Column - Estimate (8 cols) */}
@@ -228,7 +254,7 @@ export default function SummaryStep() {
                         sections={sections}
                         allItems={allItems}
                         getPrice={getPrice}
-                        onReorder={handleReorder}
+                        onReorder={handleReorder as unknown as Parameters<typeof SummaryItemsList>[0]['onReorder']}
                         isEditing={isEditing}
                         onPriceChange={handlePriceChange}
                     />

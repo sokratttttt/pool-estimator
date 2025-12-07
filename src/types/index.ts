@@ -43,6 +43,7 @@ export interface Bowl extends BaseEntity {
     volume?: number;
     material?: string;
     image_url?: string;
+    [key: string]: unknown; // Index signature for compatibility
 }
 
 export interface Equipment extends BaseEntity {
@@ -92,6 +93,8 @@ export interface ClientInfo {
     phone: string;
     email?: string;
     address?: string;
+    clientId?: string;
+    id?: string;
     managerName?: string;
     managerPhone?: string;
 }
@@ -100,6 +103,7 @@ export interface Dimensions {
     length: number;
     width: number;
     depth: number;
+    [key: string]: unknown; // Index signature for compatibility
 }
 
 export interface ProjectData {
@@ -129,10 +133,20 @@ export interface Customer {
 }
 
 export interface EstimateItem {
+    id: string;
+    section?: string;
     name: string;
+    description?: string;
     quantity: number;
     unit: string;
+    unitPrice?: number;
     price: number;
+    total?: number;
+    notes?: string;
+    type?: string;
+    installationPrice?: number;
+    category?: string; // Added for compatibility
+    [key: string]: unknown;
 }
 
 export interface EstimateSelection {
@@ -330,4 +344,84 @@ export interface ThemeColors {
     error: string;
     warning: string;
     success: string;
+}
+
+// ============================================
+// SELECTION & STATIC DATA TYPES
+// ============================================
+
+export interface BowlData {
+    id: string;
+    name: string;
+    manufacturer: string;
+    length: number;
+    width: number;
+    depth: number;
+    volume: number;
+    price: number;
+    deliveryPrice: number;
+}
+
+export interface MaterialSelection {
+    id: 'concrete' | 'composite' | 'polypropylene';
+    name: string;
+    basePricePerCubicMeter?: number;
+    type: 'custom' | 'fixed';
+}
+
+export interface FiltrationSelection {
+    id: string;
+    name: string;
+    price: number;
+    [key: string]: unknown;
+}
+
+export interface HeatingItem {
+    name: string;
+    price: number;
+    quantity: number;
+}
+
+export interface HeatingSelection {
+    id: string;
+    name: string;
+    type: string;
+    price: number;
+    installationPrice?: number;
+    items?: HeatingItem[];
+    [key: string]: unknown;
+}
+
+export interface PartItem {
+    name: string;
+    price: number;
+    quantity: number;
+    installationPrice?: number;
+    type?: 'nozzle' | 'skimmer' | 'drain' | 'light' | 'other';
+}
+
+export interface PartsSelection {
+    id: string;
+    name: string;
+    price?: number;
+    items?: PartItem[];
+    [key: string]: unknown;
+}
+
+export interface Product {
+    id: string;
+    name: string;
+    description?: string;
+    category: string;
+    price: number;
+    unit?: string;
+    sku?: string;
+    imageUrl?: string;
+    image?: string;
+    inStock?: boolean;
+    manufacturer?: string;
+    type?: string;
+    specifications?: Record<string, string | number>;
+    created_at?: string;
+    updated_at?: string;
 }

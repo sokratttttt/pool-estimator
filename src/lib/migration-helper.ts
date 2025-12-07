@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Migration Helper Utilities
  * Helps transition from Context API to Zustand without breaking existing components
@@ -12,7 +13,7 @@ export const createStoreHook = <T extends object>(storeHook: () => T) => {
         return {
             ...store,
             // Add compatibility methods if needed
-            dispatch: (store as any).setCurrentEstimate, // example
+            dispatch: (store as Record<string, unknown>).setCurrentEstimate, // example
             state: store,
         };
     };
@@ -26,8 +27,8 @@ export const migrationLogger = (componentName: string, from: string, to: string)
 };
 
 // Validate migration success
-export const validateMigration = (store: any, requiredMethods: string[]): boolean => {
-    const missingMethods = requiredMethods.filter((method: any) => !(method in store));
+export const validateMigration = (store: object, requiredMethods: string[]): boolean => {
+    const missingMethods = requiredMethods.filter((method) => !(method in store));
 
     if (missingMethods.length > 0) {
         console.warn(`⚠️ Missing methods after migration:`, missingMethods);

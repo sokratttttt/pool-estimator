@@ -2,19 +2,23 @@
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { motion } from 'framer-motion';
 
+interface ChartDataPoint {
+    label: string;
+    value: number;
+}
+
 interface SalesChartProps {
-    data?: any;
-    type?: any;
-    active?: any;
-    payload?: any;
+    data?: ChartDataPoint[];
+    type?: 'line' | 'bar';
 }
 
 export default function SalesChart({ data, type = 'line' }: SalesChartProps) {
     interface CustomTooltipProps {
-        data?: any;
-        type?: any;
-        active?: any;
-        payload?: any;
+        active?: boolean;
+        payload?: Array<{
+            value: number;
+            payload: ChartDataPoint;
+        }>;
     }
 
     const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
@@ -58,7 +62,7 @@ export default function SalesChart({ data, type = 'line' }: SalesChartProps) {
                     <YAxis
                         stroke="#94A3B8"
                         style={{ fontSize: '12px' }}
-                        tickFormatter={(value: any) => `${(value / 1000).toFixed(0)}k`}
+                        tickFormatter={(value: number) => `${(value / 1000).toFixed(0)}k`}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <DataComponent

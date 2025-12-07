@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEstimate } from '@/context/EstimateContext';
 import { useTemplates } from '@/context/TemplateContext';
+import type { Template } from '@/types/template';
 import { Save, Trash2, Plus, FileText, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import AppleCard from '@/components/apple/AppleCard';
@@ -23,16 +24,17 @@ export default function TemplatesPage() {
             return;
         }
 
-        saveTemplate(templateName, '', { selection });
+        saveTemplate(templateName, '', selection as import('@/types/estimate-utils').Selection);
         setTemplateName('');
         setShowSaveDialog(false);
     };
 
     // Загрузка шаблона
-    const loadTemplate = (template: any) => {
-        if (template.config && template.config.selection) {
-            setSelection(template.config.selection);
-            localStorage.setItem('pool-estimate-selection', JSON.stringify(template.config.selection));
+    const loadTemplate = (template: Template) => {
+        const config = template.config as typeof selection | undefined;
+        if (config) {
+            setSelection(config);
+            localStorage.setItem('pool-estimate-selection', JSON.stringify(config));
             toast.success(`Шаблон "${template.name}" загружен`);
 
             // Navigate to calculator
@@ -91,7 +93,7 @@ export default function TemplatesPage() {
                             <input
                                 type="text"
                                 value={templateName}
-                                onChange={(e: React.ChangeEvent<any>) => setTemplateName(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemplateName(e.target.value)}
                                 placeholder="Название шаблона..."
                                 className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-cyan-bright"
                                 onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && saveAsTemplate()}
@@ -160,26 +162,33 @@ export default function TemplatesPage() {
 
                                 {/* Template Info */}
                                 <div className="space-y-2 mb-4 text-sm text-gray-300">
-                                    {template.config?.selection?.material && (
-                                        <div>
-                                            <span className="text-gray-500">Материал:</span>{' '}
-                                            {template.config.selection.material.name}
-                                        </div>
-                                    )}
-                                    {template.config?.selection?.bowl && (
-                                        <div>
-                                            <span className="text-gray-500">Чаша:</span>{' '}
-                                            {template.config.selection.bowl.name}
-                                        </div>
-                                    )}
-                                    {template.config?.selection?.dimensions && (
-                                        <div>
-                                            <span className="text-gray-500">Размеры:</span>{' '}
-                                            {template.config.selection.dimensions.length}x
-                                            {template.config.selection.dimensions.width}x
-                                            {template.config.selection.dimensions.depth}м
-                                        </div>
-                                    )}
+                                    {(() => {
+                                        const cfg = template.config as { material?: { name: string }; bowl?: { name: string }; dimensions?: { length: number; width: number; depth: number } } | undefined;
+                                        return (
+                                            <>
+                                                {cfg?.material && (
+                                                    <div>
+                                                        <span className="text-gray-500">Материал:</span>{' '}
+                                                        {cfg.material.name}
+                                                    </div>
+                                                )}
+                                                {cfg?.bowl && (
+                                                    <div>
+                                                        <span className="text-gray-500">Чаша:</span>{' '}
+                                                        {cfg.bowl.name}
+                                                    </div>
+                                                )}
+                                                {cfg?.dimensions && (
+                                                    <div>
+                                                        <span className="text-gray-500">Размеры:</span>{' '}
+                                                        {cfg.dimensions.length}x
+                                                        {cfg.dimensions.width}x
+                                                        {cfg.dimensions.depth}м
+                                                    </div>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
                                 </div>
 
                                 <AppleButton

@@ -1,29 +1,35 @@
 import { useEffect, useRef } from 'react';
+import { useAsync } from './useAsync';
+
+interface UseAbortControllerResult {
+    signal: AbortSignal;
+    abort: (reason?: string) => void;
+    reset: () => void;
+    controller: AbortController;
+}
 
 /**
  * Hook to create and manage AbortController for cancelling requests
  * Automatically aborts on unmount
- * 
- * @returns {Object} - { signal, abort, reset }
  */
-export function useAbortController(): any {
+export function useAbortController(): UseAbortControllerResult {
     const controllerRef = useRef<AbortController | null>(null);
 
-    const getController = () => {
+    const getController = (): AbortController => {
         if (!controllerRef.current) {
             controllerRef.current = new AbortController();
         }
         return controllerRef.current;
     };
 
-    const abort = (reason?: any) => {
+    const abort = (reason?: string): void => {
         if (controllerRef.current) {
             controllerRef.current.abort(reason);
             controllerRef.current = null;
         }
     };
 
-    const reset = () => {
+    const reset = (): void => {
         abort();
         controllerRef.current = new AbortController();
     };
@@ -43,22 +49,21 @@ export function useAbortController(): any {
     };
 }
 
+type AsyncFunction<T> = (signal: AbortSignal, ...args: unknown[]) => Promise<T>;
+
 /**
  * Hook combining useAsync with abort controller
  */
-import { useAsync } from './useAsync';
-
-export function useAbortableAsync(asyncFunction: any, immediate = false): any {
+export function useAbortableAsync<T>(asyncFunction: AsyncFunction<T>, immediate: boolean = false) {
     const { signal, abort, reset: resetController } = useAbortController();
-    // removed require using top level import
 
-    const wrappedFunction = async (...args) => {
+    const wrappedFunction = async (...args: unknown[]): Promise<T> => {
         return asyncFunction(signal, ...args);
     };
 
     const asyncResult = useAsync(wrappedFunction, immediate);
 
-    const reset = () => {
+    const reset = (): void => {
         resetController();
         asyncResult.reset();
     };

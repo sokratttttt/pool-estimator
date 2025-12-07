@@ -3,16 +3,18 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Check, Sparkles } from 'lucide-react';
+// import { EstimateItem } from '@/types'; // Unused now
 
 interface OptionCardProps {
-    title?: any;
-    description?: any;
-    price?: any;
-    image?: any;
-    selected?: any;
+    title?: string | React.ReactNode;
+    description?: string;
+    price?: number | string;
+    image?: React.ReactNode | string | React.ElementType;
+    selected?: boolean;
     onClick?: () => void;
-    badge?: any;
-    delay?: any;
+    badge?: string;
+    delay?: number;
+    // items prop removed as it was unused and causing lint errors
 }
 
 export default function OptionCard({
@@ -23,7 +25,7 @@ export default function OptionCard({
     selected,
     onClick,
     badge,
-    delay = 0
+    delay = 0,
 }: OptionCardProps) {
     return (
         <motion.div
@@ -94,7 +96,7 @@ export default function OptionCard({
                     {typeof image === 'string' && (image.startsWith('/') || image.startsWith('http') || image.startsWith('data:')) ? (
                         <Image
                             src={image}
-                            alt={title}
+                            alt={typeof title === 'string' ? title : 'Option image'}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-contain transition-transform duration-500 hover:scale-110 p-2"
@@ -113,10 +115,10 @@ export default function OptionCard({
                                         ? 'linear-gradient(135deg, #00D9FF 0%, #0099FF 100%)'
                                         : 'rgba(255, 255, 255, 0.05)'
                                 }}>
-                                {React.cloneElement(image as React.ReactElement<any>, {
+                                {React.cloneElement(image as React.ReactElement, {
                                     size: 32,
                                     className: selected ? "text-white" : "text-cyan-bright"
-                                } as any)}
+                                } as { size: number; className: string })}
                             </div>
                         </div>
                     ) : (
@@ -129,7 +131,7 @@ export default function OptionCard({
                                         ? 'linear-gradient(135deg, #00D9FF 0%, #0099FF 100%)'
                                         : 'rgba(255, 255, 255, 0.05)'
                                 }}>
-                                {React.createElement(image as React.ComponentType<any>, {
+                                {React.createElement(image as React.ComponentType<{ size: number; className: string }>, {
                                     size: 32,
                                     className: selected ? "text-white" : "text-cyan-bright"
                                 })}

@@ -25,7 +25,7 @@ interface Pool3DModalProps {
 
 export default function Pool3DModal({ isOpen, onClose, poolData }: Pool3DModalProps) {
     const [lighting, setLighting] = useState('day');
-    const viewerRef = useRef<{ takeScreenshot: (filename: string) => void }>(null);
+    const viewerRef = useRef<{ takeScreenshot: (filename?: string) => void } | null>(null);
 
     const handleScreenshot = () => {
         const filename = `pool-${poolData.shape}-${poolData.length}x${poolData.width}.png`;
@@ -74,7 +74,7 @@ export default function Pool3DModal({ isOpen, onClose, poolData }: Pool3DModalPr
                                 {/* Lighting control */}
                                 <select
                                     value={lighting}
-                                    onChange={(e: React.ChangeEvent<any>) => setLighting(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLighting(e.target.value)}
                                     className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm"
                                 >
                                     <option value="day">☀️ День</option>

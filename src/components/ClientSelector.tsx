@@ -5,8 +5,10 @@ import { useClients } from '@/context/ClientContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 
+import type { Client } from '@/types/client';
+
 interface ClientSelectorProps {
-    onSelect?: (client: any) => void;
+    onSelect?: (client: Client) => void;
 }
 
 export default function ClientSelector({ onSelect }: ClientSelectorProps) {
@@ -58,7 +60,7 @@ export default function ClientSelector({ onSelect }: ClientSelectorProps) {
                                 type="text"
                                 placeholder="Поиск..."
                                 value={search}
-                                onChange={(e: React.ChangeEvent<any>) => setSearch(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                                 className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-bright"
                                 autoFocus
                             />

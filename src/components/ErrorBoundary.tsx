@@ -1,6 +1,5 @@
-
 'use client';
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 
 export interface ErrorBoundaryProps {
@@ -8,27 +7,28 @@ export interface ErrorBoundaryProps {
 }
 
 interface ErrorBoundaryState {
-    [key: string]: any;
+    hasError: boolean;
+    error: Error | null;
 }
 
 export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-    constructor(props) {
+    constructor(props: ErrorBoundaryProps) {
         super(props);
         this.state = { hasError: false, error: null };
     }
 
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
         return { hasError: true, error };
     }
 
-    componentDidCatch(_error: Error, _errorInfo: React.ErrorInfo) {
+    override componentDidCatch(_error: Error, _errorInfo: React.ErrorInfo): void {
         // Log to error reporting service in production
         if (process.env.NODE_ENV === 'production') {
             // Could send to Sentry, LogRocket, etc.
         }
     }
 
-    render() {
+    override render(): React.ReactNode {
         if (this.state.hasError) {
             return (
                 <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">

@@ -15,8 +15,8 @@ export default function MaterialStep() {
 
             <MaterialGrid
                 materials={materials}
-                selection={selection.material}
-                onSelect={handleSelect}
+                selection={selection.material as unknown as Parameters<typeof MaterialGrid>[0]['selection']}
+                onSelect={handleSelect as unknown as Parameters<typeof MaterialGrid>[0]['onSelect']}
             />
 
             <MaterialInfo />

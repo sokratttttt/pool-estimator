@@ -6,12 +6,13 @@ import { Plus, FileText, ArrowLeft, Loader2 } from 'lucide-react';
 import ContractEditor from '@/components/contracts/ContractEditor';
 import AppleButton from '@/components/apple/AppleButton';
 import { toast } from 'sonner';
+import type { ContractTemplate } from '@/types/contracts';
 
 
 export default function ContractsSettingsPage() {
-    const [templates, setTemplates] = useState<any[]>([]);
+    const [templates, setTemplates] = useState<ContractTemplate[]>([]);
     const [loading, setLoading] = useState(true);
-    const [editingTemplate, setEditingTemplate] = useState<any>(null);
+    const [editingTemplate, setEditingTemplate] = useState<ContractTemplate | null>(null);
     const [isCreating, setIsCreating] = useState(false);
 
     useEffect(() => {
@@ -35,7 +36,7 @@ export default function ContractsSettingsPage() {
         }
     };
 
-    const handleSave = async (templateData: any) => {
+    const handleSave = async (templateData: Partial<ContractTemplate>) => {
         try {
             if (editingTemplate) {
                 const { error } = await supabase
@@ -115,7 +116,7 @@ export default function ContractsSettingsPage() {
                 </div>
 
                 <div className="grid gap-4">
-                    {templates.map((template: any) => (
+                    {templates.map((template: ContractTemplate) => (
                         <div
                             key={template.id}
                             className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all cursor-pointer group"

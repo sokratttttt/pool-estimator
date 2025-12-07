@@ -13,7 +13,7 @@ import type {
 } from '@/types/additional-logic';
 
 export function useAdditionalLogic(
-    catalog: Record<string, any>,
+    catalog: Record<string, unknown>,
     selection: EstimateData,
     updateSelection: (key: string, value: unknown) => void
 ): UseAdditionalLogicReturn {
@@ -33,7 +33,7 @@ export function useAdditionalLogic(
 
     // Memoize display options (source of truth for available items)
     const additionalItems: AdditionalItem[] = useMemo(() => {
-        const rawItems = catalog?.additional?.length > 0 ? catalog.additional : additionalOptions;
+        const rawItems = Array.isArray(catalog?.additional) ? catalog.additional : additionalOptions;
         // Normalize items to AdditionalItem interface
         return rawItems.map((item: any) => ({
             id: item.id || '',

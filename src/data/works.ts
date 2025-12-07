@@ -1,4 +1,21 @@
 // Comprehensive work items database for pool construction
+
+interface WorkItem {
+    id: string;
+    name: string;
+    description?: string;
+    price?: number; // Optional because some might not have fixed price
+    pricePerM3?: number;
+    pricePerM2?: number;
+    pricePerHour?: number;
+    pricePerM?: number;
+    unit?: string;
+    category?: string;
+    autoCalculate?: boolean; // Optional
+    formula?: (dimensions: Record<string, number>, selection: Record<string, unknown>) => number; // Optional
+    quantity?: number; // Optional
+    total?: number; // Optional
+}
 export const works = {
     earthworks: {
         excavation: {
@@ -9,11 +26,11 @@ export const works = {
             unit: 'м³',
             category: 'earthworks',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 // Котлован = (длина + 1м) × (ширина + 1м) × (глубина + 0.3м)
                 const length = dimensions.length + 1;
                 const width = dimensions.width + 1;
-                const depth = parseFloat(dimensions.depth) + 0.3;
+                const depth = (Number(dimensions.depth) || 0) + 0.3;
                 return length * width * depth;
             }
         },
@@ -25,9 +42,9 @@ export const works = {
             unit: 'м³',
             category: 'earthworks',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 // Примерно 30% от объема котлована
-                const excavationVolume = (dimensions.length + 1) * (dimensions.width + 1) * (parseFloat(dimensions.depth) + 0.3);
+                const excavationVolume = (dimensions.length + 1) * (dimensions.width + 1) * ((Number(dimensions.depth) || 0) + 0.3);
                 return excavationVolume * 0.3;
             }
         },
@@ -39,9 +56,9 @@ export const works = {
             unit: 'м³',
             category: 'earthworks',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 // Примерно 50% от объема котлована
-                const excavationVolume = (dimensions.length + 1) * (dimensions.width + 1) * (parseFloat(dimensions.depth) + 0.3);
+                const excavationVolume = (dimensions.length + 1) * (dimensions.width + 1) * ((Number(dimensions.depth) || 0) + 0.3);
                 return excavationVolume * 0.5;
             }
         },
@@ -53,7 +70,7 @@ export const works = {
             unit: 'м²',
             category: 'earthworks',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 return dimensions.length * dimensions.width;
             }
         }
@@ -68,7 +85,7 @@ export const works = {
             unit: 'м³',
             category: 'foundation',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 return dimensions.length * dimensions.width * 0.2;
             }
         },
@@ -80,7 +97,7 @@ export const works = {
             unit: 'м³',
             category: 'foundation',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 return dimensions.length * dimensions.width * 0.25;
             }
         },
@@ -92,7 +109,7 @@ export const works = {
             unit: 'м²',
             category: 'foundation',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 return dimensions.length * dimensions.width;
             }
         },
@@ -104,7 +121,7 @@ export const works = {
             unit: 'м²',
             category: 'foundation',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 return dimensions.length * dimensions.width;
             }
         }
@@ -129,12 +146,12 @@ export const works = {
             unit: 'час',
             category: 'installation',
             autoCalculate: true,
-            formula: (_dimensions: any, selection: any) => {
+            formula: (_dimensions: Record<string, number>, selection: Record<string, unknown>) => {
                 // Базовое время + время на каждую единицу оборудования
                 let hours = 4; // Базовое время
                 if (selection.heating) hours += 2;
-                if (selection.parts) hours += selection.parts.length * 0.5;
-                if (selection.additional) hours += selection.additional.length * 1;
+                if (Array.isArray(selection.parts)) hours += selection.parts.length * 0.5;
+                if (Array.isArray(selection.additional)) hours += selection.additional.length * 1;
                 return hours;
             }
         },
@@ -189,7 +206,7 @@ export const works = {
             unit: 'м',
             category: 'finishing',
             autoCalculate: true,
-            formula: (dimensions: any) => {
+            formula: (dimensions: Record<string, number>) => {
                 return (dimensions.length + dimensions.width) * 2;
             }
         },
@@ -279,17 +296,17 @@ export const workCategories = {
 };
 
 // Helper function to calculate all auto-calculated works
-export function calculateAutoWorks(selection: any) {
-    const results: Record<string, any> = {};
+export function calculateAutoWorks(selection: Record<string, unknown>) {
+    const results: Record<string, WorkItem & { quantity: number; total: number }> = {};
     const dimensions = selection.dimensions || selection.bowl;
 
     if (!dimensions) return results;
 
     Object.entries(works).forEach(([_category, items]) => {
-        Object.entries(items).forEach(([_key, work]: [string, any]) => {
+        Object.entries(items).forEach(([_key, work]: [string, WorkItem]) => {
             if (work.autoCalculate && work.formula) {
                 try {
-                    const quantity = work.formula(dimensions, selection);
+                    const quantity = work.formula(dimensions as Record<string, number>, selection);
                     results[work.id] = {
                         ...work,
                         quantity: Math.ceil(quantity * 10) / 10, // Round to 1 decimal

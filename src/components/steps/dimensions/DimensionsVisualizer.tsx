@@ -3,11 +3,20 @@ import { motion } from 'framer-motion';
 import AppleCard from '../../apple/AppleCard';
 import PoolVisualizer from '../../PoolVisualizer';
 
+import { Dimensions } from '@/types';
+
+interface Preset {
+    label: string;
+    length: number;
+    width: number;
+    depth: number;
+}
+
 interface DimensionsVisualizerProps {
-    dimensions?: any;
-    material?: any;
-    presets?: any[];
-    onApplyPreset?: (preset: any) => void;
+    dimensions?: Dimensions;
+    material?: string;
+    presets?: Preset[];
+    onApplyPreset?: (preset: Preset) => void;
 }
 
 export default function DimensionsVisualizer({ dimensions, material, presets = [], onApplyPreset }: DimensionsVisualizerProps) {
@@ -26,7 +35,7 @@ export default function DimensionsVisualizer({ dimensions, material, presets = [
             <AppleCard className="mt-6">
                 <h4 className="apple-heading-3 mb-4">Популярные размеры</h4>
                 <div className="grid grid-cols-2 gap-3">
-                    {presets.map((preset: any) => (
+                    {presets.map((preset: Preset) => (
                         <button
                             key={preset.label}
                             onClick={() => onApplyPreset?.(preset)}

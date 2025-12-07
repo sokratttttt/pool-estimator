@@ -2,11 +2,11 @@
 import { Calculator } from 'lucide-react';
 
 interface WorksSummaryProps {
-  grandTotal?: any;
-  selectedCount?: any;
+    grandTotal: number;
+    selectedCount: number;
 }
 
-export default function WorksSummary({  grandTotal, selectedCount  }: WorksSummaryProps) {
+export default function WorksSummary({ grandTotal, selectedCount }: WorksSummaryProps) {
     return (
         <div className="bg-gradient-to-r from-[#00b4d8] to-[#0096c7] rounded-2xl p-6 text-white">
             <div className="flex items-center justify-between">

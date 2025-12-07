@@ -9,8 +9,10 @@ import AppleInput from './apple/AppleInput';
 import { useCatalog } from '@/context/CatalogContext';
 import { toast } from 'sonner';
 
+import { Product } from '@/types/index';
+
 interface ProductFormProps {
-    product?: any;
+    product?: Product;
     onClose?: () => void;
 }
 
@@ -147,7 +149,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
 
         const productData = {
             ...formData,
-            price: parseFloat(formData.price),
+            price: parseFloat(String(formData.price)),
         };
 
         // Log image size for debugging
@@ -250,7 +252,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                         label="Название *"
                         placeholder="Например: Чаша композитная LUXOR 7537"
                         value={formData.name}
-                        onChange={(e: React.ChangeEvent<any>) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                         required
                     />
 
@@ -263,7 +265,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                             className="apple-input w-full min-h-[100px] resize-none bg-slate-800 text-white border-slate-600 focus:border-blue-400 placeholder-slate-400"
                             placeholder="Описание товара..."
                             value={formData.description}
-                            onChange={(e: React.ChangeEvent<any>) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                         />
                     </div>
 
@@ -274,7 +276,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                             label="Цена *"
                             placeholder="0"
                             value={formData.price}
-                            onChange={(e: React.ChangeEvent<any>) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, price: e.target.value }))}
                             required
                             step="0.01"
                         />
@@ -282,7 +284,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                             label="Единица измерения"
                             placeholder="шт"
                             value={formData.unit}
-                            onChange={(e: React.ChangeEvent<any>) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
                         />
                     </div>
 
@@ -295,7 +297,7 @@ export default function ProductForm({ product, onClose }: ProductFormProps) {
                             <select
                                 className="apple-input w-full appearance-none cursor-pointer bg-slate-800 text-white border-slate-600 focus:border-blue-400"
                                 value={formData.category}
-                                onChange={(e: React.ChangeEvent<any>) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                                 required
                             >
                                 {categories.map(cat => (

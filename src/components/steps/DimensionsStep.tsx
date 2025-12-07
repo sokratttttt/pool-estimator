@@ -23,7 +23,7 @@ export default function DimensionsStep() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
                 <DimensionsForm
-                    dimensions={dimensions}
+                    dimensions={dimensions as { length?: number; width?: number; depth?: number }}
                     errors={errors}
                     onChange={handleChange}
                     volume={volume}
@@ -31,7 +31,7 @@ export default function DimensionsStep() {
                 />
 
                 <DimensionsVisualizer
-                    dimensions={dimensions}
+                    dimensions={dimensions as unknown as import('@/types').Dimensions}
                     material={selection.material?.id}
                     presets={presets}
                     onApplyPreset={applyPreset}

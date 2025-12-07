@@ -11,7 +11,7 @@ import type { Estimate, FilterOptions, SortOrder } from '@/types';
 export const groupEstimatesByStatus = (
     estimates: Estimate[]
 ): Record<string, Estimate[]> => {
-    return estimates.reduce((groups: any, estimate: any) => {
+    return estimates.reduce((groups: Record<string, Estimate[]>, estimate: Estimate) => {
         const status = estimate.status || 'draft';
         if (!groups[status]) {
             groups[status] = [];
@@ -69,14 +69,14 @@ export const sortEstimates = (
     sortBy: keyof Estimate,
     sortOrder: SortOrder = 'desc'
 ): Estimate[] => {
-    return [...estimates].sort((a: any, b: any) => {
-        let aValue: any = a[sortBy];
-        let bValue: any = b[sortBy];
+    return [...estimates].sort((a: Estimate, b: Estimate) => {
+        let aValue: unknown = a[sortBy];
+        let bValue: unknown = b[sortBy];
 
         // Handle dates
         if (sortBy === 'created_at' || sortBy === 'updated_at') {
-            aValue = new Date(aValue).getTime();
-            bValue = new Date(bValue).getTime();
+            aValue = new Date(aValue as string | Date).getTime();
+            bValue = new Date(bValue as string | Date).getTime();
         }
 
         // Handle strings - case insensitive
@@ -102,16 +102,16 @@ export const sortEstimates = (
  */
 export const calculateEstimateStats = (estimates: Estimate[]) => {
     const total = estimates.length;
-    const totalValue = estimates.reduce((sum: any, estimate: any) => sum + (estimate.total || 0), 0);
+    const totalValue = estimates.reduce((sum: number, estimate: Estimate) => sum + (estimate.total || 0), 0);
     const averageValue = total > 0 ? totalValue / total : 0;
 
-    const statusCounts = estimates.reduce((counts: any, estimate: any) => {
+    const statusCounts = estimates.reduce((counts: Record<string, number>, estimate: Estimate) => {
         counts[estimate.status] = (counts[estimate.status] || 0) + 1;
         return counts;
     }, {} as Record<string, number>);
 
     // Find min and max values
-    const values = estimates.map((e: any) => e.total).filter((v: any) => v > 0);
+    const values = estimates.map((e: Estimate) => e.total).filter((v: number) => v > 0);
     const minValue = values.length > 0 ? Math.min(...values) : 0;
     const maxValue = values.length > 0 ? Math.max(...values) : 0;
 
@@ -158,7 +158,7 @@ export const getPaginationInfo = (totalItems: number, page: number, pageSize: nu
  * Group items by a key function
  */
 export const groupBy = <T>(items: T[], keyFn: (item: T) => string): Record<string, T[]> => {
-    return items.reduce((groups: any, item: any) => {
+    return items.reduce((groups: Record<string, T[]>, item: T) => {
         const key = keyFn(item);
         if (!groups[key]) {
             groups[key] = [];
@@ -171,9 +171,9 @@ export const groupBy = <T>(items: T[], keyFn: (item: T) => string): Record<strin
 /**
  * Remove duplicates from array
  */
-export const uniqueBy = <T>(items: T[], keyFn: (item: T) => any): T[] => {
+export const uniqueBy = <T>(items: T[], keyFn: (item: T) => unknown): T[] => {
     const seen = new Set();
-    return items.filter((item: any) => {
+    return items.filter((item: T) => {
         const key = keyFn(item);
         if (seen.has(key)) {
             return false;
@@ -196,7 +196,7 @@ export const deepClone = <T>(obj: T): T => {
 export const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
     const output = { ...target };
 
-    Object.keys(source).forEach((key: any) => {
+    Object.keys(source).forEach((key: unknown) => {
         const targetValue = target[key as keyof T];
         const sourceValue = source[key as keyof T];
 
@@ -208,9 +208,9 @@ export const deepMerge = <T extends object>(target: T, source: Partial<T>): T =>
             sourceValue !== null &&
             !Array.isArray(sourceValue)
         ) {
-            (output as any)[key] = deepMerge(targetValue, sourceValue);
+            (output as Record<keyof T, unknown>)[key as keyof T] = deepMerge(targetValue as object, sourceValue as object);
         } else {
-            (output as any)[key] = sourceValue;
+            (output as Record<keyof T, unknown>)[key as keyof T] = sourceValue;
         }
     });
 

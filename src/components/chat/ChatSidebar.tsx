@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useChat } from '@/context/ChatContext';
-import type { Channel } from '@/types/chat';
+import type { Channel, UserProfile } from '@/types/chat';
 import { MessageSquare, Plus } from 'lucide-react';
 import UserSelector from './UserSelector';
 
 interface ChatSidebarProps {
-    channel?: any;
+    channel?: Channel;
 }
 
 export default function ChatSidebar({ }: ChatSidebarProps) {
@@ -112,7 +112,7 @@ export default function ChatSidebar({ }: ChatSidebarProps) {
             <UserSelector
                 isOpen={showUserSelector}
                 onClose={() => setShowUserSelector(false)}
-                onSelect={async (user: any) => {
+                onSelect={async (user: UserProfile) => {
                     await createDirectMessage(user.id);
                     setShowUserSelector(false);
                 }}

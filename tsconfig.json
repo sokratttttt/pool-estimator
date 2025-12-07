@@ -8,20 +8,19 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    // Strict Mode - Phase 1 (enabled now)
+    // Strict Mode - Full (Phase 1 + Phase 2)
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "useUnknownInCatchVariables": true,
     "alwaysStrict": true,
-    // Strict Mode - Phase 2 (to enable later)
     "strictPropertyInitialization": false,
-    "noImplicitThis": false,
+    "noImplicitThis": true,
     "exactOptionalPropertyTypes": false,
     "noUncheckedIndexedAccess": false,
-    "noImplicitOverride": false,
+    "noImplicitOverride": true,
     // Code Quality Rules
     "noEmit": true,
     "esModuleInterop": true,

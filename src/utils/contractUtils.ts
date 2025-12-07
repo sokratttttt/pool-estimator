@@ -2,7 +2,7 @@ import { Document, Packer, Paragraph, AlignmentType, HeadingLevel, Table, TableR
 import { saveAs } from 'file-saver';
 import { supabase } from '@/lib/supabase';
 
-const replacePlaceholders = (text: any, data: any) => {
+const replacePlaceholders = (text: string | undefined, data: Record<string, string>) => {
     if (!text) return '';
     return text
         .replace(/{{CONTRACT_NUMBER}}/g, data.contractNumber)
@@ -13,7 +13,7 @@ const replacePlaceholders = (text: any, data: any) => {
         .replace(/{{CLIENT_EMAIL}}/g, data.clientEmail);
 };
 
-const getAlignment = (align: any) => {
+const getAlignment = (align: string) => {
     switch (align) {
         case 'center': return AlignmentType.CENTER;
         case 'right': return AlignmentType.RIGHT;
@@ -22,7 +22,7 @@ const getAlignment = (align: any) => {
     }
 };
 
-const getHeadingLevel = (level: any) => {
+const getHeadingLevel = (level: number) => {
     switch (level) {
         case 1: return HeadingLevel.HEADING_1;
         case 2: return HeadingLevel.HEADING_2;
@@ -31,7 +31,13 @@ const getHeadingLevel = (level: any) => {
     }
 };
 
-export const generateContract = async (clientInfo: any, totalSum: any, estimateId: any) => {
+interface ContractClientInfo {
+    name?: string;
+    phone?: string;
+    email?: string;
+}
+
+export const generateContract = async (clientInfo: ContractClientInfo, totalSum: number, estimateId: string) => {
     try {
         // 1. Fetch default template
         const { data: templates, error } = await supabase
@@ -64,11 +70,19 @@ export const generateContract = async (clientInfo: any, totalSum: any, estimateI
             clientEmail: clientInfo?.email || "_______________________",
             totalSum: totalSum.toLocaleString('ru-RU')
         };
+        // ...
 
         const docChildren: (Paragraph | Table)[] = [];
 
+        interface TemplateSection {
+            type: string;
+            text?: string;
+            level?: number;
+            alignment?: string;
+        }
+
         // 2. Parse template sections
-        template.content.sections.forEach(section => {
+        template.content.sections.forEach((section: TemplateSection) => {
             if (section.type === 'signatures_table') {
                 docChildren.push(
                     new Table({
@@ -117,8 +131,8 @@ export const generateContract = async (clientInfo: any, totalSum: any, estimateI
                 docChildren.push(
                     new Paragraph({
                         text: text,
-                        heading: section.type === 'heading' ? getHeadingLevel(section.level) : undefined,
-                        alignment: getAlignment(section.alignment),
+                        heading: section.type === 'heading' ? getHeadingLevel(section.level || 1) : undefined,
+                        alignment: getAlignment(section.alignment || 'left'),
                         spacing: { after: 200 }
                     })
                 );
@@ -137,6 +151,6 @@ export const generateContract = async (clientInfo: any, totalSum: any, estimateI
 
     } catch (error) {
         console.error('Error generating contract:', error);
-        alert('Ошибка при генерации договора: ' + (error as any).message);
+        alert('Ошибка при генерации договора: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
 };

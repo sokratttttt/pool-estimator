@@ -1,14 +1,13 @@
-// TODO: Add proper TypeScript types for state
 import { useState, useEffect } from 'react';
 
 /**
  * Custom hook to debounce a value
- * @param {any} value - The value to debounce
- * @param {number} delay - The delay in milliseconds
- * @returns {any} The debounced value
+ * @param value - The value to debounce
+ * @param delay - The delay in milliseconds
+ * @returns The debounced value
  */
-export function useDebounce(value, delay = 500): any {
-    const [debouncedValue, setDebouncedValue] = useState(value);
+export function useDebounce<T>(value: T, delay: number = 500): T {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
     useEffect(() => {
         // Set up a timer to update the debounced value after the delay

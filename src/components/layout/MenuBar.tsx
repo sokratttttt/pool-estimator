@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
     Plus, Save, FolderOpen, Download, Printer, Upload
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface MenuItem {
     label: string;
@@ -22,20 +24,80 @@ interface Menu {
 export const MenuBar: React.FC = () => {
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+
+    // Функции для действий меню
+    const handleNewEstimate = () => {
+        router.push('/calculator');
+        toast.success('Создание новой сметы');
+    };
+
+    const handleOpenHistory = () => {
+        router.push('/history');
+    };
+
+    const handleExportPDF = () => {
+        // Trigger global export event
+        window.dispatchEvent(new CustomEvent('export-pdf'));
+        toast.info('Экспорт в PDF...');
+    };
+
+    const handleExportExcel = () => {
+        window.dispatchEvent(new CustomEvent('export-excel'));
+        toast.info('Экспорт в Excel...');
+    };
+
+    const handleToggleTheme = (theme: 'dark' | 'light') => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        toast.success(`Тема изменена на ${theme === 'dark' ? 'тёмную' : 'светлую'}`);
+    };
+
+    const handleOpenSettings = () => {
+        router.push('/settings');
+    };
+
+    const handleOpenCatalog = () => {
+        router.push('/catalog');
+    };
+
+    const handleOpenAnalytics = () => {
+        router.push('/analytics');
+    };
+
+    const handleOpenClients = () => {
+        router.push('/clients');
+    };
+
+    const handleShowAbout = () => {
+        toast.info('MOS-POOL Estimator v2.2.0\nПрофессиональный калькулятор бассейнов', {
+            duration: 5000,
+        });
+    };
+
+    const handleShowShortcuts = () => {
+        toast.info(
+            'Горячие клавиши:\n' +
+            '• Ctrl+N — Новая смета\n' +
+            '• Ctrl+S — Сохранить\n' +
+            '• ← → — Навигация по шагам\n' +
+            '• Ctrl+Z — Отменить',
+            { duration: 8000 }
+        );
+    };
 
     const menus: Menu[] = [
         {
             label: 'Файл',
             items: [
-                { label: 'Новая смета', shortcut: 'Ctrl+N', icon: <Plus size={14} />, action: () => { } },
-                { label: 'Открыть...', shortcut: 'Ctrl+O', icon: <FolderOpen size={14} />, action: () => { } },
-                { label: 'Сохранить', shortcut: 'Ctrl+S', icon: <Save size={14} />, action: () => { } },
-                { label: 'Сохранить как...', shortcut: 'Ctrl+Shift+S', action: () => { } },
+                { label: 'Новая смета', shortcut: 'Ctrl+N', icon: <Plus size={14} />, action: handleNewEstimate },
+                { label: 'История смет', shortcut: 'Ctrl+O', icon: <FolderOpen size={14} />, action: handleOpenHistory },
+                { label: 'Сохранить', shortcut: 'Ctrl+S', icon: <Save size={14} />, action: () => window.dispatchEvent(new CustomEvent('save-estimate')) },
                 { separator: true, label: '' },
-                { label: 'Экспорт в PDF', shortcut: 'Ctrl+P', icon: <Download size={14} />, action: () => { } },
-                { label: 'Экспорт в Excel', shortcut: 'Ctrl+E', icon: <Download size={14} />, action: () => { } },
+                { label: 'Экспорт в PDF', shortcut: 'Ctrl+P', icon: <Download size={14} />, action: handleExportPDF },
+                { label: 'Экспорт в Excel', shortcut: 'Ctrl+E', icon: <Download size={14} />, action: handleExportExcel },
                 { separator: true, label: '' },
-                { label: 'Импорт...', icon: <Upload size={14} />, action: () => { } },
+                { label: 'Импорт...', icon: <Upload size={14} />, action: () => toast.info('Импорт в разработке') },
                 { separator: true, label: '' },
                 { label: 'Печать...', shortcut: 'Ctrl+P', icon: <Printer size={14} />, action: () => window.print() },
             ]
@@ -43,52 +105,40 @@ export const MenuBar: React.FC = () => {
         {
             label: 'Редактирование',
             items: [
-                { label: 'Отменить', shortcut: 'Ctrl+Z', action: () => { } },
-                { label: 'Повторить', shortcut: 'Ctrl+Y', action: () => { } },
+                { label: 'Отменить', shortcut: 'Ctrl+Z', action: () => window.dispatchEvent(new CustomEvent('undo')) },
+                { label: 'Повторить', shortcut: 'Ctrl+Y', action: () => window.dispatchEvent(new CustomEvent('redo')) },
                 { separator: true, label: '' },
-                { label: 'Вырезать', shortcut: 'Ctrl+X', action: () => { } },
-                { label: 'Копировать', shortcut: 'Ctrl+C', action: () => { } },
-                { label: 'Вставить', shortcut: 'Ctrl+V', action: () => { } },
+                { label: 'Копировать смету', action: () => toast.info('Копирование в разработке') },
                 { separator: true, label: '' },
-                { label: 'Найти...', shortcut: 'Ctrl+F', action: () => { } },
-                { label: 'Заменить...', shortcut: 'Ctrl+H', action: () => { } },
+                { label: 'Найти в каталоге...', shortcut: 'Ctrl+F', action: handleOpenCatalog },
             ]
         },
         {
             label: 'Вид',
             items: [
-                { label: 'Увеличить', shortcut: 'Ctrl++', action: () => { } },
-                { label: 'Уменьшить', shortcut: 'Ctrl+-', action: () => { } },
-                { label: 'Сбросить масштаб', shortcut: 'Ctrl+0', action: () => { } },
+                { label: 'Тёмная тема', action: () => handleToggleTheme('dark') },
+                { label: 'Светлая тема', action: () => handleToggleTheme('light') },
                 { separator: true, label: '' },
-                { label: 'Боковая панель', shortcut: 'Ctrl+B', action: () => { } },
-                { label: 'Панель свойств', shortcut: 'Ctrl+Shift+P', action: () => { } },
-                { separator: true, label: '' },
-                { label: 'Тёмная тема', action: () => { } },
-                { label: 'Светлая тема', action: () => { } },
-                { label: 'Компактный режим', action: () => { } },
+                { label: 'Аналитика', action: handleOpenAnalytics },
+                { label: 'Клиенты', action: handleOpenClients },
             ]
         },
         {
             label: 'Инструменты',
             items: [
-                { label: 'Калькулятор материалов', action: () => { } },
-                { label: 'Конвертер единиц', action: () => { } },
+                { label: 'Каталог оборудования', action: handleOpenCatalog },
+                { label: 'Управление клиентами', action: handleOpenClients },
                 { separator: true, label: '' },
-                { label: 'Массовое обновление цен', action: () => { } },
-                { label: 'Менеджер шаблонов', action: () => { } },
-                { label: 'Генератор отчётов', action: () => { } },
+                { label: 'Массовое обновление цен', action: () => toast.info('В разработке') },
+                { label: 'Настройки', action: handleOpenSettings },
             ]
         },
         {
             label: 'Справка',
             items: [
-                { label: 'Документация', action: () => window.open('/docs') },
-                { label: 'Горячие клавиши', shortcut: 'Ctrl+/', action: () => { } },
+                { label: 'Горячие клавиши', shortcut: 'Ctrl+/', action: handleShowShortcuts },
                 { separator: true, label: '' },
-                { label: 'Проверить обновления', action: () => { } },
-                { separator: true, label: '' },
-                { label: 'О программе', action: () => { } },
+                { label: 'О программе', action: handleShowAbout },
             ]
         }
     ];
@@ -107,9 +157,17 @@ export const MenuBar: React.FC = () => {
         <div className="pro-menubar" ref={menuRef}>
             <div className="pro-menubar-left">
                 {/* Logo */}
-                <div className="pro-menu-logo">
-                    <span style={{ fontSize: '16px', marginRight: '8px' }}>🏊</span>
-                    <span style={{ fontWeight: 600, color: 'var(--pro-text-primary)' }}>Pool Estimator</span>
+                <div className="pro-menu-logo flex items-center">
+                    <img
+                        src="/logo.png"
+                        alt="MOSPOOL"
+                        className="h-8 w-auto object-contain mr-2"
+                        onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                    />
+                    <span className="hidden font-semibold text-[var(--pro-text-primary)]">MOS-POOL</span>
                 </div>
 
                 {/* Menus */}

@@ -4,24 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import type { CatalogContextType, CatalogData } from '@/types/catalog';
 
-// Экспортируемый интерфейс Product
-export interface Product {
-    id: string;
-    name: string;
-    description?: string;
-    category: string;
-    price: number;
-    unit?: string;
-    sku?: string;
-    imageUrl?: string;
-    image?: string;
-    inStock?: boolean;
-    manufacturer?: string;
-    type?: string;
-    specifications?: Record<string, string | number>;
-    created_at?: string;
-    updated_at?: string;
-}
+import type { Product } from '@/types/index';
 
 const CatalogContext = createContext<CatalogContextType | null>(null);
 

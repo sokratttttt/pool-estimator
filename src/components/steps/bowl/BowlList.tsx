@@ -3,18 +3,26 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Waves } from 'lucide-react';
 
-interface BowlListProps {
-    bowls?: any;
-    onSelect?: (bowl: any) => void;
-    selectedId?: string;
-    getDimensions?: any;
-    getManufacturer?: any;
+import { Bowl } from '@/types';
+
+interface BowlDimensions {
+    length?: string | number;
+    width?: string | number;
+    depth?: string | number;
 }
 
-export default function BowlList({ bowls, onSelect, selectedId, getDimensions, getManufacturer }: BowlListProps) {
+interface BowlListProps {
+    bowls?: Bowl[];
+    onSelect?: (bowl: Bowl) => void;
+    selectedId?: string;
+    getDimensions: (bowl: Bowl) => BowlDimensions;
+    getManufacturer: (bowl: Bowl) => string;
+}
+
+export default function BowlList({ bowls = [], onSelect, selectedId, getDimensions, getManufacturer }: BowlListProps) {
     return (
         <div className="space-y-3">
-            {bowls.map((bowl: any, index: number) => {
+            {bowls.map((bowl: Bowl, index: number) => {
                 const dims = getDimensions(bowl);
                 return (
                     <motion.div
@@ -35,7 +43,7 @@ export default function BowlList({ bowls, onSelect, selectedId, getDimensions, g
                             {bowl.image ? (
                                 <div className="relative w-full h-full">
                                     <Image
-                                        src={bowl.image}
+                                        src={typeof bowl.image === 'string' ? bowl.image : (bowl.image_url || '')}
                                         alt={bowl.name}
                                         fill
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -74,7 +74,7 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
  * @param {any} initialValue - The initial value if key doesn't exist
  * @returns {[any, Function]} The stored value and a setter function
  */
-export function useSessionStorage(key, initialValue): any {
+export function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
     const [storedValue, setStoredValue] = useState(() => {
         if (typeof window === 'undefined') {
             return initialValue;

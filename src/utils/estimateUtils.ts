@@ -1,7 +1,8 @@
 // Estimate generation utilities
 // Note: Filtration and equipment data moved to separate handling
 
-import type { EstimateItem, Selection, PriceList, EquipmentSelection } from '@/types/estimate-utils';
+import type { Selection, PriceList, EquipmentSelection } from '@/types/estimate-utils';
+import type { EstimateItem } from '@/types';
 
 export const generateEstimateItems = (selection: Selection, _prices: Partial<PriceList> = {}): EstimateItem[] => {
     const items: EstimateItem[] = [];

@@ -1,18 +1,44 @@
-// TODO: Add proper TypeScript types for state
 'use client';
 import { useState } from 'react';
 
-export function useDimensionsLogic(selection, updateSelection): any {
-    const [dimensions, setDimensions] = useState({
+interface Dimensions {
+    length: number;
+    width: number;
+    depth: number;
+}
+
+interface Selection {
+    dimensions?: Dimensions | null;
+}
+
+type DimensionField = 'length' | 'width' | 'depth';
+
+interface DimensionErrors {
+    length?: string;
+    width?: string;
+    depth?: string;
+}
+
+interface Preset {
+    label: string;
+    length: number;
+    width: number;
+    depth: number;
+}
+
+type UpdateSelectionFn = (key: string, value: Dimensions) => void;
+
+export function useDimensionsLogic(selection: Selection, updateSelection: UpdateSelectionFn) {
+    const [dimensions, setDimensions] = useState<Dimensions>({
         length: selection.dimensions?.length || 8,
         width: selection.dimensions?.width || 4,
         depth: selection.dimensions?.depth || 1.5,
     });
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState<DimensionErrors>({});
 
-    const validate = (field: any, value: any) => {
-        const num = parseFloat(value);
-        const newErrors = { ...errors };
+    const validate = (field: DimensionField, value: string | number): boolean => {
+        const num = typeof value === 'number' ? value : parseFloat(value);
+        const newErrors: DimensionErrors = { ...errors };
 
         if (isNaN(num) || num <= 0) {
             newErrors[field] = 'Введите положительное число';
@@ -30,7 +56,7 @@ export function useDimensionsLogic(selection, updateSelection): any {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleChange = (field: any, value: any) => {
+    const handleChange = (field: DimensionField, value: number): void => {
         const newDimensions = { ...dimensions, [field]: value };
         setDimensions(newDimensions);
 
@@ -42,16 +68,17 @@ export function useDimensionsLogic(selection, updateSelection): any {
     const volume = dimensions.length * dimensions.width * dimensions.depth;
     const surfaceArea = dimensions.length * dimensions.width;
 
-    const presets = [
+    const presets: Preset[] = [
         { label: '6×3м', length: 6, width: 3, depth: 1.5 },
         { label: '8×4м', length: 8, width: 4, depth: 1.5 },
         { label: '10×5м', length: 10, width: 5, depth: 1.8 },
         { label: '12×6м', length: 12, width: 6, depth: 2 },
     ];
 
-    const applyPreset = (preset: any) => {
-        setDimensions(preset);
-        updateSelection('dimensions', preset);
+    const applyPreset = (preset: Preset): void => {
+        const dims: Dimensions = { length: preset.length, width: preset.width, depth: preset.depth };
+        setDimensions(dims);
+        updateSelection('dimensions', dims);
     };
 
     return {

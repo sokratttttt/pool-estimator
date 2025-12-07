@@ -2,21 +2,27 @@
 import { motion } from 'framer-motion';
 import { Activity } from 'lucide-react';
 
-interface FiltrationCalculatorProps {
-  turnoverTime?: any;
-  setTurnoverTime?: any;
-  turnoverOptions?: any;
-  volume?: any;
-  requiredFlow?: any;
+interface TurnoverOption {
+    value: number;
+    label: string;
+    desc: string;
 }
 
-export default function FiltrationCalculator({ 
+interface FiltrationCalculatorProps {
+    turnoverTime?: number;
+    setTurnoverTime?: (time: number) => void;
+    turnoverOptions?: TurnoverOption[];
+    volume?: number;
+    requiredFlow?: number;
+}
+
+export default function FiltrationCalculator({
     turnoverTime,
     setTurnoverTime,
     turnoverOptions,
     volume,
     requiredFlow
- }: FiltrationCalculatorProps) {
+}: FiltrationCalculatorProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -33,10 +39,10 @@ export default function FiltrationCalculator({
                         <div>
                             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-3">Время водообмена</label>
                             <div className="flex flex-wrap gap-2">
-                                {turnoverOptions.map((opt: any) => (
+                                {turnoverOptions?.map((opt: TurnoverOption) => (
                                     <button
                                         key={opt.value}
-                                        onClick={() => setTurnoverTime(opt.value)}
+                                        onClick={() => setTurnoverTime?.(opt.value)}
                                         className={`px-3 py-2 text-xs rounded-lg border transition-all ${turnoverTime === opt.value
                                             ? 'bg-cyan-500 text-white border-cyan-500 shadow-md'
                                             : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-cyan-300'
@@ -51,7 +57,7 @@ export default function FiltrationCalculator({
                         <div className="flex items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-blue-100 dark:border-slate-600 shadow-sm">
                             <div>
                                 <div className="text-xs text-slate-500 dark:text-slate-400">Объем бассейна</div>
-                                <div className="font-bold text-slate-900 dark:text-white text-lg">{volume.toFixed(1)} м³</div>
+                                <div className="font-bold text-slate-900 dark:text-white text-lg">{(volume || 0).toFixed(1)} м³</div>
                             </div>
                             <div className="h-10 w-px bg-slate-200 dark:bg-slate-600"></div>
                             <div>

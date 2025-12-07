@@ -9,8 +9,12 @@ import BowlHeader from './bowl/BowlHeader';
 import BowlFilters from './bowl/BowlFilters';
 import BowlGrid from './bowl/BowlGrid';
 import BowlList from './bowl/BowlList';
+import VirtualizedBowlGrid from './bowl/VirtualizedBowlGrid';
 
 import type { Bowl } from '@/types';
+
+// Порог для включения виртуализации
+const VIRTUALIZATION_THRESHOLD = 12;
 
 interface BowlStepProps {
     bowl?: Bowl;
@@ -43,9 +47,9 @@ export default function BowlStep({ }: BowlStepProps) {
 
     const handleSelect = (bowl: Bowl) => {
         const dims = getDimensions(bowl);
-        const depthValue = dims.depth ? parseFloat(dims.depth) : 1.5;
-        const length = dims.length ? parseFloat(dims.length) : 0;
-        const width = dims.width ? parseFloat(dims.width) : 0;
+        const depthValue = dims.depth ? parseFloat(String(dims.depth)) : 1.5;
+        const length = dims.length ? parseFloat(String(dims.length)) : 0;
+        const width = dims.width ? parseFloat(String(dims.width)) : 0;
         const volume = bowl.volume || (length * width * depthValue);
 
         updateSelection('bowl', bowl);
@@ -99,16 +103,27 @@ export default function BowlStep({ }: BowlStepProps) {
                 />
             ) : (
                 viewMode === 'grid' ? (
-                    <BowlGrid
-                        bowls={sortedBowls}
-                        onSelect={handleSelect}
-                        selectedId={selection.bowl?.id}
-                        getDimensions={getDimensions}
-                        getManufacturer={getManufacturer}
-                    />
+                    // Используем виртуализацию для больших каталогов
+                    sortedBowls.length > VIRTUALIZATION_THRESHOLD ? (
+                        <VirtualizedBowlGrid
+                            bowls={sortedBowls as unknown as import('@/types').Bowl[]}
+                            onSelect={handleSelect}
+                            selectedId={selection.bowl?.id}
+                            getDimensions={getDimensions}
+                            getManufacturer={getManufacturer}
+                        />
+                    ) : (
+                        <BowlGrid
+                            bowls={sortedBowls as unknown as import('@/types').Bowl[]}
+                            onSelect={handleSelect}
+                            selectedId={selection.bowl?.id}
+                            getDimensions={getDimensions}
+                            getManufacturer={getManufacturer}
+                        />
+                    )
                 ) : (
                     <BowlList
-                        bowls={sortedBowls}
+                        bowls={sortedBowls as unknown as import('@/types').Bowl[]}
                         onSelect={handleSelect}
                         selectedId={selection.bowl?.id}
                         getDimensions={getDimensions}

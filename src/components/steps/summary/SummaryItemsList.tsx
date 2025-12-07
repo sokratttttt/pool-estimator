@@ -3,7 +3,8 @@ import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Trash2, Copy, GripVertical } from 'lucide-react';
 import AppleCard from '../../apple/AppleCard';
-import { EditableCell, formatCurrency } from '@/components/editable/EditableCell';
+import { EditableCell } from '@/components/editable/EditableCell';
+import InlinePrice from '../../InlinePrice';
 import DraggableList from '../../DraggableList';
 
 interface EstimateItem {
@@ -131,7 +132,7 @@ export default function SummaryItemsList({
                                                 )}
                                             </div>
 
-                                            {/* Price */}
+                                            {/* Price - с инлайн-редактированием */}
                                             <div className="w-32 text-right">
                                                 {isEditing ? (
                                                     <EditableCell
@@ -141,9 +142,10 @@ export default function SummaryItemsList({
                                                         className="font-bold"
                                                     />
                                                 ) : (
-                                                    <p className="apple-body font-bold whitespace-nowrap">
-                                                        {formatCurrency(getItemPrice(item))}
-                                                    </p>
+                                                    <InlinePrice
+                                                        value={getItemPrice(item)}
+                                                        onChange={(newPrice) => handlePriceChange(item.id, String(newPrice))}
+                                                    />
                                                 )}
                                             </div>
 

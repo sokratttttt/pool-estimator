@@ -116,7 +116,7 @@ export default function Select({
                         "
                     >
                         <div className="p-1">
-                            {options.map((option: any) => {
+                            {options.map((option: SelectOption) => {
                                 const isSelected = option.value === value;
                                 return (
                                     <button

@@ -8,7 +8,7 @@
  * @param {string} phone - номер телефона в любом формате
  * @returns {string} - номер в формате 79852000041
  */
-export const formatPhoneForWhatsApp = (phone: any) => {
+export const formatPhoneForWhatsApp = (phone: string) => {
     if (!phone) return '';
 
     // Убираем все символы кроме цифр
@@ -34,13 +34,18 @@ export const formatPhoneForWhatsApp = (phone: any) => {
  * @param {Array} items - позиции сметы (для краткого описания)
  * @returns {string} - текст сообщения
  */
-export const generateWhatsAppMessage = (clientInfo: any, totalSum: any, items: any) => {
+export interface WhatsAppItem {
+    category?: string;
+    section?: string;
+}
+
+export const generateWhatsAppMessage = (clientInfo: { name?: string; managerName?: string; managerPhone?: string } | null, totalSum: number, items: WhatsAppItem[]): string => {
     const clientName = clientInfo?.name || 'Уважаемый клиент';
     const managerName = clientInfo?.managerName || 'Менеджер MOSPOOL';
     const managerPhone = clientInfo?.managerPhone || '+7 (985) 200-00-41';
 
     // Подсчитываем количество основных категорий
-    const categories = new Set(items.map(item => item.category || item.section || 'Прочее'));
+    const categories = new Set(items.map((item: WhatsAppItem) => item.category || item.section || 'Прочее'));
     const categoriesCount = categories.size;
 
     // Формируем текст
@@ -51,7 +56,7 @@ export const generateWhatsAppMessage = (clientInfo: any, totalSum: any, items: a
 📊 *Общая стоимость: ${totalSum.toLocaleString('ru-RU')} ₽*
 
 Смета включает ${items.length} позиций в ${categoriesCount} категориях:
-${Array.from(categories).slice(0, 5).map(cat => `• ${cat}`).join('\n')}
+${Array.from(categories).slice(0, 5).map((cat: string) => `• ${cat}`).join('\n')}
 
 PDF-файл с подробной сметой отправлю следующим сообщением.
 
@@ -76,7 +81,7 @@ www.mos-pool.ru`;
  * @param {Number} totalSum - итоговая сумма
  * @param {Array} items - позиции сметы
  */
-export const sendToWhatsApp = (phone: any, clientInfo: any, totalSum: any, items: any) => {
+export const sendToWhatsApp = (phone: string, clientInfo: { name?: string; managerName?: string; managerPhone?: string } | null, totalSum: number, items: WhatsAppItem[]) => {
     // Форматируем телефон
     const formattedPhone = formatPhoneForWhatsApp(phone);
 

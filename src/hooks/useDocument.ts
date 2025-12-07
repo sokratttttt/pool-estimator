@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
  * useTitle hook
  * Update document title
  */
-export function useTitle(title: string): any {
+export function useTitle(title: string): void {
     useEffect(() => {
         const prevTitle = document.title;
         document.title = title;
@@ -20,7 +20,7 @@ export function useTitle(title: string): any {
  * useFavicon hook
  * Update favicon dynamically
  */
-export function useFavicon(href: string): any {
+export function useFavicon(href: string): void {
     useEffect(() => {
         const link: HTMLLinkElement = document.querySelector("link[rel*='icon']") || document.createElement('link');
         link.type = 'image/x-icon';
@@ -34,7 +34,7 @@ export function useFavicon(href: string): any {
  * useMeta hook
  * Update meta tags
  */
-export function useMeta(name: string, content: string): any {
+export function useMeta(name: string, content: string): void {
     useEffect(() => {
         let meta: HTMLMetaElement | null = document.querySelector(`meta[name="${name}"]`);
 
@@ -52,8 +52,8 @@ export function useMeta(name: string, content: string): any {
  * useDocumentVisibility hook
  * Track document visibility
  */
-export function useDocumentVisibility(): any {
-    const [isVisible, setIsVisible] = useState(!document.hidden);
+export function useDocumentVisibility(): boolean {
+    const [isVisible, setIsVisible] = useState(typeof document !== 'undefined' ? !document.hidden : true);
 
     useEffect(() => {
         const handleVisibilityChange = () => {

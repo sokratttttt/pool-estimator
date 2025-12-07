@@ -14,20 +14,24 @@ import { motion } from 'framer-motion';
  * @param {string} props.className - Дополнительные CSS классы
  */
 interface EmptyStateProps {
-  icon?: any;
-  title?: any;
-  description?: any;
-  action?: any;
-  className?: string;
+    icon?: React.ReactNode;
+    title?: string;
+    description?: string;
+    action?: {
+        label: string;
+        onClick: () => void;
+        variant?: 'primary' | 'secondary';
+    };
+    className?: string;
 }
 
-export default function EmptyState({ 
+export default function EmptyState({
     icon,
     title,
     description,
     action,
     className = ''
- }: EmptyStateProps) {
+}: EmptyStateProps) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}

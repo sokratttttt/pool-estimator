@@ -2,7 +2,7 @@
 
 export const validators = {
     // Required field
-    required: (value: any) => {
+    required: (value: unknown) => {
         if (!value || (typeof value === 'string' && !value.trim())) {
             return 'Это поле обязательно';
         }
@@ -10,8 +10,8 @@ export const validators = {
     },
 
     // Email validation
-    email: (value: any) => {
-        if (!value) return null;
+    email: (value: unknown) => {
+        if (!value || typeof value !== 'string') return null;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) {
             return 'Некорректный email адрес';
@@ -20,8 +20,8 @@ export const validators = {
     },
 
     // Russian phone number validation
-    phone: (value: any) => {
-        if (!value) return null;
+    phone: (value: unknown) => {
+        if (!value || typeof value !== 'string') return null;
         // Remove all non-digits
         const digits = value.replace(/\D/g, '');
         // Russian phone: 10 or 11 digits (with or without country code)
@@ -35,7 +35,7 @@ export const validators = {
     },
 
     // Price validation (positive number)
-    price: (value: any) => {
+    price: (value: unknown) => {
         if (!value && value !== 0) return null;
         const num = Number(value);
         if (isNaN(num)) {
@@ -51,7 +51,7 @@ export const validators = {
     },
 
     // Quantity validation (positive integer)
-    quantity: (value: any) => {
+    quantity: (value: unknown) => {
         if (!value && value !== 0) return null;
         const num = Number(value);
         if (isNaN(num)) {
@@ -70,7 +70,8 @@ export const validators = {
     },
 
     // Min length
-    minLength: (min: any) => (value: any) => {
+    minLength: (min: number) => (value: unknown) => {
+        if (typeof value !== 'string' && !Array.isArray(value)) return null;
         if (!value) return null;
         if (value.length < min) {
             return `Минимум ${min} символов`;
@@ -79,7 +80,8 @@ export const validators = {
     },
 
     // Max length
-    maxLength: (max: any) => (value: any) => {
+    maxLength: (max: number) => (value: unknown) => {
+        if (typeof value !== 'string' && !Array.isArray(value)) return null;
         if (!value) return null;
         if (value.length > max) {
             return `Максимум ${max} символов`;
@@ -88,7 +90,7 @@ export const validators = {
     },
 
     // Number range
-    range: (min: any, max: any) => (value: any) => {
+    range: (min: number, max: number) => (value: unknown) => {
         if (!value && value !== 0) return null;
         const num = Number(value);
         if (isNaN(num)) {
@@ -101,10 +103,10 @@ export const validators = {
     },
 
     // URL validation
-    url: (value: any) => {
+    url: (value: unknown) => {
         if (!value) return null;
         try {
-            new URL(value);
+            new URL(String(value));
             return null;
         } catch {
             return 'Некорректный URL';
@@ -112,17 +114,19 @@ export const validators = {
     },
 
     // Pattern matching
-    pattern: (regex: any, message: any) => (value: any) => {
+    pattern: (regex: RegExp, message: string) => (value: unknown) => {
         if (!value) return null;
-        if (!regex.test(value)) {
+        if (!regex.test(String(value))) {
             return message || 'Некорректный формат';
         }
         return null;
     }
 };
 
+type ValidatorFn = (value: unknown) => string | null;
+
 // Combine multiple validators
-export const combineValidators = (...validatorFns) => (value: any) => {
+export const combineValidators = (...validatorFns: ValidatorFn[]) => (value: unknown): string | null => {
     for (const validator of validatorFns) {
         const error = validator(value);
         if (error) return error;
@@ -131,8 +135,8 @@ export const combineValidators = (...validatorFns) => (value: any) => {
 };
 
 // Validate entire form
-export const validateForm = (formData: any, validationRules: any) => {
-    const errors = {};
+export const validateForm = (formData: Record<string, unknown>, validationRules: Record<string, ValidatorFn[]>) => {
+    const errors: Record<string, string> = {};
     let isValid = true;
 
     Object.keys(validationRules).forEach(field => {
@@ -153,7 +157,7 @@ export const validateForm = (formData: any, validationRules: any) => {
 };
 
 // Format phone number for display
-export const formatPhone = (value: any) => {
+export const formatPhone = (value: string) => {
     if (!value) return '';
     const digits = value.replace(/\D/g, '');
 
@@ -166,7 +170,7 @@ export const formatPhone = (value: any) => {
 };
 
 // Sanitize input (remove dangerous characters)
-export const sanitizeInput = (value: any) => {
+export const sanitizeInput = (value: unknown) => {
     if (typeof value !== 'string') return value;
     return value
         .replace(/[<>]/g, '') // Remove < and >
@@ -174,8 +178,8 @@ export const sanitizeInput = (value: any) => {
 };
 
 // Validate and sanitize
-export const validateAndSanitize = (value: any, validatorFn: any) => {
-    const sanitized = sanitizeInput(value);
+export const validateAndSanitize = (value: string, validatorFn: (val: string) => string | null) => {
+    const sanitized = sanitizeInput(value) as string;
     const error = validatorFn ? validatorFn(sanitized) : null;
     return { value: sanitized, error };
 };

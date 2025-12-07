@@ -2,8 +2,8 @@ import AppleButton from '../apple/AppleButton';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface ConfiguratorFooterProps {
-    currentStepIndex?: any;
-    visibleSteps?: any;
+    currentStepIndex: number;
+    visibleSteps: string[];
     handleNext?: () => void;
     handleBack?: () => void;
     canGoNext?: boolean;
@@ -11,8 +11,8 @@ interface ConfiguratorFooterProps {
 }
 
 export default function ConfiguratorFooter({
-    currentStepIndex,
-    visibleSteps,
+    currentStepIndex = 0,
+    visibleSteps = [],
     handleNext,
     handleBack,
     canGoNext,
@@ -34,7 +34,7 @@ export default function ConfiguratorFooter({
 
                     {/* Progress Dots */}
                     <div className="hidden md:flex gap-2">
-                        {visibleSteps.map((step: any, idx: number) => (
+                        {visibleSteps.map((step: string, idx: number) => (
                             <div
                                 key={step}
                                 className={`h-1.5 rounded-full transition-all duration-500 ${idx === currentStepIndex ? 'bg-gradient-primary w-12 shadow-glow' :

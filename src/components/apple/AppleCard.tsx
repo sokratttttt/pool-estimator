@@ -1,21 +1,20 @@
-'use client';
-import { motion } from 'framer-motion';
-import { memo, useMemo } from 'react';
+import { motion, HTMLMotionProps } from 'framer-motion';
+import React, { useMemo } from 'react';
 
-interface AppleCardProps extends React.HTMLAttributes<HTMLDivElement> {
-    variant?: 'glass' | 'premium' | 'flat';
+interface AppleCardProps extends HTMLMotionProps<'div'> {
+    variant?: 'premium' | 'flat' | 'glass';
     hover?: boolean;
     children?: React.ReactNode;
 }
 
-const AppleCard = memo(function AppleCard({
-    children,
-    className = '',
+const AppleCard = ({
     variant = 'glass',
     hover = true,
     onClick,
+    className = '',
+    children,
     ...props
-}: AppleCardProps) {
+}: AppleCardProps) => {
     // ✨ Memoize variant styles - only recalculate when variant changes
     const variantStyles = useMemo(() => {
         if (variant === 'premium') {
@@ -50,12 +49,12 @@ const AppleCard = memo(function AppleCard({
             onClick={onClick}
             className={`rounded-xl p-6 transition-all duration-300 ${className}`}
             style={variantStyles}
-            {...(props as any)}
+            {...props}
         >
             {children}
         </motion.div>
     );
-});
+};
 
 AppleCard.displayName = 'AppleCard';
 

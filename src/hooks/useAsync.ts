@@ -1,22 +1,38 @@
-// TODO: Add proper TypeScript types for state
 import { useState, useEffect, useCallback, useRef } from 'react';
+
+type AsyncStatus = 'idle' | 'pending' | 'success' | 'error';
+
+interface UseAsyncResult<T> {
+    execute: (...params: unknown[]) => Promise<T>;
+    reset: () => void;
+    loading: boolean;
+    data: T | null;
+    error: Error | null;
+    status: AsyncStatus;
+    isIdle: boolean;
+    isLoading: boolean;
+    isSuccess: boolean;
+    isError: boolean;
+}
 
 /**
  * Hook for handling async operations with loading, error, and data states
- * 
- * @param {Function} asyncFunction - Async function to execute
- * @param {boolean} immediate - Execute immediately on mount
- * @returns {Object} - { execute, loading, data, error, reset }
+ * @param asyncFunction - Async function to execute
+ * @param immediate - Execute immediately on mount
+ * @returns { execute, loading, data, error, reset }
  */
-export function useAsync(asyncFunction, immediate = false): any {
-    const [status, setStatus] = useState('idle'); // idle | pending | success | error
-    const [data, setData] = useState(null);
-    const [error, setError] = useState<any | null>(null);
+export function useAsync<T>(
+    asyncFunction: (...args: unknown[]) => Promise<T>,
+    immediate = false
+): UseAsyncResult<T> {
+    const [status, setStatus] = useState<AsyncStatus>('idle');
+    const [data, setData] = useState<T | null>(null);
+    const [error, setError] = useState<Error | null>(null);
     const mountedRef = useRef(true);
 
     // Execute the async function
     const execute = useCallback(
-        async (...params) => {
+        async (...params: unknown[]): Promise<T> => {
             setStatus('pending');
             setData(null);
             setError(null);
@@ -31,12 +47,12 @@ export function useAsync(asyncFunction, immediate = false): any {
                 }
 
                 return response;
-            } catch (error) {
+            } catch (err) {
                 if (mountedRef.current) {
-                    setError(error);
+                    setError(err instanceof Error ? err : new Error(String(err)));
                     setStatus('error');
                 }
-                throw error;
+                throw err;
             }
         },
         [asyncFunction]

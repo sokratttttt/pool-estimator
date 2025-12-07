@@ -1,9 +1,12 @@
 'use client';
 import { motion } from 'framer-motion';
 import { memo, useMemo } from 'react';
-import { useRipple } from '../effects/Ripple';
+import { useRipple, type RippleItem } from '../effects/Ripple';
 
-interface AppleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+import type { HTMLMotionProps } from 'framer-motion';
+
+interface AppleButtonProps extends Omit<HTMLMotionProps<"button">, "ref" | "children"> {
+    children?: React.ReactNode;
     variant?: 'primary' | 'secondary' | 'ghost' | 'gold';
     size?: 'sm' | 'md' | 'lg';
     icon?: React.ReactNode;
@@ -78,7 +81,7 @@ const AppleButton = memo(function AppleButton({
             whileHover={{ scale: disabled || loading ? 1 : 1.02, boxShadow: disabled || loading ? undefined : '0 8px 24px rgba(0, 217, 255, 0.3)' }}
             whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
             onClick={onClick}
-            onMouseDown={addRipple as any}
+            onMouseDown={(e: React.MouseEvent<HTMLButtonElement>) => addRipple({ event: e })}
             disabled={disabled || loading}
             type={type}
             aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
@@ -95,7 +98,7 @@ const AppleButton = memo(function AppleButton({
                 ${className}
             `}
             style={variantStyles}
-            {...(props as any)}
+            {...props}
         >
             {loading ? (
                 <div
@@ -111,7 +114,7 @@ const AppleButton = memo(function AppleButton({
 
                     {/* Ripples */}
                     <div className="absolute inset-0 pointer-events-none z-0">
-                        {ripples.map((ripple: any) => (
+                        {ripples.map((ripple: RippleItem) => (
                             <motion.span
                                 key={ripple.key}
                                 className="absolute rounded-full"

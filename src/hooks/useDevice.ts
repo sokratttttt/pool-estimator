@@ -52,7 +52,7 @@ export const useDevice = () => {
  * Хук для определения, является ли текущее устройство touch-устройством
  * @returns {boolean}
  */
-export const useIsTouchDevice = () => {
+export const useIsTouchDevice = (): boolean => {
     const [isTouch, setIsTouch] = useState(false);
 
     useEffect(() => {
@@ -60,7 +60,7 @@ export const useIsTouchDevice = () => {
             const hasTouch =
                 'ontouchstart' in window ||
                 navigator.maxTouchPoints > 0 ||
-                (navigator as any).msMaxTouchPoints > 0;
+                ('msMaxTouchPoints' in navigator && (navigator as any).msMaxTouchPoints > 0);
             setIsTouch(hasTouch);
         };
 

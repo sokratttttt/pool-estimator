@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react';
  * useClickAway hook
  * Detect clicks outside of element
  */
-export function useClickAway(callback: (event: MouseEvent | TouchEvent) => void): any {
-    const ref = useRef<HTMLElement | null>(null);
+export function useClickAway<T extends HTMLElement = HTMLElement>(callback: (event: MouseEvent | TouchEvent) => void): React.RefObject<T | null> {
+    const ref = useRef<T>(null);
 
     useEffect(() => {
         const handleClick = (event: MouseEvent | TouchEvent) => {
@@ -32,8 +32,8 @@ export const useOnClickOutside = useClickAway;
  * useEventListener hook
  * Add event listener with cleanup
  */
-export function useEventListener(eventName: string, handler: (event: Event) => void, element: any = window): any {
-    const savedHandler = useRef<any>(null);
+export function useEventListener(eventName: string, handler: (event: Event) => void, element: EventTarget | null = typeof window !== 'undefined' ? window : null): void {
+    const savedHandler = useRef<(event: Event) => void | undefined>(undefined);
 
     useEffect(() => {
         savedHandler.current = handler;
@@ -43,7 +43,11 @@ export function useEventListener(eventName: string, handler: (event: Event) => v
         const isSupported = element && element.addEventListener;
         if (!isSupported) return;
 
-        const eventListener = (event: Event) => savedHandler.current(event);
+        const eventListener = (event: Event) => {
+            if (savedHandler.current) {
+                savedHandler.current(event);
+            }
+        };
         element.addEventListener(eventName, eventListener);
 
         return () => {
@@ -56,7 +60,7 @@ export function useEventListener(eventName: string, handler: (event: Event) => v
  * useScript hook
  * Dynamically load external script
  */
-export function useScript(src: string): any {
+export function useScript(src: string): string {
     const [status, setStatus] = useState(src ? 'loading' : 'idle');
 
     useEffect(() => {
@@ -109,7 +113,7 @@ export function useScript(src: string): any {
  * useIdle hook
  * Detect user inactivity
  */
-export function useIdle(timeout = 60000): any {
+export function useIdle(timeout = 60000): boolean {
     const [isIdle, setIsIdle] = useState(false);
 
     useEffect(() => {
@@ -144,7 +148,7 @@ export function useIdle(timeout = 60000): any {
  * useNetworkStatus hook
  * Monitor online/offline status
  */
-export function useNetworkStatus(): any {
+export function useNetworkStatus(): boolean {
     const [isOnline, setIsOnline] = useState(
         typeof navigator !== 'undefined' ? navigator.onLine : true
     );
@@ -155,12 +159,34 @@ export function useNetworkStatus(): any {
     return isOnline;
 }
 
+interface BatteryManager extends EventTarget {
+    charging: boolean;
+    chargingTime: number;
+    dischargingTime: number;
+    level: number;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void;
+    removeEventListener(type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions): void;
+}
+
+interface NavigatorWithBattery extends Navigator {
+    getBattery: () => Promise<BatteryManager>;
+}
+
+interface BatteryState {
+    supported: boolean;
+    loading: boolean;
+    level: number | null;
+    charging: boolean | null;
+    chargingTime: number | null;
+    dischargingTime: number | null;
+}
+
 /**
  * useBattery hook
  * Get battery status
  */
-export function useBattery(): any {
-    const [battery, setBattery] = useState<any>({
+export function useBattery(): BatteryState {
+    const [battery, setBattery] = useState<BatteryState>({
         supported: false,
         loading: true,
         level: null,
@@ -170,8 +196,9 @@ export function useBattery(): any {
     });
 
     useEffect(() => {
-        if (!(navigator as any).getBattery) {
-            setBattery((state: any) => ({
+        const nav = navigator as unknown as NavigatorWithBattery;
+        if (!nav.getBattery) {
+            setBattery(state => ({
                 ...state,
                 supported: false,
                 loading: false
@@ -179,30 +206,30 @@ export function useBattery(): any {
             return;
         }
 
-        (navigator as any).getBattery().then((battery: any) => {
+        nav.getBattery().then((batteryManager: BatteryManager) => {
             const updateBattery = () => {
                 setBattery({
                     supported: true,
                     loading: false,
-                    level: battery.level,
-                    charging: battery.charging,
-                    chargingTime: battery.chargingTime,
-                    dischargingTime: battery.dischargingTime
+                    level: batteryManager.level,
+                    charging: batteryManager.charging,
+                    chargingTime: batteryManager.chargingTime,
+                    dischargingTime: batteryManager.dischargingTime
                 });
             };
 
             updateBattery();
 
-            battery.addEventListener('levelchange', updateBattery);
-            battery.addEventListener('chargingchange', updateBattery);
-            battery.addEventListener('chargingtimechange', updateBattery);
-            battery.addEventListener('dischargingtimechange', updateBattery);
+            batteryManager.addEventListener('levelchange', updateBattery);
+            batteryManager.addEventListener('chargingchange', updateBattery);
+            batteryManager.addEventListener('chargingtimechange', updateBattery);
+            batteryManager.addEventListener('dischargingtimechange', updateBattery);
 
             return () => {
-                battery.removeEventListener('levelchange', updateBattery);
-                battery.removeEventListener('chargingchange', updateBattery);
-                battery.removeEventListener('chargingtimechange', updateBattery);
-                battery.removeEventListener('dischargingtimechange', updateBattery);
+                batteryManager.removeEventListener('levelchange', updateBattery);
+                batteryManager.removeEventListener('chargingchange', updateBattery);
+                batteryManager.removeEventListener('chargingtimechange', updateBattery);
+                batteryManager.removeEventListener('dischargingtimechange', updateBattery);
             };
         });
     }, []);

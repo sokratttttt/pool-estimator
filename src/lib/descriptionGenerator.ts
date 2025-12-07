@@ -1,14 +1,25 @@
 // Smart Description Generator
 // Template-based system for generating compelling sales descriptions
 
-const POOL_SIZE_CATEGORIES = {
+type SizeCategory = 'intimate' | 'family' | 'sport' | 'luxury';
+type TemplateKey = 'family_premium' | 'family_standard' | 'sport_premium' | 'luxury_any';
+type FeatureKey = 'heating' | 'lighting' | 'massage' | 'automation' | 'filtration';
+type SeasonKey = 'spring' | 'summer' | 'autumn' | 'winter';
+
+interface SizeCategoryConfig {
+    maxArea: number;
+    label: string;
+    adjective: string;
+}
+
+const POOL_SIZE_CATEGORIES: Record<SizeCategory, SizeCategoryConfig> = {
     intimate: { maxArea: 15, label: 'уютный', adjective: 'компактный' },
     family: { maxArea: 35, label: 'семейный', adjective: 'просторный' },
     sport: { maxArea: 60, label: 'спортивный', adjective: 'профессиональный' },
     luxury: { maxArea: Infinity, label: 'роскошный', adjective: 'впечатляющий' }
 };
 
-const TEMPLATES = {
+const TEMPLATES: Record<TemplateKey, string> = {
     family_premium: `{adjective} {label} бассейн площадью {area}м² — это идеальное решение для вашей семьи. {features_intro}
 
 ✨ Что делает этот проект особенным:
@@ -58,7 +69,12 @@ const TEMPLATES = {
 {closing}`
 };
 
-const FEATURE_DESCRIPTIONS = {
+interface FeatureDescription {
+    short: string;
+    detail: string;
+}
+
+const FEATURE_DESCRIPTIONS: Record<FeatureKey, FeatureDescription> = {
     heating: {
         short: 'Современная система подогрева позволит наслаждаться плаванием круглый год.',
         detail: 'Энергоэффективная система подогрева поддерживает комфортную температуру воды 24-30°C в любое время года.'
@@ -81,21 +97,21 @@ const FEATURE_DESCRIPTIONS = {
     }
 };
 
-const SEASON_BENEFITS = {
+const SEASON_BENEFITS: Record<SeasonKey, string> = {
     spring: 'Весна — идеальное время для начала строительства. Бассейн будет готов к лету!',
     summer: 'Летний сезон в разгаре — самое время задуматься о собственном бассейне для следующего года.',
     autumn: 'Осень — отличное время для планирования. Избежите весенней загруженности подрядчиков.',
     winter: 'Зимнее время — возможность спокойно спроектировать и подготовиться к весеннему старту работ.'
 };
 
-const POOL_USE_CASES = {
+const POOL_USE_CASES: Record<SizeCategory, string> = {
     intimate: 'романтичных вечеров и утренних заплывов',
     family: 'семейного отдыха, детских игр и взрослого плавания',
     sport: 'серьезных тренировок и поддержания спортивной формы',
     luxury: 'приема гостей, вечеринок у бассейна и ежедневного релакса'
 };
 
-interface EstimateData {
+export interface EstimateData {
     length?: number;
     width?: number;
     depth?: number;
@@ -125,7 +141,7 @@ interface DescriptionConfig {
 /**
  * Generate compelling description based on estimate data
  */
-export function generatePoolDescription(estimate: EstimateData): any {
+export function generatePoolDescription(estimate: EstimateData): string {
     const config = analyzeEstimate(estimate);
     const template = selectTemplate(config);
 
@@ -152,8 +168,8 @@ function analyzeEstimate(estimate: EstimateData) {
         features,
         season,
         total: estimate.total,
-        poolUse: POOL_USE_CASES[sizeCategory],
-        ...POOL_SIZE_CATEGORIES[sizeCategory]
+        poolUse: POOL_USE_CASES[sizeCategory as SizeCategory],
+        ...POOL_SIZE_CATEGORIES[sizeCategory as SizeCategory]
     };
 }
 
@@ -196,11 +212,11 @@ function getCurrentSeason() {
     return 'winter';
 }
 
-function selectTemplate(config: DescriptionConfig) {
-    const key = `${config.sizeCategory}_${config.segment}`;
+function selectTemplate(config: DescriptionConfig): string {
+    const key = `${config.sizeCategory}_${config.segment}` as TemplateKey;
 
     // Check for exact match
-    if (TEMPLATES[key]) return TEMPLATES[key];
+    if (key in TEMPLATES) return TEMPLATES[key];
 
     // Fallback templates
     if (config.segment === 'luxury') return TEMPLATES.luxury_any;
@@ -228,7 +244,10 @@ function fillTemplate(template: string, config: DescriptionConfig) {
 
     // Features list
     const featuresList = config.features
-        .map(f => `• ${FEATURE_DESCRIPTIONS[f]?.detail || FEATURE_DESCRIPTIONS[f]?.short}`)
+        .map((f: string) => {
+            const key = f as FeatureKey;
+            return `• ${FEATURE_DESCRIPTIONS[key]?.detail || FEATURE_DESCRIPTIONS[key]?.short}`;
+        })
         .join('\n');
     description = description.replace(/{features_list}/g, featuresList || '• Качественная система фильтрации\n• Надежное оборудование');
 
@@ -239,7 +258,7 @@ function fillTemplate(template: string, config: DescriptionConfig) {
         config.features.includes('lighting') ? FEATURE_DESCRIPTIONS.lighting.short : '');
 
     // Season benefit
-    description = description.replace(/{season_benefit}/g, SEASON_BENEFITS[config.season]);
+    description = description.replace(/{season_benefit}/g, SEASON_BENEFITS[config.season as SeasonKey]);
 
     // Closing
     const closing = config.total
@@ -253,22 +272,25 @@ function fillTemplate(template: string, config: DescriptionConfig) {
 /**
  * Generate short version for WhatsApp/SMS
  */
-export function generateShortDescription(estimate: EstimateData): any {
+export function generateShortDescription(estimate: EstimateData): string {
     const config = analyzeEstimate(estimate);
 
     const featuresText = config.features.length > 0
-        ? config.features.map(f => FEATURE_DESCRIPTIONS[f].short).join(' ')
+        ? config.features.map((f: string) => FEATURE_DESCRIPTIONS[f as FeatureKey].short).join(' ')
         : '';
 
     return `🏊 ${config.adjective} ${config.label} бассейн ${config.size}
 ${featuresText}
-💰 ${(config.total / 1000000).toFixed(1)} млн ₽`.trim();
+💰 ${((config.total || 0) / 1000000).toFixed(1)} млн ₽`.trim();
 }
 
 /**
  * Get description variations for A/B testing
  */
-export function generateVariations(estimate: EstimateData): any {
+/**
+ * Get description variations for A/B testing
+ */
+export function generateVariations(estimate: EstimateData): Record<string, string> {
     return {
         formal: generatePoolDescription(estimate),
         casual: generateCasualDescription(estimate),
@@ -277,20 +299,21 @@ export function generateVariations(estimate: EstimateData): any {
     };
 }
 
-function generateCasualDescription(estimate: EstimateData) {
+function generateCasualDescription(estimate: EstimateData): string {
     const config = analyzeEstimate(estimate);
+    const total = config.total || 0;
     return `Представьте: ${config.label} бассейн ${config.size} прямо у вас на участке! 🏊‍♂️
 
-${config.features.length > 0 ? 'Со всеми фишками:\n' + config.features.map(f => `✓ ${FEATURE_DESCRIPTIONS[f].short}`).join('\n') : ''}
+${config.features.length > 0 ? 'Со всеми фишками:\n' + config.features.map((f: string) => `✓ ${FEATURE_DESCRIPTIONS[f as FeatureKey].short}`).join('\n') : ''}
 
-${SEASON_BENEFITS[config.season]}
+${SEASON_BENEFITS[config.season as SeasonKey]}
 
-Стоимость: ${(config.total / 1000000).toFixed(1)} млн ₽
+Стоимость: ${(total / 1000000).toFixed(1)} млн ₽
 
 Хотите так же? Давайте обсудим! 😊`;
 }
 
-function generateTechnicalDescription(estimate: EstimateData) {
+function generateTechnicalDescription(estimate: EstimateData): string {
     const config = analyzeEstimate(estimate);
     return `Технические характеристики бассейна:
 
@@ -299,7 +322,7 @@ function generateTechnicalDescription(estimate: EstimateData) {
 Категория: ${config.label}
 
 Оборудование:
-${config.features.map(f => `- ${FEATURE_DESCRIPTIONS[f].detail}`).join('\n')}
+${config.features.map((f: string) => `- ${FEATURE_DESCRIPTIONS[f as FeatureKey].detail}`).join('\n')}
 
 Стоимость под ключ: ${config.total?.toLocaleString('ru-RU')} ₽
 

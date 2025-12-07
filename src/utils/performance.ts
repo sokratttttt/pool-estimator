@@ -3,14 +3,16 @@
  * Optimization and lazy loading helpers
  */
 
+type AnyFunction = (...args: unknown[]) => unknown;
+
 /**
  * Debounce function
  */
-export const debounce = (func: any, wait: any) => {
-    let timeout;
+export const debounce = <T extends AnyFunction>(func: T, wait: number): ((...args: Parameters<T>) => void) => {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
 
-    return function executedFunction(...args) {
-        const later = () => {
+    return function executedFunction(...args: Parameters<T>): void {
+        const later = (): void => {
             clearTimeout(timeout);
             func(...args);
         };
@@ -23,10 +25,10 @@ export const debounce = (func: any, wait: any) => {
 /**
  * Throttle function
  */
-export const throttle = (func: any, limit: any) => {
-    let inThrottle;
+export const throttle = <T extends AnyFunction>(func: T, limit: number): ((...args: Parameters<T>) => void) => {
+    let inThrottle: boolean = false;
 
-    return function executedFunction(...args) {
+    return function executedFunction(...args: Parameters<T>): void {
         if (!inThrottle) {
             func(...args);
             inThrottle = true;
@@ -38,17 +40,17 @@ export const throttle = (func: any, limit: any) => {
 /**
  * Memoize function results
  */
-export const memoize = (func: any) => {
-    const cache = new Map();
+export const memoize = <T extends AnyFunction>(func: T): ((...args: Parameters<T>) => ReturnType<T>) => {
+    const cache = new Map<string, ReturnType<T>>();
 
-    return (...args) => {
+    return (...args: Parameters<T>): ReturnType<T> => {
         const key = JSON.stringify(args);
 
         if (cache.has(key)) {
-            return cache.get(key);
+            return cache.get(key) as ReturnType<T>;
         }
 
-        const result = func(...args);
+        const result = func(...args) as ReturnType<T>;
         cache.set(key, result);
         return result;
     };
@@ -57,10 +59,10 @@ export const memoize = (func: any) => {
 /**
  * Lazy load image
  */
-export const lazyLoadImage = (img: any, src: any) => {
+export const lazyLoadImage = (img: HTMLImageElement, src: string): void => {
     if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries: any) => {
-            entries.forEach(entry => {
+        const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+            entries.forEach((entry: IntersectionObserverEntry) => {
                 if (entry.isIntersecting) {
                     img.src = src;
                     observer.unobserve(img);
@@ -78,10 +80,10 @@ export const lazyLoadImage = (img: any, src: any) => {
 /**
  * Preload images
  */
-export const preloadImages = (urls: any) => {
+export const preloadImages = (urls: string[]): Promise<string[]> => {
     return Promise.all(
-        urls.map(url => {
-            return new Promise((resolve: any, reject: any) => {
+        urls.map((url: string) => {
+            return new Promise<string>((resolve, reject) => {
                 const img = new Image();
                 img.onload = () => resolve(url);
                 img.onerror = reject;
@@ -94,27 +96,27 @@ export const preloadImages = (urls: any) => {
 /**
  * Request idle callback wrapper
  */
-export const runWhenIdle = (callback: any) => {
+export const runWhenIdle = (callback: IdleRequestCallback): number | ReturnType<typeof setTimeout> => {
     if ('requestIdleCallback' in window) {
         return requestIdleCallback(callback);
     }
 
-    return setTimeout(callback, 1);
+    return setTimeout(callback as () => void, 1);
 };
 
 /**
  * Batch DOM updates
  */
-export const batchDOMUpdates = (updates: any) => {
+export const batchDOMUpdates = (updates: Array<() => void>): void => {
     requestAnimationFrame(() => {
-        updates.forEach(update => update());
+        updates.forEach((update: () => void) => update());
     });
 };
 
 /**
  * Measure performance
  */
-export const measurePerformance = (name: any, fn: any) => {
+export const measurePerformance = <T>(name: string, fn: () => T): T => {
     const start = performance.now();
     const result = fn();
     const end = performance.now();
@@ -127,8 +129,12 @@ export const measurePerformance = (name: any, fn: any) => {
 /**
  * Create virtual scroll helper
  */
-export const createVirtualScroll = (totalItems: any, itemHeight: any, containerHeight: any) => {
-    return (scrollTop: any) => {
+export const createVirtualScroll = (
+    totalItems: number,
+    itemHeight: number,
+    containerHeight: number
+): ((scrollTop: number) => { startIndex: number; endIndex: number; offsetY: number }) => {
+    return (scrollTop: number) => {
         const startIndex = Math.floor(scrollTop / itemHeight);
         const endIndex = Math.ceil((scrollTop + containerHeight) / itemHeight);
 
@@ -143,13 +149,13 @@ export const createVirtualScroll = (totalItems: any, itemHeight: any, containerH
 /**
  * Request Animation Frame helper
  */
-export const raf = (callback: any) => {
+export const raf = (callback: FrameRequestCallback): number => {
     return requestAnimationFrame(callback);
 };
 
 /**
  * Cancel Animation Frame helper
  */
-export const caf = (id: number) => {
-    return cancelAnimationFrame(id);
+export const caf = (id: number): void => {
+    cancelAnimationFrame(id);
 };

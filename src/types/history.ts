@@ -12,6 +12,28 @@ export type HistoryActionType =
     | 'backup_created'
     | 'restore_performed';
 
+import { ClientInfo, ProjectData } from './index';
+
+export interface HistoryEstimate {
+    id: string;
+    created_at: string;
+    updated_at?: string;
+    createdAt?: string; // legacy
+    updatedAt?: string; // legacy
+    name: string;
+    description?: string;
+    status: 'draft' | 'in_progress' | 'completed' | 'archived' | string;
+    total: number;
+    user_id?: string;
+    author?: string;
+    selection?: Record<string, unknown>;
+    items?: unknown[];
+    client_info?: ClientInfo;
+    clientInfo?: ClientInfo; // legacy compatibility
+    project_data?: ProjectData;
+    [key: string]: unknown;
+}
+
 export interface HistoryAction<T = unknown> {
     type: HistoryActionType;
     entityId: string;
@@ -67,9 +89,16 @@ export interface TimelineData {
     groups: Record<string, HistoryEntry[]>;
 }
 
+export interface DiffItem {
+    path: string[];
+    lhs: unknown;
+    rhs: unknown;
+    kind: 'N' | 'D' | 'E' | 'A';
+}
+
 export interface DifferenceReport {
     // Define structure based on usage or mock it for now
-    diffs: any[];
+    diffs: DiffItem[];
     summary: string;
 }
 
@@ -171,11 +200,11 @@ export interface HistoryContextType {
     compressHistory: () => Promise<CompressionResult>;
 
     // Legacy support methods (from original JS file)
-    estimates: any[];
-    saveEstimate: (name: string, selection: any, items: any, total: number) => string;
-    updateEstimate: (id: string, updates: any) => void;
+    estimates: HistoryEstimate[];
+    saveEstimate: (name: string, selection: unknown, items: unknown, total: number) => string;
+    updateEstimate: (id: string, updates: Partial<HistoryEstimate>) => void;
     deleteEstimate: (id: string) => Promise<void>;
-    getEstimate: (id: string) => any;
+    getEstimate: (id: string) => HistoryEstimate | undefined;
     duplicateEstimate: (id: string) => string | null;
 
     // Events (optional)

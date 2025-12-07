@@ -4,13 +4,7 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-interface UserProfile {
-    id: string;
-    full_name: string | null;
-    email: string;
-    avatar_url: string | null;
-}
+import type { UserProfile } from '@/types/chat';
 
 interface UserSelectorProps {
     isOpen?: boolean;

@@ -15,6 +15,7 @@ import type {
     ForecastStatus,
     RequestType as RequestTypeEnum
 } from '@/types/request';
+import type { RequestData } from '@/components/requests/RequestForm';
 
 interface Filters {
     status: RequestStatus | '';
@@ -82,8 +83,8 @@ export default function RequestsPage() {
         fetchRequests();
     }, [fetchRequests]);
 
-    const handleEdit = useCallback((request: Request) => {
-        setEditingRequest(request);
+    const handleEdit = useCallback((request: RequestData) => {
+        setEditingRequest(request as unknown as Request);
         setShowForm(true);
     }, []);
 
@@ -93,17 +94,17 @@ export default function RequestsPage() {
         }
     }, [deleteRequest]);
 
-    const handleSave = useCallback(async (data: Request) => {
+    const handleSave = useCallback(async (data: RequestData) => {
         if (editingRequest) {
-            await updateRequest(editingRequest.id, data);
+            await updateRequest(editingRequest.id, data as unknown as Request);
         } else {
-            await createRequest(data);
+            await createRequest(data as unknown as Request);
         }
         setShowForm(false);
         setEditingRequest(null);
     }, [editingRequest, updateRequest, createRequest]);
 
-    const handleCreateEstimate = useCallback((_request: Request) => {
+    const handleCreateEstimate = useCallback((_request: RequestData) => {
         // Navigate to calculator with pre-filled data
         // This is a placeholder - implement based on your routing
     }, []);
@@ -297,7 +298,7 @@ export default function RequestsPage() {
                 transition={{ delay: 0.2 }}
             >
                 <RequestsTable
-                    requests={requests}
+                    requests={requests as unknown as RequestData[]}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     onCreateEstimate={handleCreateEstimate}
@@ -309,7 +310,7 @@ export default function RequestsPage() {
             <AnimatePresence>
                 {showForm && (
                     <RequestForm
-                        request={editingRequest}
+                        request={editingRequest as unknown as RequestData | undefined}
                         onSave={handleSave}
                         onClose={handleFormClose}
                         loading={loading}

@@ -35,23 +35,25 @@ const FORECAST_STATUSES: Record<string, { label: string; color: string }> = {
     neutral: { label: 'Нейтральная', color: 'bg-gray-500' }
 };
 
+import { RequestData } from './RequestForm';
+
 interface RequestsTableProps {
-    requests?: any[];
-    onEdit?: (request: any) => void;
+    requests?: RequestData[];
+    onEdit?: (request: RequestData) => void;
     onDelete?: (id: string) => void;
-    onCreateEstimate?: (request: any) => void;
+    onCreateEstimate?: (request: RequestData) => void;
     loading?: boolean;
 }
 
 export default function RequestsTable({ requests = [], onEdit, onDelete, onCreateEstimate, loading }: RequestsTableProps) {
-    const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
+    const [sortConfig, setSortConfig] = useState<{ key: keyof RequestData; direction: 'asc' | 'desc' }>({ key: 'created_at', direction: 'desc' });
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     // Sorting logic
     const sortedRequests = useMemo(() => {
         if (!requests) return [];
 
-        return [...requests].sort((a: any, b: any) => {
+        return [...requests].sort((a: RequestData, b: RequestData) => {
             const aVal = a[sortConfig.key];
             const bVal = b[sortConfig.key];
 
@@ -59,19 +61,28 @@ export default function RequestsTable({ requests = [], onEdit, onDelete, onCreat
             if (aVal == null) return 1;
             if (bVal == null) return -1;
 
-            const comparison = aVal > bVal ? 1 : -1;
+            if (typeof aVal === 'string' && typeof bVal === 'string') {
+                const comparison = aVal.localeCompare(bVal);
+                return sortConfig.direction === 'asc' ? comparison : -comparison;
+            }
+
+            if (typeof aVal === 'number' && typeof bVal === 'number') {
+                return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
+            }
+
+            const comparison = String(aVal).localeCompare(String(bVal));
             return sortConfig.direction === 'asc' ? comparison : -comparison;
         });
     }, [requests, sortConfig]);
 
-    const handleSort = (key: string) => {
+    const handleSort = (key: keyof RequestData) => {
         setSortConfig(prev => ({
             key,
             direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
         }));
     };
 
-    const SortIcon = ({ columnKey }: { columnKey: string }) => {
+    const SortIcon = ({ columnKey }: { columnKey: keyof RequestData }) => {
         if (sortConfig.key !== columnKey) return null;
         return sortConfig.direction === 'asc' ?
             <ChevronUp size={16} /> : <ChevronDown size={16} />;
@@ -85,7 +96,7 @@ export default function RequestsTable({ requests = [], onEdit, onDelete, onCreat
 
     const toggleSelectAll = () => {
         setSelectedIds(prev =>
-            prev.length === requests.length ? [] : requests.map(r => r.id)
+            prev.length === requests.length ? [] : requests.map(r => r.id!)
         );
     };
 
@@ -198,7 +209,7 @@ export default function RequestsTable({ requests = [], onEdit, onDelete, onCreat
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedRequests.map((request: any, index: number) => (
+                        {sortedRequests.map((request: RequestData, index: number) => (
                             <motion.tr
                                 key={request.id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -209,8 +220,8 @@ export default function RequestsTable({ requests = [], onEdit, onDelete, onCreat
                                 <td className="px-4 py-4">
                                     <input
                                         type="checkbox"
-                                        checked={selectedIds.includes(request.id)}
-                                        onChange={() => toggleSelection(request.id)}
+                                        checked={request.id ? selectedIds.includes(request.id) : false}
+                                        onChange={() => request.id && toggleSelection(request.id)}
                                         className="rounded"
                                     />
                                 </td>
@@ -315,9 +326,9 @@ export default function RequestsTable({ requests = [], onEdit, onDelete, onCreat
                                                 <Edit2 size={18} />
                                             </button>
                                         )}
-                                        {onDelete && (
+                                        {onDelete && request.id && (
                                             <button
-                                                onClick={() => onDelete(request.id)}
+                                                onClick={() => onDelete(request.id!)}
                                                 className="p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition-colors"
                                                 title="Удалить"
                                             >

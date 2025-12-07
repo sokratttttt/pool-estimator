@@ -2,9 +2,19 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface ContextMenuItem {
+    label?: string;
+    icon?: React.ReactNode;
+    action?: () => void;
+    disabled?: boolean;
+    danger?: boolean;
+    shortcut?: string;
+    separator?: boolean;
+}
+
 interface ContextMenuProps {
     children: React.ReactNode;
-    items: any[];
+    items: ContextMenuItem[];
     onClose?: () => void;
 }
 
@@ -57,7 +67,7 @@ export default function ContextMenu({ children, items, onClose }: ContextMenuPro
         };
     }, [isOpen, onClose]);
 
-    const handleItemClick = (action: any) => {
+    const handleItemClick = (action?: () => void) => {
         if (action) action();
         setIsOpen(false);
         if (onClose) onClose();
@@ -85,7 +95,7 @@ export default function ContextMenu({ children, items, onClose }: ContextMenuPro
                         }}
                     >
                         <div className="py-2">
-                            {items.map((item: any, index: number) => (
+                            {items.map((item: ContextMenuItem, index: number) => (
                                 item.separator ? (
                                     <div key={index} className="h-px bg-apple-border my-2" />
                                 ) : (

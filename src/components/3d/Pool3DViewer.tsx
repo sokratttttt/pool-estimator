@@ -8,10 +8,12 @@ import Lighting from './Lighting';
 import Equipment3D from './Equipment3D';
 import ScreenshotHelper from './ScreenshotHelper';
 
+type LightingPreset = 'day' | 'sunset' | 'night';
+type PoolShapeType = 'rectangular' | 'oval';
+type PoolMaterialType = 'concrete' | 'composite' | 'liner';
+
 /**
  * Pool3DViewer - Main 3D visualization component
- * @param {Object} poolData - Pool configuration data
- * @param {string} lighting - Lighting preset: 'day' | 'sunset' | 'night'
  */
 interface Pool3DViewerProps {
     poolData?: {
@@ -24,8 +26,12 @@ interface Pool3DViewerProps {
     lighting?: string;
 }
 
-const Pool3DViewer = forwardRef<any, Pool3DViewerProps>(({ poolData = {}, lighting = 'day' }, ref) => {
-    const screenshotRef = useRef<any>(null);
+interface Pool3DViewerHandle {
+    takeScreenshot: (filename?: string) => void;
+}
+
+const Pool3DViewer = forwardRef<Pool3DViewerHandle, Pool3DViewerProps>(({ poolData = {}, lighting = 'day' }, ref) => {
+    const screenshotRef = useRef<{ takeScreenshot: (filename?: string) => void } | null>(null);
 
     useImperativeHandle(ref, () => ({
         takeScreenshot: (filename: any) => {
@@ -52,7 +58,7 @@ const Pool3DViewer = forwardRef<any, Pool3DViewerProps>(({ poolData = {}, lighti
                 shadows
             >
                 {/* Lighting */}
-                <Lighting preset={lighting} />
+                <Lighting preset={lighting as LightingPreset} />
 
                 {/* Environment */}
                 <Suspense fallback={null}>
@@ -79,8 +85,8 @@ const Pool3DViewer = forwardRef<any, Pool3DViewerProps>(({ poolData = {}, lighti
                         length={length}
                         width={width}
                         depth={depth}
-                        shape={shape}
-                        material={material}
+                        shape={shape as PoolShapeType}
+                        material={material as PoolMaterialType}
                     />
 
                     {/* Water surface */}

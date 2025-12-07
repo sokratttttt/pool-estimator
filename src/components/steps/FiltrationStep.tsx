@@ -24,7 +24,7 @@ export default function FiltrationStep() {
         <div className="space-y-8 pb-20">
             <div className="flex justify-between items-center">
                 <FiltrationHeader />
-                <CatalogImporter type="filtration" />
+                <CatalogImporter type={"filtration" as "bowls" | "equipment"} />
             </div>
 
             <FiltrationCalculator
@@ -44,9 +44,9 @@ export default function FiltrationStep() {
                 />
             ) : (
                 <FiltrationGrid
-                    options={displayOptions}
-                    selection={selection.filtration}
-                    onSelect={handleSelect}
+                    options={displayOptions as unknown as Parameters<typeof FiltrationGrid>[0]['options']}
+                    selection={selection.filtration as unknown as Parameters<typeof FiltrationGrid>[0]['selection']}
+                    onSelect={handleSelect as unknown as Parameters<typeof FiltrationGrid>[0]['onSelect']}
                     requiredFlow={requiredFlow}
                 />
             )}

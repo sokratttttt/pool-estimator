@@ -1,24 +1,38 @@
 'use client';
+import React from 'react';
+import { LucideIcon, TrendingUp, Target, DollarSign, Percent } from 'lucide-react';
 
-import { TrendingUp, Target, DollarSign, Percent } from 'lucide-react';
+interface Deal {
+    id: string;
+    value?: number;
+    stage?: string;
+    probability?: number;
+}
+
+interface Stat {
+    label: string;
+    value: string;
+    icon: LucideIcon;
+    color: string;
+}
 
 interface DealStatsProps {
-    deals?: any;
-    stages?: any;
+    deals: Deal[];
+    stages?: unknown[];
 }
 
 export default function DealStats({ deals }: DealStatsProps) {
-    const totalValue = deals.reduce((sum: any, d: any) => sum + (d.value || 0), 0);
+    const totalValue = deals.reduce((sum: number, d: Deal) => sum + (d.value || 0), 0);
     const avgDealSize = deals.length > 0 ? totalValue / deals.length : 0;
 
-    const completedDeals = deals.filter(d => d.stage === 'completed');
+    const completedDeals = deals.filter((d: Deal) => d.stage === 'completed');
     const winRate = deals.length > 0 ? (completedDeals.length / deals.length) * 100 : 0;
 
-    const weightedValue = deals.reduce((sum: any, d: any) =>
+    const weightedValue = deals.reduce((sum: number, d: Deal) =>
         sum + (d.value || 0) * (d.probability || 0) / 100, 0
     );
 
-    const stats = [
+    const stats: Stat[] = [
         {
             label: 'Общая сумма',
             value: `${(totalValue / 1000000).toFixed(1)}M ₽`,
@@ -48,7 +62,7 @@ export default function DealStats({ deals }: DealStatsProps) {
     return (
         <div className="bg-navy-light border-b border-gray-700 p-4">
             <div className="max-w-[2000px] mx-auto grid grid-cols-4 gap-4">
-                {stats.map((stat: any, index: number) => (
+                {stats.map((stat: Stat, index: number) => (
                     <div
                         key={index}
                         className="bg-gray-800 rounded-lg p-4 flex items-center gap-4"

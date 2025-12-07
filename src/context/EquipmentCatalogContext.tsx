@@ -49,9 +49,9 @@ export function EquipmentCatalogProvider({ children }: { children: React.ReactNo
 
             setItems(allItems);
             setError(null);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Ошибка загрузки каталога:', err);
-            setError(err.message);
+            setError(err instanceof Error ? err.message : 'Unknown error');
         } finally {
             setLoading(false);
         }

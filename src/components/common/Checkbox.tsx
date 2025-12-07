@@ -6,21 +6,22 @@ import { Check } from 'lucide-react';
  * Checkbox component
  */
 interface CheckboxProps {
-  checked?: any;
-  onChange?: () => void;
-  label?: any;
-  disabled?: any;
-  className?: string;
+    checked?: boolean;
+    onChange?: () => void;
+    label?: string | React.ReactNode;
+    disabled?: boolean;
+    className?: string;
+    [key: string]: unknown;
 }
 
-export default function Checkbox({ 
+export default function Checkbox({
     checked,
     onChange,
     label,
     disabled = false,
     className = '',
     ...props
- }: CheckboxProps) {
+}: CheckboxProps) {
     return (
         <label className={`inline-flex items-center gap-3 cursor-pointer ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}>
             <div className="relative">

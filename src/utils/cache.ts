@@ -3,18 +3,28 @@
  * In-memory and localStorage caching
  */
 
+interface CacheItem<T> {
+    value: T;
+    expires: number;
+}
+
+interface CacheOptions {
+    ttl?: number;
+    maxSize?: number;
+}
+
 class Cache {
-    cache: Map<string, { value: any; expires: number }>;
+    cache: Map<string, CacheItem<unknown>>;
     ttl: number;
     maxSize: number;
 
-    constructor(options: any = {}) {
+    constructor(options: CacheOptions = {}) {
         this.cache = new Map();
         this.ttl = options.ttl || 3600000; // 1 hour default
         this.maxSize = options.maxSize || 100;
     }
 
-    set(key, value, ttl = this.ttl) {
+    set<T>(key: string, value: T, ttl: number = this.ttl): void {
         if (this.cache.size >= this.maxSize) {
             // Remove oldest entry
             const firstKey = this.cache.keys().next().value;
@@ -29,7 +39,7 @@ class Cache {
         });
     }
 
-    get(key) {
+    get<T>(key: string): T | null {
         const item = this.cache.get(key);
 
         if (!item) return null;
@@ -39,22 +49,22 @@ class Cache {
             return null;
         }
 
-        return item.value;
+        return item.value as T;
     }
 
-    has(key) {
+    has(key: string): boolean {
         return this.get(key) !== null;
     }
 
-    delete(key) {
+    delete(key: string): boolean {
         return this.cache.delete(key);
     }
 
-    clear() {
+    clear(): void {
         this.cache.clear();
     }
 
-    size() {
+    size(): number {
         return this.cache.size;
     }
 }
@@ -65,11 +75,11 @@ class Cache {
 class LocalStorageCache {
     prefix: string;
 
-    constructor(prefix = 'cache_') {
+    constructor(prefix: string = 'cache_') {
         this.prefix = prefix;
     }
 
-    set(key, value, ttl = 3600000) {
+    set<T>(key: string, value: T, ttl: number = 3600000): void {
         const item = {
             value,
             expires: Date.now() + ttl
@@ -82,7 +92,7 @@ class LocalStorageCache {
         }
     }
 
-    get(key) {
+    get<T>(key: string): T | null {
         try {
             const itemStr = localStorage.getItem(this.prefix + key);
             if (!itemStr) return null;
@@ -94,22 +104,22 @@ class LocalStorageCache {
                 return null;
             }
 
-            return item.value;
+            return item.value as T;
         } catch (error) {
             console.error('Failed to get cache:', error);
             return null;
         }
     }
 
-    has(key) {
+    has(key: string): boolean {
         return this.get(key) !== null;
     }
 
-    delete(key) {
+    delete(key: string): void {
         localStorage.removeItem(this.prefix + key);
     }
 
-    clear() {
+    clear(): void {
         const keys = Object.keys(localStorage);
         keys.forEach(key => {
             if (key.startsWith(this.prefix)) {
@@ -118,7 +128,7 @@ class LocalStorageCache {
         });
     }
 
-    clearExpired() {
+    clearExpired(): void {
         const keys = Object.keys(localStorage);
         keys.forEach(key => {
             if (key.startsWith(this.prefix)) {
@@ -131,18 +141,21 @@ class LocalStorageCache {
 /**
  * Create cache instance
  */
-export const createCache = (options: any) => new Cache(options);
-export const createLocalStorageCache = (prefix: any) => new LocalStorageCache(prefix);
+export const createCache = (options: CacheOptions): Cache => new Cache(options);
+export const createLocalStorageCache = (prefix: string): LocalStorageCache => new LocalStorageCache(prefix);
 
 /**
  * Memoize function with cache
  */
-export const memoizeWithCache = (fn: (...args: any[]) => any, cache = createCache({})) => {
-    return (...args) => {
+export const memoizeWithCache = <T extends unknown[], R>(
+    fn: (...args: T) => R,
+    cache: Cache = createCache({})
+): ((...args: T) => R) => {
+    return (...args: T): R => {
         const key = JSON.stringify(args);
 
         if (cache.has(key)) {
-            return cache.get(key);
+            return cache.get<R>(key) as R;
         }
 
         const result = fn(...args);

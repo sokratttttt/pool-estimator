@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { GripVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-interface DraggableListProps {
-    items?: any[];
-    onReorder?: (items: any[]) => void;
-    renderItem?: (item: any, index: number) => React.ReactNode;
+interface DraggableListProps<T> {
+    items?: T[];
+    onReorder?: (items: T[]) => void;
+    renderItem?: (item: T, index: number) => React.ReactNode;
     className?: string;
 }
 
-export default function DraggableList({ items = [], onReorder, renderItem, className = '' }: DraggableListProps) {
+export default function DraggableList<T extends { id?: string | number }>({ items = [], onReorder, renderItem, className = '' }: DraggableListProps<T>) {
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -60,7 +60,7 @@ export default function DraggableList({ items = [], onReorder, renderItem, class
 
     return (
         <div className={className}>
-            {items.map((item: any, index: number) => (
+            {items.map((item: T, index: number) => (
                 <motion.div
                     key={item.id || index}
                     layout
@@ -69,10 +69,10 @@ export default function DraggableList({ items = [], onReorder, renderItem, class
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                     draggable
-                    onDragStart={(e: any) => handleDragStart(e, index)}
-                    onDragOver={(e: any) => handleDragOver(e, index)}
+                    onDragStart={(e) => handleDragStart(e as unknown as React.DragEvent<HTMLDivElement>, index)}
+                    onDragOver={(e) => handleDragOver(e as unknown as React.DragEvent<HTMLDivElement>, index)}
                     onDragLeave={handleDragLeave}
-                    onDrop={(e: any) => handleDrop(e, index)}
+                    onDrop={(e) => handleDrop(e as unknown as React.DragEvent<HTMLDivElement>, index)}
                     onDragEnd={handleDragEnd}
                     className={`
                         group relative cursor-move transition-all

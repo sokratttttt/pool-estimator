@@ -28,7 +28,7 @@ export default function ProgressBar({ currentStep, totalSteps, stepNames, onStep
                     transition={{ duration: 0.5, ease: 'easeInOut' }}
                 />
 
-                {stepNames?.map((name: any, index: number) => {
+                {stepNames?.map((name: string, index: number) => {
                     const isCompleted = index < currentStep;
                     const isCurrent = index === currentStep;
                     const isClickable = index <= currentStep;

@@ -1,34 +1,40 @@
 'use client';
 import { motion } from 'framer-motion';
 
+type SwitchSize = 'sm' | 'md' | 'lg';
+
+interface SwitchProps {
+    checked?: boolean;
+    onChange?: () => void;
+    label?: string;
+    disabled?: boolean;
+    size?: SwitchSize;
+    className?: string;
+}
+
+interface SizeConfig {
+    container: string;
+    thumb: string;
+}
+
+const sizes: Record<SwitchSize, SizeConfig> = {
+    sm: { container: 'w-8 h-4', thumb: 'w-3 h-3' },
+    md: { container: 'w-11 h-6', thumb: 'w-5 h-5' },
+    lg: { container: 'w-14 h-7', thumb: 'w-6 h-6' }
+};
+
 /**
  * Switch component (toggle)
  */
-interface SwitchProps {
-  checked?: any;
-  onChange?: () => void;
-  label?: any;
-  disabled?: any;
-  size?: any;
-  // sm?: any;
-  md?: any;
-  lg
-    className?: any;
-}
-
-export default function Switch({ 
+export default function Switch({
     checked,
     onChange,
     label,
     disabled = false,
-    size = 'md', // sm, md, lg
+    size = 'md',
     className = ''
- }: SwitchProps) {
-    const sizes = {
-        sm: { container: 'w-8 h-4', thumb: 'w-3 h-3' },
-        md: { container: 'w-11 h-6', thumb: 'w-5 h-5' },
-        lg: { container: 'w-14 h-7', thumb: 'w-6 h-6' }
-    };
+}: SwitchProps) {
+    const sizeConfig = sizes[size];
 
     return (
         <label className={`inline-flex items-center gap-3 cursor-pointer ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}>
@@ -45,7 +51,7 @@ export default function Switch({
                         backgroundColor: checked ? '#06b6d4' : 'rgba(255, 255, 255, 0.1)'
                     }}
                     className={`
-                        ${sizes[size].container}
+                        ${sizeConfig.container}
                         rounded-full
                         peer-focus-visible:ring-2 peer-focus-visible:ring-cyan-500 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-navy-deep
                         transition-all duration-200
@@ -58,7 +64,7 @@ export default function Switch({
                         }}
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                         className={`
-                            ${sizes[size].thumb}
+                            ${sizeConfig.thumb}
                             bg-white rounded-full
                             absolute top-1/2 -translate-y-1/2
                             shadow-lg

@@ -1,51 +1,47 @@
 'use client';
 import { motion } from 'framer-motion';
 
+type ProgressSize = 'sm' | 'md' | 'lg';
+type ProgressVariant = 'primary' | 'success' | 'warning' | 'error';
+
+interface ProgressBarProps {
+    value?: number;
+    max?: number;
+    size?: ProgressSize;
+    variant?: ProgressVariant;
+    showLabel?: boolean;
+    label?: string;
+    animated?: boolean;
+    className?: string;
+}
+
+const sizes: Record<ProgressSize, string> = {
+    sm: 'h-1',
+    md: 'h-2',
+    lg: 'h-3'
+};
+
+const variants: Record<ProgressVariant, string> = {
+    primary: 'bg-cyan-500',
+    success: 'bg-green-500',
+    warning: 'bg-yellow-500',
+    error: 'bg-red-500'
+};
+
 /**
  * Progress bar component
  */
-interface ProgressBarProps {
-  value?: any;
-  max?: any;
-  size?: any;
-  // sm?: any;
-  md?: any;
-  lg
-    variant?: any;
-  // primary?: any;
-  success?: any;
-  warning?: any;
-  error
-    showLabel?: any;
-  label?: any;
-  animated?: any;
-  className?: string;
-}
-
-export default function ProgressBar({ 
+export default function ProgressBar({
     value = 0,
     max = 100,
-    size = 'md', // sm, md, lg
-    variant = 'primary', // primary, success, warning, error
+    size = 'md',
+    variant = 'primary',
     showLabel = false,
     label,
     animated = true,
     className = ''
- }: ProgressBarProps) {
+}: ProgressBarProps) {
     const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
-
-    const sizes = {
-        sm: 'h-1',
-        md: 'h-2',
-        lg: 'h-3'
-    };
-
-    const variants = {
-        primary: 'bg-cyan-500',
-        success: 'bg-green-500',
-        warning: 'bg-yellow-500',
-        error: 'bg-red-500'
-    };
 
     return (
         <div className={className}>

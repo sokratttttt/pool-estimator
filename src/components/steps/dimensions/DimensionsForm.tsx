@@ -5,14 +5,20 @@ import AppleCard from '../../apple/AppleCard';
 import AppleInput from '../../apple/AppleInput';
 
 interface DimensionsFormProps {
-    dimensions?: any;
-    errors?: any;
-    onChange?: (field: string, value: string) => void;
-    volume?: any;
-    surfaceArea?: any;
+    dimensions?: { length?: number; width?: number; depth?: number };
+    errors?: { length?: string; width?: string; depth?: string };
+    onChange?: (field: 'length' | 'width' | 'depth', value: number) => void;
+    volume?: number;
+    surfaceArea?: number;
 }
 
-export default function DimensionsForm({ dimensions, errors, onChange, volume, surfaceArea }: DimensionsFormProps) {
+export default function DimensionsForm({
+    dimensions = { length: 8, width: 4, depth: 1.5 },
+    errors = {},
+    onChange,
+    volume = 0,
+    surfaceArea = 0
+}: DimensionsFormProps) {
     return (
         <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -27,8 +33,8 @@ export default function DimensionsForm({ dimensions, errors, onChange, volume, s
                         type="number"
                         label="Длина (м)"
                         placeholder="8"
-                        value={dimensions.length}
-                        onChange={(e: React.ChangeEvent<any>) => onChange?.('length', e.target.value)}
+                        value={dimensions.length ?? 8}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange?.('length', parseFloat(e.target.value) || 0)}
                         error={errors.length}
                         icon={<Ruler size={20} />}
                         step="0.1"
@@ -40,8 +46,8 @@ export default function DimensionsForm({ dimensions, errors, onChange, volume, s
                         type="number"
                         label="Ширина (м)"
                         placeholder="4"
-                        value={dimensions.width}
-                        onChange={(e: React.ChangeEvent<any>) => onChange?.('width', e.target.value)}
+                        value={dimensions.width ?? 4}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange?.('width', parseFloat(e.target.value) || 0)}
                         error={errors.width}
                         icon={<Ruler size={20} />}
                         step="0.1"
@@ -53,8 +59,8 @@ export default function DimensionsForm({ dimensions, errors, onChange, volume, s
                         type="number"
                         label="Глубина (м)"
                         placeholder="1.5"
-                        value={dimensions.depth}
-                        onChange={(e: React.ChangeEvent<any>) => onChange?.('depth', e.target.value)}
+                        value={dimensions.depth ?? 1.5}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange?.('depth', parseFloat(e.target.value) || 0)}
                         error={errors.depth}
                         icon={<Droplet size={20} />}
                         step="0.1"

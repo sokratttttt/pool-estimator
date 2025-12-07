@@ -8,17 +8,18 @@ import { CSS } from '@dnd-kit/utilities';
 import AppleButton from '../apple/AppleButton';
 import AppleInput from '../apple/AppleInput';
 import { toast } from 'sonner';
+import type { ContractTemplate, ContractSection } from '@/types/contracts';
+import type { DragEndEvent } from '@dnd-kit/core';
 
 interface SortableSectionProps {
-    template?: any;
+    template?: ContractTemplate;
     onSave?: () => void;
-    section?: any;
-    index?: any;
-    onChange?: (index: number, section: any) => void;
+    section: ContractSection;
+    index: number;
+    onChange?: (index: number, section: ContractSection) => void;
     onDelete?: (index: number) => void;
-    event?: any;
-    newSection?: any;
-
+    event?: DragEndEvent;
+    newSection?: ContractSection;
 }
 
 const SortableSection = ({ section, index, onChange, onDelete }: SortableSectionProps) => {
@@ -40,7 +41,7 @@ const SortableSection = ({ section, index, onChange, onDelete }: SortableSection
                     <div className="flex items-center gap-4">
                         <select
                             value={section.type}
-                            onChange={(e: any) => onChange?.(index, { ...section, type: e.target.value })}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange?.(index, { ...section, type: e.target.value as ContractSection['type'] })}
                             className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-bright"
                         >
                             <option value="paragraph">Параграф</option>
@@ -52,7 +53,7 @@ const SortableSection = ({ section, index, onChange, onDelete }: SortableSection
                         {section.type !== 'signatures_table' && (
                             <select
                                 value={section.alignment || 'left'}
-                                onChange={(e: any) => onChange?.(index, { ...section, alignment: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange?.(index, { ...section, alignment: e.target.value as ContractSection['alignment'] })}
                                 className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-bright"
                             >
                                 <option value="left">Слева</option>
@@ -65,7 +66,7 @@ const SortableSection = ({ section, index, onChange, onDelete }: SortableSection
                         {section.type === 'heading' && (
                             <select
                                 value={section.level || 1}
-                                onChange={(e: any) => onChange?.(index, { ...section, level: parseInt(e.target.value) })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange?.(index, { ...section, level: parseInt(e.target.value) as 1 | 2 | 3 })}
                                 className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-bright"
                             >
                                 <option value={1}>H1</option>
@@ -78,7 +79,7 @@ const SortableSection = ({ section, index, onChange, onDelete }: SortableSection
                     {section.type !== 'signatures_table' && (
                         <textarea
                             value={section.text || ''}
-                            onChange={(e: any) => onChange?.(index, { ...section, text: e.target.value })}
+                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange?.(index, { ...section, text: e.target.value })}
                             placeholder="Текст секции..."
                             className="w-full h-24 bg-white/5 border border-white/10 rounded-lg p-3 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-bright resize-y font-mono text-sm"
                         />
@@ -104,12 +105,12 @@ const SortableSection = ({ section, index, onChange, onDelete }: SortableSection
 };
 
 interface ContractEditorProps {
-    template?: any;
-    onSave?: (data: any) => void;
+    template?: ContractTemplate | null;
+    onSave?: (data: Partial<ContractTemplate>) => void;
 }
 
 export default function ContractEditor({ template, onSave }: ContractEditorProps) {
-    const [sections, setSections] = useState(template?.content?.sections || []);
+    const [sections, setSections] = useState<ContractSection[]>(template?.content?.sections || []);
     const [name, setName] = useState(template?.name || '');
     const [description, setDescription] = useState(template?.description || '');
 
@@ -120,26 +121,26 @@ export default function ContractEditor({ template, onSave }: ContractEditorProps
         })
     );
 
-    const handleDragEnd = (event: any) => {
+    const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
-        if (active.id !== over.id) {
-            setSections((items: any) => {
-                const oldIndex = parseInt(active.id.split('-')[1]);
-                const newIndex = parseInt(over.id.split('-')[1]);
+        if (over && active.id !== over.id) {
+            setSections((items: ContractSection[]) => {
+                const oldIndex = parseInt(String(active.id).split('-')[1]);
+                const newIndex = parseInt(String(over.id).split('-')[1]);
                 return arrayMove(items, oldIndex, newIndex);
             });
         }
     };
 
-    const handleSectionChange = (index: number, newSection: any) => {
+    const handleSectionChange = (index: number, newSection: ContractSection) => {
         const newSections = [...sections];
         newSections[index] = newSection;
         setSections(newSections);
     };
 
     const handleDeleteSection = (index: number) => {
-        setSections(sections.filter((_: any, i: number) => i !== index));
+        setSections(sections.filter((_: ContractSection, i: number) => i !== index));
     };
 
     const handleAddSection = () => {
@@ -166,12 +167,12 @@ export default function ContractEditor({ template, onSave }: ContractEditorProps
                 <AppleInput
                     label="Название шаблона"
                     value={name}
-                    onChange={(e: React.ChangeEvent<any>) => setName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                 />
                 <AppleInput
                     label="Описание"
                     value={description}
-                    onChange={(e: React.ChangeEvent<any>) => setDescription(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
                 />
             </div>
 
@@ -191,10 +192,10 @@ export default function ContractEditor({ template, onSave }: ContractEditorProps
                     onDragEnd={handleDragEnd}
                 >
                     <SortableContext
-                        items={sections.map((_: any, i: number) => `section-${i}`)}
+                        items={sections.map((_: ContractSection, i: number) => `section-${i}`)}
                         strategy={verticalListSortingStrategy}
                     >
-                        {sections.map((section: any, index: number) => (
+                        {sections.map((section: ContractSection, index: number) => (
                             <SortableSection
                                 key={`section-${index}`}
                                 index={index}

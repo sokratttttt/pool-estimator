@@ -6,10 +6,10 @@
 /**
  * Read file as text
  */
-export const readFileAsText = (file: any) => {
-    return new Promise((resolve: any, reject: any) => {
+export const readFileAsText = (file: File | Blob): Promise<string | ArrayBuffer | null> => {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result);
+        reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result || null);
         reader.onerror = reject;
         reader.readAsText(file);
     });
@@ -18,10 +18,10 @@ export const readFileAsText = (file: any) => {
 /**
  * Read file as data URL
  */
-export const readFileAsDataURL = (file: any) => {
-    return new Promise((resolve: any, reject: any) => {
+export const readFileAsDataURL = (file: File | Blob): Promise<string | ArrayBuffer | null> => {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result);
+        reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result || null);
         reader.onerror = reject;
         reader.readAsDataURL(file);
     });
@@ -30,10 +30,10 @@ export const readFileAsDataURL = (file: any) => {
 /**
  * Read file as array buffer
  */
-export const readFileAsArrayBuffer = (file: any) => {
-    return new Promise((resolve: any, reject: any) => {
+export const readFileAsArrayBuffer = (file: File | Blob): Promise<string | ArrayBuffer | null> => {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result);
+        reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result || null);
         reader.onerror = reject;
         reader.readAsArrayBuffer(file);
     });
@@ -42,7 +42,7 @@ export const readFileAsArrayBuffer = (file: any) => {
 /**
  * Format file size
  */
-export const formatFileSize = (bytes: any) => {
+export const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
 
     const k = 1024;
@@ -55,16 +55,16 @@ export const formatFileSize = (bytes: any) => {
 /**
  * Get file extension
  */
-export const getFileExtension = (filename: any) => {
+export const getFileExtension = (filename: string) => {
     return filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2);
 };
 
 /**
  * Validate file type
  */
-export const validateFileType = (file: any, allowedTypes: any) => {
+export const validateFileType = (file: File, allowedTypes: string[]): boolean => {
     const extension = getFileExtension(file.name).toLowerCase();
-    return allowedTypes.some(type => {
+    return allowedTypes.some((type: string) => {
         if (type.startsWith('.')) {
             return type.slice(1).toLowerCase() === extension;
         }
@@ -75,15 +75,15 @@ export const validateFileType = (file: any, allowedTypes: any) => {
 /**
  * Validate file size
  */
-export const validateFileSize = (file: any, maxSize: any) => {
+export const validateFileSize = (file: File, maxSize: number) => {
     return file.size <= maxSize;
 };
 
 /**
  * Compress image
  */
-export const compressImage = (file: any, maxWidth = 1920, maxHeight = 1080, quality = 0.8) => {
-    return new Promise((resolve: any, reject: any) => {
+export const compressImage = (file: File, maxWidth = 1920, maxHeight = 1080, quality = 0.8): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
         reader.onload = (e: ProgressEvent<FileReader>) => {

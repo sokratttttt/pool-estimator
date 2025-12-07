@@ -6,11 +6,7 @@ import { motion } from 'framer-motion';
 /**
  * FileMessage - Component to display file/image attachments in chat
  */
-interface ChatMessage {
-    content?: string;
-    file_url: string;
-    type: 'image' | 'file';
-}
+import type { ChatMessage } from '@/types/chat';
 
 interface FileMessageProps {
     message: ChatMessage;
@@ -28,7 +24,7 @@ export default function FileMessage({ message }: FileMessageProps) {
     const handleDownload = (e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         const link = document.createElement('a');
-        link.href = file_url;
+        link.href = file_url || '';
         link.download = getFileName();
         link.target = '_blank';
         link.click();
@@ -47,7 +43,7 @@ export default function FileMessage({ message }: FileMessageProps) {
             >
                 <div className="relative rounded-lg shadow-md overflow-hidden">
                     <Image
-                        src={file_url}
+                        src={file_url || ''}
                         alt={altText}
                         width={400}
                         height={300}

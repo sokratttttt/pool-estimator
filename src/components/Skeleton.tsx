@@ -1,7 +1,14 @@
 import { motion } from 'framer-motion';
 
+interface SkeletonProps {
+    className?: string;
+    width?: string | number;
+    height?: string | number;
+    rounded?: string;
+}
+
 // Base skeleton with animation
-export function Skeleton({ className = '', width = '100%', height = '1rem', rounded = 'rounded-lg' }) {
+export function Skeleton({ className = '', width = '100%', height = '1rem', rounded = 'rounded-lg' }: SkeletonProps) {
     return (
         <motion.div
             className={`bg-gradient-to-r from-white/5 via-white/10 to-white/5 ${rounded} ${className}`}
@@ -81,7 +88,7 @@ export function SkeletonChart({ type = 'bar' }) {
     return (
         <div className="p-6">
             <div className="flex items-end justify-between gap-2 h-48">
-                {[...Array(7)].map((_: any, i: number) => (
+                {[...Array(7)].map((_: unknown, i: number) => (
                     <Skeleton
                         key={i}
                         width="100%"
@@ -91,7 +98,7 @@ export function SkeletonChart({ type = 'bar' }) {
                 ))}
             </div>
             <div className="flex justify-between mt-4">
-                {[...Array(7)].map((_: any, i: number) => (
+                {[...Array(7)].map((_: unknown, i: number) => (
                     <Skeleton key={i} width="2rem" height="0.75rem" />
                 ))}
             </div>
@@ -103,7 +110,7 @@ export function SkeletonChart({ type = 'bar' }) {
 export function SkeletonGrid({ columns = 3, rows = 3, CardComponent = SkeletonCard }) {
     return (
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${columns} gap-6`}>
-            {[...Array(rows * columns)].map((_: any, i: number) => (
+            {[...Array(rows * columns)].map((_: unknown, i: number) => (
                 <CardComponent key={i} />
             ))}
         </div>
@@ -114,7 +121,7 @@ export function SkeletonGrid({ columns = 3, rows = 3, CardComponent = SkeletonCa
 export function SkeletonStats() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {[...Array(4)].map((_: any, i: number) => (
+            {[...Array(4)].map((_: unknown, i: number) => (
                 <div key={i} className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
                     <Skeleton width="3rem" height="3rem" rounded="rounded-xl" className="mb-4" />
                     <Skeleton width="60%" height="0.875rem" className="mb-2" />

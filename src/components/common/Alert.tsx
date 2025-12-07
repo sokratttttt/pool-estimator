@@ -1,28 +1,61 @@
 'use client';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { X, AlertCircle, CheckCircle2, Info, AlertTriangle } from 'lucide-react';
 import { useEffect } from 'react';
 
-/**
- * Alert component with different variants
- */
+type AlertVariant = 'info' | 'success' | 'warning' | 'error';
+
+interface AlertConfig {
+    bg: string;
+    border: string;
+    icon: React.ReactNode;
+    text: string;
+}
+
 interface AlertProps {
-    variant?: any;
-    // info?: any;
-    success?: any;
-    warning?: any;
-    error?: any;
-    title?: any;
-    message?: any;
+    variant?: AlertVariant;
+    title?: string;
+    message?: string;
     onClose?: () => void;
-    autoClose?: any;
-    autoCloseDuration?: any;
-    action?: any;
+    autoClose?: boolean;
+    autoCloseDuration?: number;
+    action?: React.ReactNode;
     className?: string;
 }
 
+const alertVariants: Record<AlertVariant, AlertConfig> = {
+    info: {
+        bg: 'bg-blue-500/10',
+        border: 'border-blue-500/30',
+        icon: <Info size={20} className="text-blue-400" />,
+        text: 'text-blue-300'
+    },
+    success: {
+        bg: 'bg-green-500/10',
+        border: 'border-green-500/30',
+        icon: <CheckCircle2 size={20} className="text-green-400" />,
+        text: 'text-green-300'
+    },
+    warning: {
+        bg: 'bg-yellow-500/10',
+        border: 'border-yellow-500/30',
+        icon: <AlertTriangle size={20} className="text-yellow-400" />,
+        text: 'text-yellow-300'
+    },
+    error: {
+        bg: 'bg-red-500/10',
+        border: 'border-red-500/30',
+        icon: <AlertCircle size={20} className="text-red-400" />,
+        text: 'text-red-300'
+    }
+};
+
+/**
+ * Alert component with different variants
+ */
 export default function Alert({
-    variant = 'info', // info, success, warning, error
+    variant = 'info',
     title,
     message,
     onClose,
@@ -40,34 +73,7 @@ export default function Alert({
         return undefined;
     }, [autoClose, autoCloseDuration, onClose]);
 
-    const variants = {
-        info: {
-            bg: 'bg-blue-500/10',
-            border: 'border-blue-500/30',
-            icon: <Info size={20} className="text-blue-400" />,
-            text: 'text-blue-300'
-        },
-        success: {
-            bg: 'bg-green-500/10',
-            border: 'border-green-500/30',
-            icon: <CheckCircle2 size={20} className="text-green-400" />,
-            text: 'text-green-300'
-        },
-        warning: {
-            bg: 'bg-yellow-500/10',
-            border: 'border-yellow-500/30',
-            icon: <AlertTriangle size={20} className="text-yellow-400" />,
-            text: 'text-yellow-300'
-        },
-        error: {
-            bg: 'bg-red-500/10',
-            border: 'border-red-500/30',
-            icon: <AlertCircle size={20} className="text-red-400" />,
-            text: 'text-red-300'
-        }
-    };
-
-    const config = variants[variant];
+    const config = alertVariants[variant];
 
     return (
         <motion.div

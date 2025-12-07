@@ -111,7 +111,7 @@ export default function GalleryPage() {
                             type="text"
                             placeholder="Поиск..."
                             value={searchQuery}
-                            onChange={(e: React.ChangeEvent<any>) => setSearchQuery(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                         />
                     </div>
@@ -120,7 +120,7 @@ export default function GalleryPage() {
                 {/* Grid */}
                 {filteredImages.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredImages.map((image: any, index: number) => (
+                        {filteredImages.map((image: GalleryImage, index: number) => (
                             <motion.div
                                 key={image.src}
                                 layoutId={image.src}

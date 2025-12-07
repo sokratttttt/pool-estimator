@@ -56,7 +56,7 @@ export default function Test3DPage() {
                             <input
                                 type="number"
                                 value={poolData.length}
-                                onChange={(e: React.ChangeEvent<any>) => setPoolData({ ...poolData, length: parseFloat(e.target.value) })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPoolData({ ...poolData, length: parseFloat(e.target.value) })}
                                 className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
                             />
                         </div>
@@ -67,7 +67,7 @@ export default function Test3DPage() {
                             <input
                                 type="number"
                                 value={poolData.width}
-                                onChange={(e: React.ChangeEvent<any>) => setPoolData({ ...poolData, width: parseFloat(e.target.value) })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPoolData({ ...poolData, width: parseFloat(e.target.value) })}
                                 className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
                             />
                         </div>
@@ -78,7 +78,7 @@ export default function Test3DPage() {
                             <input
                                 type="number"
                                 value={poolData.depth}
-                                onChange={(e: React.ChangeEvent<any>) => setPoolData({ ...poolData, depth: parseFloat(e.target.value) })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPoolData({ ...poolData, depth: parseFloat(e.target.value) })}
                                 className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
                             />
                         </div>
@@ -92,7 +92,7 @@ export default function Test3DPage() {
                             </label>
                             <select
                                 value={poolData.shape}
-                                onChange={(e: React.ChangeEvent<any>) => setPoolData({ ...poolData, shape: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPoolData({ ...poolData, shape: e.target.value })}
                                 className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
                             >
                                 <option value="rectangular">Прямоугольная</option>
@@ -105,7 +105,7 @@ export default function Test3DPage() {
                             </label>
                             <select
                                 value={poolData.material}
-                                onChange={(e: React.ChangeEvent<any>) => setPoolData({ ...poolData, material: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPoolData({ ...poolData, material: e.target.value })}
                                 className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
                             >
                                 <option value="concrete">Бетон (серый)</option>
@@ -119,7 +119,7 @@ export default function Test3DPage() {
                             </label>
                             <select
                                 value={lighting}
-                                onChange={(e: React.ChangeEvent<any>) => setLighting(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLighting(e.target.value)}
                                 className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
                             >
                                 <option value="day">☀️ День</option>

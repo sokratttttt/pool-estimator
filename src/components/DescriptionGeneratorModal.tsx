@@ -3,31 +3,27 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Copy, Sparkles } from 'lucide-react';
-import { generateVariations } from '@/lib/descriptionGenerator';
+import { generateVariations, EstimateData } from '@/lib/descriptionGenerator';
 import { toast } from 'sonner';
 
+// Define types locally for now if not available globally, or use object/Record if structure varies
 interface DescriptionGeneratorModalProps {
     isOpen?: boolean;
     onClose?: () => void;
-    estimate?: any;
-
-    text?: any;
+    estimate?: EstimateData;
+    text?: string;
 }
 
 export default function DescriptionGeneratorModal({ isOpen, onClose, estimate }: DescriptionGeneratorModalProps) {
     const [activeTab, setActiveTab] = useState('formal');
-    const [descriptions, setDescriptions] = useState(null);
+    const [descriptions, setDescriptions] = useState<Record<string, string> | null>(null);
 
-    interface handleGenerateProps {
-        isOpen?: boolean;
-        onClose?: () => void;
-        estimate?: any;
-
-        text?: any;
-    }
-
-    const handleGenerate = ({ }: handleGenerateProps) => {
+    const handleGenerate = () => {
         try {
+            if (!estimate) {
+                toast.error('Нет данных для генерации');
+                return;
+            }
             const variations = generateVariations(estimate);
             setDescriptions(variations);
             toast.success('Описание сгенерировано!');
@@ -37,15 +33,8 @@ export default function DescriptionGeneratorModal({ isOpen, onClose, estimate }:
         }
     };
 
-    interface handleCopyProps {
-        isOpen?: boolean;
-        onClose?: () => void;
-        estimate?: any;
-
-        text?: any;
-    }
-
-    const handleCopy = ({ text }: handleCopyProps) => {
+    const handleCopy = (text: string) => {
+        if (!text) return;
         navigator.clipboard.writeText(text);
         toast.success('Скопировано в буфер обмена!');
     };
@@ -65,7 +54,7 @@ export default function DescriptionGeneratorModal({ isOpen, onClose, estimate }:
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    onClick={(e: React.MouseEvent<any>) => e.stopPropagation()}
+                    onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
                     className="bg-navy-deep border border-white/10 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
                 >
                     {/* Header */}
@@ -97,7 +86,7 @@ export default function DescriptionGeneratorModal({ isOpen, onClose, estimate }:
                                     AI проанализирует ваш проект и создаст 4 варианта описания
                                 </p>
                                 <button
-                                    onClick={handleGenerate as any}
+                                    onClick={() => handleGenerate()}
                                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity shadow-glow"
                                 >
                                     ✨ Сгенерировать описания
@@ -145,7 +134,7 @@ export default function DescriptionGeneratorModal({ isOpen, onClose, estimate }:
                                 {/* Actions */}
                                 <div className="flex gap-3">
                                     <button
-                                        onClick={handleGenerate as any}
+                                        onClick={() => handleGenerate()}
                                         className="flex-1 px-4 py-2 bg-white/5 text-purple-300 border border-purple-500/30 rounded-lg font-medium hover:bg-purple-500/10 transition-colors"
                                     >
                                         🔄 Пересоздать

@@ -2,23 +2,65 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 
-/**
- * PoolShape - Dynamic pool geometry generator
- * @param {number} length - Pool length in meters
- * @param {number} width - Pool width in meters
- * @param {number} depth - Pool depth in meters
- * @param {string} shape - Pool shape: 'rectangular' | 'oval'
- * @param {string} material - Material type: 'concrete' | 'composite' | 'liner'
- */
-interface PoolShapeProps {
-  length?: any;
-  width?: any;
-  depth?: any;
-  shape?: any;
-  material?: any;
+type PoolShapeType = 'rectangular' | 'oval';
+type PoolMaterialType = 'concrete' | 'composite' | 'liner';
+
+interface MaterialConfig {
+    color: string;
+    roughness: number;
+    metalness: number;
+    emissive: string;
+    emissiveIntensity: number;
+    clearcoat?: number;
+    clearcoatRoughness?: number;
 }
 
-export default function PoolShape({  length = 10, width = 5, depth = 1.5, shape = 'rectangular', material = 'concrete'  }: PoolShapeProps) {
+interface PoolShapeProps {
+    length?: number;
+    width?: number;
+    depth?: number;
+    shape?: PoolShapeType;
+    material?: PoolMaterialType;
+}
+
+const materials: Record<PoolMaterialType, MaterialConfig> = {
+    concrete: {
+        color: '#B0B0B0',
+        roughness: 0.85,
+        metalness: 0.05,
+        emissive: '#2a2a2a',
+        emissiveIntensity: 0.02
+    },
+    composite: {
+        color: '#5AA3D9',
+        roughness: 0.25,
+        metalness: 0.3,
+        emissive: '#1a4d7a',
+        emissiveIntensity: 0.05,
+        clearcoat: 0.3,
+        clearcoatRoughness: 0.2
+    },
+    liner: {
+        color: '#40C0FF',
+        roughness: 0.08,
+        metalness: 0.6,
+        emissive: '#0080c0',
+        emissiveIntensity: 0.08,
+        clearcoat: 0.8,
+        clearcoatRoughness: 0.1
+    }
+};
+
+/**
+ * PoolShape - Dynamic pool geometry generator
+ */
+export default function PoolShape({
+    length = 10,
+    width = 5,
+    depth = 1.5,
+    shape = 'rectangular',
+    material = 'concrete'
+}: PoolShapeProps) {
 
     // Generate geometry based on shape
     const geometry = useMemo(() => {
@@ -33,7 +75,7 @@ export default function PoolShape({  length = 10, width = 5, depth = 1.5, shape 
     }, [length, width, depth, shape]);
 
     // Get material configuration
-    const materialConfig = useMemo(() => getMaterialConfig(material), [material]);
+    const materialConfig = useMemo(() => materials[material], [material]);
 
     return (
         <group>
@@ -61,7 +103,7 @@ export default function PoolShape({  length = 10, width = 5, depth = 1.5, shape 
 /**
  * Creates rectangular pool with walls
  */
-function createRectangularPool(length: any, width: any, depth: any) {
+function createRectangularPool(length: number, width: number, depth: number): THREE.ExtrudeGeometry {
     const shape = new THREE.Shape();
 
     // Outer boundary
@@ -99,7 +141,7 @@ function createRectangularPool(length: any, width: any, depth: any) {
 /**
  * Creates oval/elliptical pool
  */
-function createOvalPool(length: any, width: any, depth: any) {
+function createOvalPool(length: number, width: number, depth: number): THREE.ExtrudeGeometry {
     const shape = new THREE.Shape();
     const radiusX = width / 2;
     const radiusY = length / 2;
@@ -147,42 +189,4 @@ function createOvalPool(length: any, width: any, depth: any) {
     geometry.translate(0, -depth / 2, 0);
 
     return geometry;
-}
-
-/**
- * Material configurations with enhanced properties
- */
-function getMaterialConfig(type: any) {
-    const materials = {
-        concrete: {
-            color: '#B0B0B0',
-            roughness: 0.85,
-            metalness: 0.05,
-            // Slight color variation for concrete
-            emissive: '#2a2a2a',
-            emissiveIntensity: 0.02
-        },
-        composite: {
-            color: '#5AA3D9',
-            roughness: 0.25,
-            metalness: 0.3,
-            // Slight shine for composite
-            emissive: '#1a4d7a',
-            emissiveIntensity: 0.05,
-            clearcoat: 0.3,
-            clearcoatRoughness: 0.2
-        },
-        liner: {
-            color: '#40C0FF',
-            roughness: 0.08,
-            metalness: 0.6,
-            // Glossy liner material
-            emissive: '#0080c0',
-            emissiveIntensity: 0.08,
-            clearcoat: 0.8,
-            clearcoatRoughness: 0.1
-        }
-    };
-
-    return materials[type] || materials.concrete;
 }

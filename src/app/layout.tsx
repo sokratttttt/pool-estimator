@@ -14,6 +14,7 @@ import { ClientProvider } from "../context/ClientContext";
 import { RequestsProvider } from "../context/RequestsContext";
 import { SettingsProvider } from "../context/SettingsContext";
 import { GlobalShortcutsProvider } from "../components/providers/GlobalShortcutsProvider";
+import QueryClientProvider from "../providers/QueryClientProvider";
 import { Toaster } from 'sonner';
 import { Inter, Montserrat } from 'next/font/google';
 import { ProfessionalLayout } from '@/components/layout/ProfessionalLayout';
@@ -41,47 +42,49 @@ export const metadata = {
         type: 'website',
     },
     icons: {
-        icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏊</text></svg>",
+        icon: "/icon.png",
     },
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="ru" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
             <body className="min-h-screen bg-navy-deep text-white antialiased overflow-x-hidden">
-                <ThemeProvider>
-                    <PhotoProvider>
-                        <SyncProvider>
-                            <ClientProvider>
-                                <RequestsProvider>
-                                    <BackupProvider>
-                                        <CatalogProvider>
-                                            <EquipmentCatalogProvider>
-                                                <EstimateProvider>
-                                                    <TemplateProvider>
-                                                        <HistoryProvider>
-                                                            <SettingsProvider>
-                                                                <GlobalShortcutsProvider>
-                                                                    <ProfessionalLayout>
-                                                                        <VersionChecker />
-                                                                        <PageTransition>
-                                                                            {children}
-                                                                        </PageTransition>
-                                                                    </ProfessionalLayout>
-                                                                    <Toaster position="top-right" richColors theme="dark" />
-                                                                </GlobalShortcutsProvider>
-                                                            </SettingsProvider>
-                                                        </HistoryProvider>
-                                                    </TemplateProvider>
-                                                </EstimateProvider>
-                                            </EquipmentCatalogProvider>
-                                        </CatalogProvider>
-                                    </BackupProvider>
-                                </RequestsProvider>
-                            </ClientProvider>
-                        </SyncProvider>
-                    </PhotoProvider>
-                </ThemeProvider>
+                <QueryClientProvider>
+                    <ThemeProvider>
+                        <PhotoProvider>
+                            <SyncProvider>
+                                <ClientProvider>
+                                    <RequestsProvider>
+                                        <BackupProvider>
+                                            <CatalogProvider>
+                                                <EquipmentCatalogProvider>
+                                                    <EstimateProvider>
+                                                        <TemplateProvider>
+                                                            <HistoryProvider>
+                                                                <SettingsProvider>
+                                                                    <GlobalShortcutsProvider>
+                                                                        <ProfessionalLayout>
+                                                                            <VersionChecker />
+                                                                            <PageTransition>
+                                                                                {children}
+                                                                            </PageTransition>
+                                                                        </ProfessionalLayout>
+                                                                        <Toaster position="top-right" richColors theme="dark" />
+                                                                    </GlobalShortcutsProvider>
+                                                                </SettingsProvider>
+                                                            </HistoryProvider>
+                                                        </TemplateProvider>
+                                                    </EstimateProvider>
+                                                </EquipmentCatalogProvider>
+                                            </CatalogProvider>
+                                        </BackupProvider>
+                                    </RequestsProvider>
+                                </ClientProvider>
+                            </SyncProvider>
+                        </PhotoProvider>
+                    </ThemeProvider>
+                </QueryClientProvider>
             </body>
         </html>
     );

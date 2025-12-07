@@ -1,21 +1,21 @@
 'use client';
 
+type DividerOrientation = 'horizontal' | 'vertical';
+
+interface DividerProps {
+    orientation?: DividerOrientation;
+    className?: string;
+    label?: string;
+}
+
 /**
  * Divider component
  */
-interface DividerProps {
-  orientation?: any;
-  // horizontal?: any;
-  vertical
-    className?: any;
-  label?: any;
-}
-
-export default function Divider({ 
-    orientation = 'horizontal', // horizontal, vertical
+export default function Divider({
+    orientation = 'horizontal',
     className = '',
     label
- }: DividerProps) {
+}: DividerProps) {
     if (orientation === 'vertical') {
         return (
             <div className={`w-px bg-white/10 ${className}`} />

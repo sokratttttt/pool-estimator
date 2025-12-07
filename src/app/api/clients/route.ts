@@ -8,8 +8,13 @@ interface Client {
     id: string;
     createdAt: string;
     updatedAt?: string;
-    estimates?: any[];
-    [key: string]: any;
+    estimates?: unknown[];
+    name?: string;
+    email?: string;
+    phone?: string;
+    company?: string;
+    address?: string;
+    [key: string]: unknown;
 }
 
 interface Data {

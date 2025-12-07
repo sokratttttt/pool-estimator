@@ -3,12 +3,13 @@ import { bowls } from '../../data/bowls';
 import { useEstimate } from '../../context/EstimateContext';
 import StepLayout from '../../components/StepLayout';
 import { useRouter } from 'next/navigation';
+import type { BowlData } from '@/types';
 
 export default function PoolSelection() {
     const { selection, updateSelection } = useEstimate();
     const router = useRouter();
 
-    const handleSelect = (bowl: any) => {
+    const handleSelect = (bowl: BowlData) => {
         updateSelection('bowl', bowl);
         // Reset dimensions if switching from other types, though flow shouldn't allow it easily
         updateSelection('dimensions', {
@@ -23,7 +24,7 @@ export default function PoolSelection() {
     return (
         <StepLayout title="Выберите чашу бассейна">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {bowls.map((bowl: any) => (
+                {bowls.map((bowl: BowlData) => (
                     <div
                         key={bowl.id}
                         className={`glass-card rounded-xl p-6 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-xl

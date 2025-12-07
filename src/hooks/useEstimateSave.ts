@@ -79,9 +79,9 @@ export const useEstimateSave = (): UseEstimateSaveReturn => {
             }
 
             return result;
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Save error:', error);
-            const errorMessage = error.message || 'Ошибка при сохранении';
+            const errorMessage = error instanceof Error ? error.message : 'Ошибка при сохранении';
             setLastError(errorMessage);
             statsRef.current.failedSaves++;
 
@@ -189,9 +189,15 @@ export const useEstimateSave = (): UseEstimateSaveReturn => {
         };
     }, []);
 
-    const saveTemplateMethod = useCallback(async (name: string, description: string, data: any): Promise<void> => {
-        saveTemplate(name, description, data);
-        toast.success('Шаблон сохранен');
+    const saveTemplateMethod = useCallback(async (name: string, description: string, data: unknown): Promise<void> => {
+        try {
+            await saveTemplate(name, description, data as Parameters<typeof saveTemplate>[2]);
+            toast.success('Шаблон успешно сохранен');
+        } catch (error: unknown) {
+            console.error('Error saving template:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Ошибка при сохранении шаблона';
+            toast.error(errorMessage);
+        }
     }, [saveTemplate]);
 
     return {

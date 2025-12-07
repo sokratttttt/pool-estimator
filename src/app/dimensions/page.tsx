@@ -10,7 +10,7 @@ export default function DimensionsInput() {
 
     const [dims, setDims] = useState(selection.dimensions || { length: '', width: '', depth: '' });
 
-    const handleChange = (e: React.ChangeEvent<any>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setDims(prev => ({ ...prev, [name]: value }));
     };

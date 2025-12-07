@@ -86,10 +86,11 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
             await updateLastSeen(email);
             toast.success('Вход выполнен успешно');
             return { success: true };
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Login error:', error);
-            toast.error('Ошибка входа: ' + error.message);
-            return { success: false, error: error.message };
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            toast.error('Ошибка входа: ' + message);
+            return { success: false, error: message };
         }
     };
 

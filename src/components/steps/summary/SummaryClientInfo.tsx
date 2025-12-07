@@ -5,18 +5,19 @@ import AppleCard from '../../apple/AppleCard';
 import AppleInput from '../../apple/AppleInput';
 import AppleButton from '../../apple/AppleButton';
 import ClientSelector from '../../ClientSelector';
+import { ClientInfo } from '@/types';
 
 interface SummaryClientInfoProps {
-  clientInfo?: any;
-  setClientInfo?: any;
-  onClientSelect?: () => void;
-  onExportExcel?: () => void;
-  onExportPDF?: () => void;
-  onWhatsApp?: () => void;
-  isExporting?: boolean;
+    clientInfo?: ClientInfo;
+    setClientInfo?: (info: ClientInfo) => void;
+    onClientSelect?: () => void;
+    onExportExcel?: () => void;
+    onExportPDF?: () => void;
+    onWhatsApp?: () => void;
+    isExporting?: boolean;
 }
 
-export default function SummaryClientInfo({ 
+export default function SummaryClientInfo({
     clientInfo,
     setClientInfo,
     onClientSelect,
@@ -24,7 +25,9 @@ export default function SummaryClientInfo({
     onExportPDF,
     onWhatsApp,
     isExporting
- }: SummaryClientInfoProps) {
+}: SummaryClientInfoProps) {
+    if (!clientInfo) return null;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -40,19 +43,19 @@ export default function SummaryClientInfo({
                     <AppleInput
                         label="Имя клиента"
                         value={clientInfo.name}
-                        onChange={(e: React.ChangeEvent<any>) => setClientInfo({ ...clientInfo, name: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClientInfo?.({ ...clientInfo, name: e.target.value })}
                         placeholder="Введите имя клиента"
                     />
                     <AppleInput
                         label="Телефон"
                         value={clientInfo.phone}
-                        onChange={(e: React.ChangeEvent<any>) => setClientInfo({ ...clientInfo, phone: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClientInfo?.({ ...clientInfo, phone: e.target.value })}
                         placeholder="+7 (XXX) XXX-XX-XX"
                     />
                     <AppleInput
                         label="Email"
                         value={clientInfo.email}
-                        onChange={(e: React.ChangeEvent<any>) => setClientInfo({ ...clientInfo, email: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setClientInfo?.({ ...clientInfo, email: e.target.value })}
                         placeholder="email@example.com"
                     />
                     <div className="flex gap-2 items-end">

@@ -1,10 +1,18 @@
 'use client';
 import OptionCard from '../../premium/OptionCard';
 
+interface FiltrationOption {
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    flowRate?: number;
+}
+
 interface FiltrationGridProps {
-    options?: any[];
-    selection?: any;
-    onSelect?: (item: any) => void;
+    options?: FiltrationOption[];
+    selection?: FiltrationOption;
+    onSelect?: (item: FiltrationOption) => void;
     requiredFlow?: number;
 }
 
@@ -16,13 +24,13 @@ export default function FiltrationGrid({
 }: FiltrationGridProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {options.map((item: any, index: number) => {
+            {options.map((item: FiltrationOption, index: number) => {
                 // Smart Suggestion Logic
                 const flow = item.flowRate || 0;
                 const isRecommended = flow >= requiredFlow && flow <= requiredFlow * 2.5;
                 const isTooWeak = flow < requiredFlow;
 
-                let badge: string | null = null;
+                let badge: string | undefined;
                 if (isRecommended) badge = "Рекомендуем";
                 if (isTooWeak) badge = "Слабая мощность";
 

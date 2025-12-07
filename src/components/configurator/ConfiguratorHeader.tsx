@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Undo2, Redo2, Check } from 'lucide-react';
-import ProgressBar from '../ProgressBar';
+import { Undo2, Redo2, Check, Layout, Ruler, Box, Filter, ThermometerSun, Puzzle, Hammer, Plus, FileText, Circle } from 'lucide-react';
+import WizardProgress from '../WizardProgress';
 
 // Client-side only time ago component to avoid hydration mismatch
 function TimeAgo({ date }: { date: Date }) {
@@ -25,11 +25,28 @@ function TimeAgo({ date }: { date: Date }) {
     return <>{timeAgo}</>;
 }
 
+const STEP_ICONS: Record<string, any> = {
+    material: Layout,
+    dimensions: Ruler,
+    bowl: Box,
+    filtration: Filter,
+    heating: ThermometerSun,
+    parts: Puzzle,
+    works: Hammer,
+    additional: Plus,
+    summary: FileText
+};
+
+interface Step {
+    id: string;
+    label: string;
+}
+
 interface ConfiguratorHeaderProps {
     currentStepIndex?: number;
-    visibleSteps?: any[];
-    steps?: any[];
-    currentStepData?: any;
+    visibleSteps?: string[];
+    steps?: Step[];
+    currentStepData?: Step;
     undo?: () => void;
     redo?: () => void;
     canUndo?: boolean;
@@ -56,12 +73,18 @@ export default function ConfiguratorHeader({
         <div className="bg-navy-deep/95 backdrop-blur-md border-b border-white/10 sticky top-0 z-30 shadow-lg">
             <div className="max-w-[1600px] mx-auto px-6">
                 <div className="py-4">
-                    {/* Progress Bar */}
-                    <ProgressBar
+                    {/* Wizard Progress */}
+                    <WizardProgress
+                        steps={visibleSteps?.map((stepId, index) => ({
+                            id: stepId,
+                            title: steps?.find(s => s.id === stepId)?.label || stepId,
+                            icon: STEP_ICONS[stepId] || Circle,
+                            isComplete: index < currentStepIndex,
+                            isValid: true, // TODO: Добавить валидацию
+                            // summary: selection?.[stepId]?.name // Можно добавить позже
+                        })) || []}
                         currentStep={currentStepIndex}
-                        totalSteps={visibleSteps?.length || 0}
-                        stepNames={visibleSteps?.map(id => steps?.find(s => s.id === id)?.label) || []}
-                        onStepClick={(idx: number) => {
+                        onStepClick={(idx) => {
                             if (idx <= currentStepIndex) {
                                 onStepClick?.(idx);
                             }

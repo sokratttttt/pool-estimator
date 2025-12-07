@@ -6,20 +6,23 @@
 /**
  * Scroll to element smoothly
  */
-export const scrollToElement = (element: any, options: any = {}) => {
+export const scrollToElement = (element: Element | string | null, options: ScrollToOptions & { offset?: number; block?: ScrollLogicalPosition } = {}) => {
     const {
         offset = 0,
         behavior = 'smooth',
-        block: _block = 'start'
+        // block: _block = 'start' // unused
     } = options;
 
+    let targetElement: Element | null = null;
     if (typeof element === 'string') {
-        element = document.querySelector(element);
+        targetElement = document.querySelector(element);
+    } else {
+        targetElement = element;
     }
 
-    if (!element) return;
+    if (!targetElement) return;
 
-    const elementPosition = element.getBoundingClientRect().top;
+    const elementPosition = targetElement.getBoundingClientRect().top;
     const offsetPosition = elementPosition + window.pageYOffset - offset;
 
     window.scrollTo({
@@ -31,7 +34,7 @@ export const scrollToElement = (element: any, options: any = {}) => {
 /**
  * Check if element is in viewport
  */
-export const isInViewport = (element: any) => {
+export const isInViewport = (element: Element | string | null) => {
     if (typeof element === 'string') {
         element = document.querySelector(element);
     }
@@ -50,21 +53,24 @@ export const isInViewport = (element: any) => {
 /**
  * Get element offset from top
  */
-export const getElementOffset = (element: any) => {
+export const getElementOffset = (element: Element | string | null) => {
+    let targetElement: Element | null = null;
     if (typeof element === 'string') {
-        element = document.querySelector(element);
+        targetElement = document.querySelector(element);
+    } else {
+        targetElement = element;
     }
 
-    if (!element) return 0;
+    if (!targetElement) return 0;
 
-    const rect = element.getBoundingClientRect();
+    const rect = targetElement.getBoundingClientRect();
     return rect.top + window.pageYOffset;
 };
 
 /**
  * Copy text to clipboard
  */
-export const copyToClipboard = async (text: any) => {
+export const copyToClipboard = async (text: string) => {
     try {
         if (navigator.clipboard) {
             await navigator.clipboard.writeText(text);
@@ -90,7 +96,7 @@ export const copyToClipboard = async (text: any) => {
 /**
  * Download file from URL
  */
-export const downloadFile = (url: any, filename: any) => {
+export const downloadFile = (url: string, filename?: string) => {
     const link = document.createElement('a');
     link.href = url;
     link.download = filename || 'download';
@@ -129,29 +135,38 @@ export const unlockBodyScroll = () => {
 /**
  * Add class to element
  */
-export const addClass = (element: any, className: string) => {
+export const addClass = (element: Element | string | null, className: string) => {
+    let targetElement: Element | null = null;
     if (typeof element === 'string') {
-        element = document.querySelector(element);
+        targetElement = document.querySelector(element);
+    } else {
+        targetElement = element;
     }
-    element?.classList.add(className);
+    targetElement?.classList.add(className);
 };
 
 /**
  * Remove class from element
  */
-export const removeClass = (element: any, className: string) => {
+export const removeClass = (element: Element | string | null, className: string) => {
+    let targetElement: Element | null = null;
     if (typeof element === 'string') {
-        element = document.querySelector(element);
+        targetElement = document.querySelector(element);
+    } else {
+        targetElement = element;
     }
-    element?.classList.remove(className);
+    targetElement?.classList.remove(className);
 };
 
 /**
  * Toggle class on element
  */
-export const toggleClass = (element: any, className: string) => {
+export const toggleClass = (element: Element | string | null, className: string) => {
+    let targetElement: Element | null = null;
     if (typeof element === 'string') {
-        element = document.querySelector(element);
+        targetElement = document.querySelector(element);
+    } else {
+        targetElement = element;
     }
-    element?.classList.toggle(className);
+    targetElement?.classList.toggle(className);
 };

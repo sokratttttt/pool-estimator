@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { usePhotos } from '@/context/PhotoContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image as ImageIcon, Trash2, Filter } from 'lucide-react';
+import Image from 'next/image';
 import PhotoViewer from './PhotoViewer';
 import type { PhotoData } from '@/types/photo';
 
@@ -126,10 +127,12 @@ export default function PhotoGallery({ estimateId }: PhotoGalleryProps) {
                                 className="group relative aspect-square rounded-xl overflow-hidden border border-apple-border hover:border-apple-accent cursor-pointer transition-all"
                             >
                                 {/* Image */}
-                                <img
+                                <Image
                                     src={photoUrl || ''}
                                     alt={photo.caption || 'Фото проекта'}
-                                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                                    fill
+                                    className="object-cover transition-transform group-hover:scale-110"
+                                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                 />
 
                                 {/* Overlay */}

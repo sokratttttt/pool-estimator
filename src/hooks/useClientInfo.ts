@@ -2,8 +2,25 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 
-export const useClientInfo = (initialData = {}) => {
-    const [clientInfo, setClientInfo] = useState({
+interface ClientInfo {
+    name: string;
+    phone: string;
+    email: string;
+    managerName: string;
+    managerPhone: string;
+    clientId?: string;
+    [key: string]: string | undefined;
+}
+
+interface ClientData {
+    id: string;
+    name: string;
+    phone?: string;
+    email?: string;
+}
+
+export const useClientInfo = (initialData: Partial<ClientInfo> = {}) => {
+    const [clientInfo, setClientInfo] = useState<ClientInfo>({
         name: '',
         phone: '',
         email: '',
@@ -12,14 +29,14 @@ export const useClientInfo = (initialData = {}) => {
         ...initialData
     });
 
-    const updateClientInfo = useCallback((field: any, value: any) => {
+    const updateClientInfo = useCallback((field: keyof ClientInfo, value: string) => {
         setClientInfo(prev => ({
             ...prev,
             [field]: value
         }));
     }, []);
 
-    const selectClient = useCallback((client: any) => {
+    const selectClient = useCallback((client: ClientData) => {
         setClientInfo(prev => ({
             ...prev,
             name: client.name,

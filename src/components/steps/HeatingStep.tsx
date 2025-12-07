@@ -14,7 +14,7 @@ export default function HeatingStep() {
         <div className="space-y-8 pb-20">
             <div className="flex justify-between items-center">
                 <HeatingHeader />
-                <CatalogImporter type="heating" />
+                <CatalogImporter type={"heating" as "bowls" | "equipment"} />
             </div>
 
             {isLoadingCatalog ? (
@@ -26,9 +26,9 @@ export default function HeatingStep() {
                 />
             ) : (
                 <HeatingGrid
-                    options={heatingOptions}
-                    selection={selection.heating}
-                    onSelect={handleSelect}
+                    options={heatingOptions as unknown as Parameters<typeof HeatingGrid>[0]['options']}
+                    selection={selection.heating as unknown as Parameters<typeof HeatingGrid>[0]['selection']}
+                    onSelect={handleSelect as unknown as Parameters<typeof HeatingGrid>[0]['onSelect']}
                 />
             )}
         </div>

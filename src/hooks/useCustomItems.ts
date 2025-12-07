@@ -2,11 +2,21 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 
-export const useCustomItems = () => {
-    const [customItems, setCustomItems] = useState<any[]>([]);
+export interface CustomItem {
+    id: string;
+    name: string;
+    quantity: number;
+    unit: string;
+    price: number;
+    total: number;
+    category: string;
+}
 
-    const addCustomItem = useCallback((product: any) => {
-        const newItem = {
+export const useCustomItems = () => {
+    const [customItems, setCustomItems] = useState<CustomItem[]>([]);
+
+    const addCustomItem = useCallback((product: Partial<CustomItem> & { name: string; price: number }) => {
+        const newItem: CustomItem = {
             id: `custom-${Date.now()}`,
             name: product.name,
             quantity: product.quantity || 1,
@@ -25,7 +35,7 @@ export const useCustomItems = () => {
         toast.success('Позиция удалена');
     }, []);
 
-    const updateCustomItem = useCallback((itemId: string, updates: any) => {
+    const updateCustomItem = useCallback((itemId: string, updates: Partial<CustomItem>) => {
         setCustomItems(prev => prev.map(item =>
             item.id === itemId
                 ? {

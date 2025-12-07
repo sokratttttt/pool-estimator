@@ -4,9 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import Image from 'next/image';
 
+interface GalleryImage {
+    src: string;
+    alt?: string;
+    label?: string;
+}
+
 interface ImageGalleryProps {
-    images?: any;
-    title?: any;
+    images?: GalleryImage[];
+    title?: string;
     className?: string;
 }
 
@@ -15,6 +21,7 @@ export default function ImageGallery({ images, title, className = '' }: ImageGal
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const openLightbox = (index: number) => {
+        if (!images) return;
         setCurrentIndex(index);
         setSelectedImage(images[index]);
     };
@@ -24,12 +31,14 @@ export default function ImageGallery({ images, title, className = '' }: ImageGal
     };
 
     const nextImage = () => {
+        if (!images) return;
         const newIndex = (currentIndex + 1) % images.length;
         setCurrentIndex(newIndex);
         setSelectedImage(images[newIndex]);
     };
 
     const prevImage = () => {
+        if (!images) return;
         const newIndex = (currentIndex - 1 + images.length) % images.length;
         setCurrentIndex(newIndex);
         setSelectedImage(images[newIndex]);
@@ -43,7 +52,7 @@ export default function ImageGallery({ images, title, className = '' }: ImageGal
 
             {/* Gallery Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {images.map((image: any, index: number) => (
+                {images && images.map((image, index) => (
                     <motion.div
                         key={index}
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -92,7 +101,7 @@ export default function ImageGallery({ images, title, className = '' }: ImageGal
                             </button>
 
                             {/* Navigation */}
-                            {images.length > 1 && (
+                            {images && images.length > 1 && (
                                 <>
                                     <button
                                         onClick={prevImage}
@@ -135,7 +144,7 @@ export default function ImageGallery({ images, title, className = '' }: ImageGal
                             )}
 
                             {/* Counter */}
-                            {images.length > 1 && (
+                            {images && images.length > 1 && (
                                 <div className="absolute top-4 left-4 text-white text-sm bg-black/50 px-4 py-2 rounded-full">
                                     {currentIndex + 1} / {images.length}
                                 </div>

@@ -24,7 +24,7 @@
       }
     ],
     // Смягчаем правило для any типов - ОТКЛЮЧАЕМ для сборки
-    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
     // ОТКЛЮЧАЕМ правило consistent-type-imports
     "@typescript-eslint/consistent-type-imports": "off",
     // Смягчаем правило для зависимостей React хуков
@@ -49,16 +49,13 @@
     ".next/",
     "electron/",
     "out/",
+    "dist/",
     "*.config.js",
     "*.config.mjs",
     "**/__tests__/**",
-    // Дополнительно игнорируем проблемные папки
+    // Игнорируем 3D компоненты (сложная типизация three.js)
     "src/components/3d/",
-    "src/utils/",
-    "src/hooks/",
-    "src/types/",
-    "src/lib/",
-    // Игнорируем все JS файлы
-    "**/*.js"
+    // Игнорируем все JS файлы в корне
+    "*.js"
   ]
 }

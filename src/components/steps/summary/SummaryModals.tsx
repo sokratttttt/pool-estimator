@@ -1,28 +1,61 @@
-import React from 'react';
-import { Suspense, lazy } from 'react';
+'use client';
+import React, { Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Save, Bookmark, Calendar, X } from 'lucide-react';
 import AppleButton from '../../apple/AppleButton';
 import AppleInput from '../../apple/AppleInput';
 import { useMediaQuery } from '../../../hooks/useMediaQuery';
 import { LoadingSkeleton } from '../../ui';
+import { EstimateItem, Product } from '@/types';
+import { Selection } from '@/types/estimate-utils';
 
 const GanttChart = lazy(() => import('../../GanttChart'));
 const DescriptionGeneratorModal = lazy(() => import('../../DescriptionGeneratorModal'));
 const CatalogSelector = lazy(() => import('../../CatalogSelector'));
 
-interface SummaryModalsProps {
-  modalsState?: any;
-  modalsHandlers?: any;
-  data?: any;
+interface ModalsState {
+    showSaveModal: boolean;
+    showTemplateModal: boolean;
+    showGanttModal: boolean;
+    showDescriptionModal: boolean;
+    showCatalogSelector: boolean;
 }
 
-export default function SummaryModals({ 
+interface ModalsHandlers {
+    setShowSaveModal: (show: boolean) => void;
+    setShowTemplateModal: (show: boolean) => void;
+    setShowGanttModal: (show: boolean) => void;
+    setShowDescriptionModal: (show: boolean) => void;
+    setShowCatalogSelector: (show: boolean) => void;
+    handleSave: () => void;
+    handleSaveAsTemplate: () => void;
+    handleCatalogSelect: (item: Product) => void;
+}
+
+interface SummaryData {
+    estimateName: string;
+    setEstimateName: (name: string) => void;
+    templateName: string;
+    setTemplateName: (name: string) => void;
+    templateDescription: string;
+    setTemplateDescription: (desc: string) => void;
+    allItems: EstimateItem[];
+    selection: Selection;
+}
+
+interface SummaryModalsProps {
+    modalsState: ModalsState;
+    modalsHandlers: ModalsHandlers;
+    data: SummaryData;
+}
+
+export default function SummaryModals({
     modalsState,
     modalsHandlers,
     data
- }: SummaryModalsProps) {
+}: SummaryModalsProps) {
     const isMobile = useMediaQuery('(max-width: 768px)');
+
     const {
         showSaveModal,
         showTemplateModal,
@@ -87,7 +120,7 @@ export default function SummaryModals({
                                     label="Название сметы"
                                     placeholder="Например: Бассейн 8x4м - Загородный дом"
                                     value={estimateName}
-                                    onChange={(e: React.ChangeEvent<any>) => setEstimateName(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEstimateName(e.target.value)}
                                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSave()}
                                     className="mb-6"
                                     autoFocus
@@ -148,7 +181,7 @@ export default function SummaryModals({
                                     label="Название шаблона"
                                     placeholder="Например: Стандартный бассейн 8×4"
                                     value={templateName}
-                                    onChange={(e: React.ChangeEvent<any>) => setTemplateName(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemplateName(e.target.value)}
                                     className="mb-4"
                                     autoFocus
                                 />
@@ -156,7 +189,7 @@ export default function SummaryModals({
                                     label="Описание (необязательно)"
                                     placeholder="Краткое описание конфигурации"
                                     value={templateDescription}
-                                    onChange={(e: React.ChangeEvent<any>) => setTemplateDescription(e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemplateDescription(e.target.value)}
                                     className="mb-6"
                                 />
 
@@ -242,8 +275,8 @@ export default function SummaryModals({
                         length: selection?.dimensions?.length || selection?.bowl?.length || 0,
                         width: selection?.dimensions?.width || selection?.bowl?.width || 0,
                         depth: selection?.dimensions?.depth || selection?.bowl?.depth || 1.5,
-                        total: allItems.reduce((sum: any, item: any) => sum + (item.price * item.quantity), 0),
-                        selectedWorks: allItems // Pass all items as works for feature detection
+                        total: allItems.reduce((sum: number, item: EstimateItem) => sum + (item.price * item.quantity), 0),
+                        selectedWorks: allItems
                     }}
                 />
             </Suspense>

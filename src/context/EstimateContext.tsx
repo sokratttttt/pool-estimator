@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, t
 import { toast } from 'sonner';
 import dynamicPrices from '@/data/prices.json';
 import { useCatalog } from './CatalogContext';
-import type { Bowl, Dimensions } from '@/types';
+import type { Bowl, Dimensions, MaterialSelection, FiltrationSelection, HeatingSelection, PartsSelection } from '@/types';
 
 // ============================================
 // TYPES
@@ -15,46 +15,8 @@ interface ClientInfo {
     email: string;
 }
 
-interface MaterialSelection {
-    id: 'concrete' | 'composite' | 'polypropylene';
-    name: string;
-    basePricePerCubicMeter?: number;
-    type: 'custom' | 'fixed';
-}
+// Local interfaces removed, imported from @/types
 
-interface FiltrationSelection {
-    id: string;
-    name: string;
-    price: number;
-}
-
-interface HeatingSelection {
-    id: string;
-    name: string;
-    type: string;
-    price: number;
-    installationPrice?: number;
-    items?: Array<{
-        name: string;
-        price: number;
-        quantity: number;
-    }>;
-}
-
-interface PartItem {
-    name: string;
-    price: number;
-    quantity: number;
-    installationPrice?: number;
-    type?: 'nozzle' | 'skimmer' | 'drain' | 'light' | 'other';
-}
-
-interface PartsSelection {
-    id: string;
-    name: string;
-    price?: number;
-    items?: PartItem[];
-}
 
 // Unified AdditionalItem type
 export interface AdditionalItem {
@@ -88,6 +50,7 @@ export interface Selection {
     additional: AdditionalItem[];
     works?: Record<string, WorkSelection> | WorkSelection[];
     clientInfo: ClientInfo;
+    [key: string]: unknown; // Index signature for compatibility
 }
 
 // Измененный тип для совместимости
@@ -95,7 +58,8 @@ interface CatalogData {
     bowls?: Bowl[];
     heating?: HeatingSelection[];
     filtration?: FiltrationSelection[];
-    additional?: any[]; // Temporarily use any for compatibility
+    additional?: AdditionalItem[];
+    [key: string]: unknown; // Index signature for compatibility
 }
 
 interface EstimateContextValue {
@@ -106,7 +70,7 @@ interface EstimateContextValue {
     getDynamicPrice: (itemName: string | undefined, defaultPrice: number) => number;
     catalog: CatalogData;
     isLoadingCatalog: boolean;
-    updateCatalog: (category: string, items: any[]) => void;
+    updateCatalog: (category: string, items: unknown[]) => void;
     isInitialized: boolean;
     lastSaved: Date | null;
     undo: () => void;
@@ -297,11 +261,11 @@ export function EstimateProvider({ children }: EstimateProviderProps) {
     }, []);
 
     // Функция для адаптации данных каталога
-    const adaptCatalogData = useCallback((catalogData: any): CatalogData => {
+    const adaptCatalogData = useCallback((catalogData: Partial<CatalogData>): CatalogData => {
         return {
-            bowls: catalogData.bowls || [],
-            heating: catalogData.heating || [],
-            filtration: catalogData.filtration || [],
+            bowls: (catalogData.bowls || []) as Bowl[],
+            heating: (catalogData.heating || []) as HeatingSelection[],
+            filtration: (catalogData.filtration || []) as FiltrationSelection[],
             additional: catalogData.additional || []
         };
     }, []);
@@ -311,9 +275,9 @@ export function EstimateProvider({ children }: EstimateProviderProps) {
         setSelection,
         updateSelection,
         getDynamicPrice,
-        catalog: adaptCatalogData(catalog),
+        catalog: adaptCatalogData(catalog as any),
         isLoadingCatalog,
-        updateCatalog: updateCatalog as (category: string, items: any[]) => void,
+        updateCatalog: updateCatalog as (category: string, items: unknown[]) => void,
         isInitialized,
         lastSaved,
         undo,

@@ -1,6 +1,18 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+import type { ClientInfo } from '@/types/index';
+
+interface ProposalItem {
+    name: string;
+    quantity?: number;
+    unit?: string;
+    price?: number;
+    total?: number;
+    category?: string;
+    section?: string;
+}
+
 // Функция для загрузки шрифта
 const loadFonts = async (doc: any) => {
     try {
@@ -10,7 +22,7 @@ const loadFonts = async (doc: any) => {
         const blob = await response.blob();
         const reader = new FileReader();
 
-        return new Promise((resolve: any, reject: any) => {
+        return new Promise((resolve, reject) => {
             reader.onloadend = () => {
                 const result = reader.result as string;
                 const base64data = result ? result.split(',')[1] : null;
@@ -22,6 +34,7 @@ const loadFonts = async (doc: any) => {
                 } else {
                     reject(new Error('Failed to convert font to base64'));
                 }
+
             };
             reader.onerror = reject;
             reader.readAsDataURL(blob);
@@ -34,7 +47,7 @@ const loadFonts = async (doc: any) => {
     }
 };
 
-export const generateProposal = async (items: any, totalSum: any, clientInfo: any, estimateId: string) => {
+export const generateProposal = async (items: ProposalItem[], totalSum: number, clientInfo: ClientInfo, estimateId: string) => {
     const doc: any = new jsPDF();
 
     // Загружаем шрифт перед генерацией
@@ -157,8 +170,8 @@ export const generateProposal = async (items: any, totalSum: any, clientInfo: an
     doc.text('СОСТАВ КОММЕРЧЕСКОГО ПРЕДЛОЖЕНИЯ', 20, currentY);
     currentY += 15;
 
-    const grouped: any = {};
-    items.forEach((item: any) => {
+    const grouped: Record<string, ProposalItem[]> = {};
+    items.forEach((item: ProposalItem) => {
         const category = item.category || item.section || 'Прочее';
         if (!grouped[category]) {
             grouped[category] = [];
@@ -177,7 +190,7 @@ export const generateProposal = async (items: any, totalSum: any, clientInfo: an
         doc.text(category, 20, currentY);
         currentY += 10;
 
-        const tableData = grouped[category].map((item: any) => [
+        const tableData = grouped[category].map((item: ProposalItem) => [
             item.name,
             item.quantity || 1,
             item.unit || 'шт',

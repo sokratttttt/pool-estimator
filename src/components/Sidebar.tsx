@@ -18,7 +18,8 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-type SidebarProps = object;
+/* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
+interface SidebarProps { }
 
 export default function Sidebar({ }: SidebarProps) {
     const pathname = usePathname();
@@ -57,7 +58,7 @@ export default function Sidebar({ }: SidebarProps) {
 
             {/* Navigation */}
             <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto premium-scrollbar">
-                {menuItems.map((item: any) => {
+                {menuItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
 

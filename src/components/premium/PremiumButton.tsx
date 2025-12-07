@@ -9,7 +9,7 @@ interface PremiumButtonProps {
     disabled?: boolean;
     loading?: boolean;
     fullWidth?: boolean;
-    icon?: any;
+    icon?: React.ComponentType<{ size?: number }>;
     iconPosition?: 'left' | 'right';
     className?: string;
 }

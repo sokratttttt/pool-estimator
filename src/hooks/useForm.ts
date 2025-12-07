@@ -51,15 +51,15 @@ export interface UseFormReturn<T> {
     errors: Partial<Record<keyof T, string>>;
     touched: Partial<Record<keyof T, boolean>>;
     isSubmitting: boolean;
-    handleChange: (name: keyof T, value: any) => void;
+    handleChange: (name: keyof T, value: T[keyof T]) => void;
     handleBlur: (name: keyof T) => void;
     handleSubmit: (e?: FormEvent) => Promise<void>;
     reset: () => void;
-    setFieldValue: (name: keyof T, value: any) => void;
+    setFieldValue: (name: keyof T, value: T[keyof T]) => void;
     setFieldError: (name: keyof T, error: string | null) => void;
     getFieldProps: (name: keyof T) => {
         name: string;
-        value: any;
+        value: T[keyof T] | string;
         onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
         onBlur: () => void;
     };
@@ -70,7 +70,7 @@ export interface UseFormReturn<T> {
  * useForm hook
  * Complete form management solution
  */
-export function useForm<T extends Record<string, any>>({
+export function useForm<T extends Record<string, unknown>>({
     initialValues,
     validate,
     onSubmit
@@ -81,7 +81,7 @@ export function useForm<T extends Record<string, any>>({
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Handle field change
-    const handleChange = useCallback((name: keyof T, value: any) => {
+    const handleChange = useCallback((name: keyof T, value: T[keyof T]) => {
         setValues(prev => ({
             ...prev,
             [name]: value
@@ -163,7 +163,7 @@ export function useForm<T extends Record<string, any>>({
     }, [initialValues]);
 
     // Set field value programmatically
-    const setFieldValue = useCallback((name: keyof T, value: any) => {
+    const setFieldValue = useCallback((name: keyof T, value: T[keyof T]) => {
         setValues(prev => ({
             ...prev,
             [name]: value
@@ -186,9 +186,9 @@ export function useForm<T extends Record<string, any>>({
     // Get field props
     const getFieldProps = useCallback((name: keyof T) => ({
         name: String(name),
-        value: values[name] || '',
+        value: (values[name] !== undefined && values[name] !== null ? values[name] : '') as T[keyof T] | string,
         onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-            handleChange(name, e.target.value),
+            handleChange(name, e.target.value as unknown as T[keyof T]),
         onBlur: () => handleBlur(name)
     }), [values, handleChange, handleBlur]);
 

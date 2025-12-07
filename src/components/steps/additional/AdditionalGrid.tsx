@@ -2,11 +2,13 @@
 import { Check, Plus } from 'lucide-react';
 import OptionCard from '../../premium/OptionCard';
 
+import { Product } from '@/types';
+
 interface AdditionalGridProps {
     categories: string[];
-    optionsByCategory: Record<string, any[]>;
+    optionsByCategory: Record<string, Product[]>;
     selectedIds: string[];
-    onToggle: (option: any) => void;
+    onToggle: (option: Product) => void;
 }
 
 export default function AdditionalGrid({ categories, optionsByCategory, selectedIds, onToggle }: AdditionalGridProps) {
@@ -18,7 +20,7 @@ export default function AdditionalGrid({ categories, optionsByCategory, selected
                         {category}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {optionsByCategory[category]?.map((option: any, index: number) => {
+                        {optionsByCategory[category]?.map((option: Product, index: number) => {
                             const isSelected = selectedIds.includes(option.id);
                             return (
                                 <OptionCard
@@ -29,7 +31,7 @@ export default function AdditionalGrid({ categories, optionsByCategory, selected
                                     image={isSelected ? <Check size={64} className="text-green-500" /> : <Plus size={64} className="text-cyan-500" />}
                                     selected={isSelected}
                                     onClick={() => onToggle(option)}
-                                    badge={isSelected ? 'Выбрано' : null}
+                                    badge={isSelected ? 'Выбрано' : undefined}
                                     delay={index * 0.05}
                                 />
                             );

@@ -9,7 +9,8 @@ import type {
     HistorySnapshot,
     HistoryAction,
     HistoryFilters,
-    HistoryActionType
+    HistoryActionType,
+    HistoryEstimate
 } from '@/types/history';
 
 const HistoryContext = createContext<HistoryContextType | null>(null);
@@ -18,13 +19,13 @@ const MAX_HISTORY_SIZE = 1000;
 
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
     const { user, isOnline } = useSync();
-    const [estimates, setEstimates] = useState<any[]>([]);
+    const [estimates, setEstimates] = useState<HistoryEstimate[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
 
     // New state for advanced history features
     const [entries, setEntries] = useState<HistoryEntry[]>([]);
     const [snapshots, _setSnapshots] = useState<HistorySnapshot[]>([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, _setCurrentIndex] = useState(0);
     const [isRecording, setIsRecording] = useState(true);
 
     // Load from localStorage on mount
@@ -50,10 +51,11 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
     }, [estimates, isInitialized]);
 
     // ✨ Memoized cloud update handler
-    const handleCloudUpdate = useCallback((record: any) => {
+    const handleCloudUpdate = useCallback((record: Record<string, unknown>) => {
         setEstimates(prev => {
-            const index = prev.findIndex(e => e.id === record.id);
-            const newItem = { ...record.data, author: record.created_by };
+            const r = record as { id: string; data: object; created_by?: string };
+            const index = prev.findIndex(e => e.id === r.id);
+            const newItem = { ...r.data, author: r.created_by } as HistoryEstimate;
 
             if (index >= 0) {
                 if (JSON.stringify(prev[index]) !== JSON.stringify(newItem)) {
@@ -84,16 +86,25 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
                 const prevIds = new Set(prev.map(e => e.id));
 
                 if (remoteEstimates) {
-                    remoteEstimates.forEach((remote: any) => {
-                        const remoteEst = { ...remote.data, author: remote.created_by };
-                        if (!prevIds.has(remote.id)) {
+                    remoteEstimates.forEach((remote: unknown) => {
+                        const r = remote as { id: string; data: object; created_by?: string; created_at: string };
+                        const remoteEst = {
+                            ...r.data,
+                            author: r.created_by,
+                            created_at: r.created_at, // Ensure created_at is present
+                        } as HistoryEstimate;
+                        if (!prevIds.has(r.id)) {
                             merged.push(remoteEst);
                         }
                     });
                 }
 
                 return merged
-                    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                    .sort((a, b) => {
+                        const dateA = new Date(a.created_at || a.createdAt || 0).getTime();
+                        const dateB = new Date(b.created_at || b.createdAt || 0).getTime();
+                        return dateB - dateA;
+                    })
                     .slice(0, MAX_HISTORY_SIZE);
             });
         } catch (error) {
@@ -102,7 +113,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     // ✨ Memoized save to cloud
-    const saveToCloud = useCallback(async (estimate: any) => {
+    const saveToCloud = useCallback(async (estimate: HistoryEstimate) => {
         if (!user || !isOnline) return;
 
         try {
@@ -111,7 +122,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
                 .upsert({
                     id: estimate.id,
                     name: estimate.name,
-                    client_name: estimate.clientInfo?.name,
+                    client_name: estimate.client_info?.name || estimate.clientInfo?.name,
                     data: estimate,
                     total: estimate.total,
                     status: estimate.status || 'draft',
@@ -165,7 +176,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
                 ...action,
                 timestamp: new Date(),
                 userId: user?.id || 'guest',
-            },
+            } as HistoryAction,
             description,
             tags: [],
             isUndone: false,
@@ -174,44 +185,61 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
         };
 
         setEntries(prev => [newEntry, ...prev].slice(0, MAX_HISTORY_SIZE));
-        setCurrentIndex(0);
         return newEntry.id;
     }, [isRecording, user]);
 
     // ✨ Memoized save estimate
-    const saveEstimate = useCallback((name: string, selection: any, items: any, total: number) => {
-        const newEstimate = {
-            id: Date.now().toString(),
+    const saveEstimate = useCallback((name: string, selection: unknown, items: unknown, total: number) => {
+        const now = new Date().toISOString();
+        const id = Date.now().toString();
+
+        // Extract client info if possible, assuming selection object might have it
+        // We cast broadly to avoid strict type checks here as selection is unknown
+        const sel = selection as { clientInfo?: { name: string; phone: string; email?: string } } | null;
+        const cInfo = sel?.clientInfo;
+
+        const newEstimate: HistoryEstimate = {
+            id,
             name,
-            selection,
-            items,
             total,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            author: user?.email || 'Guest',
-            status: 'draft'
+            selection: selection as Record<string, unknown>,
+            items: items as unknown[],
+            client_info: cInfo,
+            clientInfo: cInfo, // legacy
+            created_at: now,
+            updated_at: now,
+            createdAt: now,
+            updatedAt: now,
+            status: 'draft',
+            user_id: user?.id,
+            author: user?.email || 'Guest'
         };
 
         setEstimates(prev => [newEstimate, ...prev].slice(0, MAX_HISTORY_SIZE));
         saveToCloud(newEstimate);
 
-        // Record action
         recordAction({
             type: 'estimate_created',
             entityId: newEstimate.id,
             entityType: 'estimate',
             after: newEstimate,
             changes: ['created']
-        }, `Created estimate: ${name}`);
+        }, `Created estimate: ${newEstimate.name}`);
 
         return newEstimate.id;
     }, [user, saveToCloud, recordAction]);
 
     // ✨ Memoized update estimate
-    const updateEstimate = useCallback((id: string, updates: any) => {
+    const updateEstimate = useCallback((id: string, updates: Partial<HistoryEstimate>) => {
         setEstimates(prev => prev.map(est => {
             if (est.id === id) {
-                const updated = { ...est, ...updates, updatedAt: new Date().toISOString() };
+                const now = new Date().toISOString();
+                const updated = {
+                    ...est,
+                    ...updates,
+                    updated_at: now,
+                    updatedAt: now
+                };
                 saveToCloud(updated);
 
                 // Record action
@@ -259,14 +287,18 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
         const original = getEstimate(id);
         if (!original) return null;
 
-        const duplicate = {
+        const now = new Date().toISOString();
+        const duplicate: HistoryEstimate = {
             ...original,
             id: Date.now().toString(),
             name: `${original.name} (копия)`,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            created_at: now,
+            updated_at: now,
+            createdAt: now,
+            updatedAt: now,
             author: user?.email || 'Guest',
-            status: 'draft'
+            status: 'draft',
+            user_id: user?.id
         };
 
         setEstimates(prev => [duplicate, ...prev].slice(0, MAX_HISTORY_SIZE));
@@ -300,7 +332,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
         return 0;
     }, []);
 
-    const createSnapshot = useCallback(async (_name: string, _options?: any) => {
+    const createSnapshot = useCallback(async (_name: string, _options?: Record<string, unknown>) => {
         return 'snapshot-id';
     }, []);
 

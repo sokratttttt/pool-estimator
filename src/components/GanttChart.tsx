@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Gantt, ViewMode, type Task } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
-import { calculateSchedule, getProjectDuration, detectStagesFromItems } from '@/utils/ganttUtils';
+import { calculateSchedule, getProjectDuration, detectStagesFromItems, type EstimateItem } from '@/utils/ganttUtils';
 import { Calendar, Download } from 'lucide-react';
 import AppleButton from './apple/AppleButton';
 import AppleCard from './apple/AppleCard';
@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
  * @param {Date} startDate - дата начала проекта
  */
 interface GanttChartProps {
-    items?: any[];
+    items?: EstimateItem[];
     startDate?: Date | null;
 }
 
@@ -35,7 +35,7 @@ export default function GanttChart({ items = [], startDate }: GanttChartProps) {
         const projectStart = startDate || new Date();
         const scheduledTasks = calculateSchedule(stages, projectStart);
 
-        setTasks(scheduledTasks);
+        setTasks(scheduledTasks as Task[]);
     }, [items, startDate]);
 
     const duration = getProjectDuration(tasks);

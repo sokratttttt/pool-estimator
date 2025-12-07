@@ -14,7 +14,7 @@ interface Task {
 interface Action {
     label: string;
     type?: string;
-    data?: any;
+    data?: unknown;
 }
 
 interface Insight {

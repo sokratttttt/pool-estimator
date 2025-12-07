@@ -5,7 +5,16 @@
 /**
  * Стандартные этапы строительства бассейна с длительностью
  */
-const STANDARD_STAGES = [
+// Define types
+export interface Stage {
+    id: string;
+    name: string;
+    duration: number;
+    dependencies: string[];
+    category: string;
+}
+
+const STANDARD_STAGES: Stage[] = [
     {
         id: 'preparation',
         name: 'Подготовка участка',
@@ -63,7 +72,7 @@ const STANDARD_STAGES = [
  * @param {number} days - количество рабочих дней
  * @returns {Date} - конечная дата
  */
-const addWorkingDays = (date: any, days: any) => {
+const addWorkingDays = (date: Date, days: number): Date => {
     const result = new Date(date);
     let addedDays = 0;
 
@@ -84,20 +93,25 @@ const addWorkingDays = (date: any, days: any) => {
  * @param {Date} startDate - дата начала проекта
  * @returns {Array} - массив задач для gantt-chart
  */
-export const calculateSchedule = (stages: any[] = STANDARD_STAGES, startDate = new Date()) => {
-    const tasks: any[] = [];
+export const calculateSchedule = (stages: Stage[] = STANDARD_STAGES, startDate = new Date()) => {
+    const tasks: GanttTask[] = [];
     const stageEndDates: Record<string, Date> = {};
 
-    stages.forEach((stage: any) => {
+    stages.forEach((stage: Stage) => {
         // Определяем дату начала этапа
         let taskStart = new Date(startDate);
 
         // Если есть зависимости, берем максимальную дату окончания
         if (stage.dependencies && stage.dependencies.length > 0) {
             const dependencyDates = stage.dependencies.map((depId: string) => stageEndDates[depId]);
-            const maxDependencyDate = new Date(Math.max(...dependencyDates.map((d: Date) => d.getTime())));
-            taskStart = new Date(maxDependencyDate);
-            taskStart.setDate(taskStart.getDate() + 1); // Начинаем на следующий день
+            // Filter out undefined dates if any dependency is missing
+            const validDates = dependencyDates.filter((d): d is Date => !!d);
+
+            if (validDates.length > 0) {
+                const maxDependencyDate = new Date(Math.max(...validDates.map((d: Date) => d.getTime())));
+                taskStart = new Date(maxDependencyDate);
+                taskStart.setDate(taskStart.getDate() + 1); // Начинаем на следующий день
+            }
         }
 
         // Рассчитываем дату окончания
@@ -122,34 +136,42 @@ export const calculateSchedule = (stages: any[] = STANDARD_STAGES, startDate = n
     return tasks;
 };
 
-/**
- * Получить цвет для категории этапа
- * @param {string} category - категория этапа
- * @returns {object} - стили для задачи
- */
-const getStageColor = (category: any) => {
-    const colorMap = {
+type StageCategory = 'Земляные работы' | 'Работы' | 'Оборудование' | 'Сервис';
+
+interface StageColor {
+    backgroundColor?: string;
+    backgroundSelectedColor?: string;
+}
+
+const getStageColor = (category: string): StageColor => {
+    const colorMap: Record<StageCategory, StageColor> = {
         'Земляные работы': { backgroundColor: '#8B4513', backgroundSelectedColor: '#A0522D' },
         'Работы': { backgroundColor: '#0071E3', backgroundSelectedColor: '#0077ED' },
         'Оборудование': { backgroundColor: '#00B4D8', backgroundSelectedColor: '#00C4E8' },
         'Сервис': { backgroundColor: '#34C759', backgroundSelectedColor: '#3ED368' }
     };
 
-    return colorMap[category] || { backgroundColor: '#666', backgroundSelectedColor: '#777' };
+    return colorMap[category as StageCategory] || { backgroundColor: '#666', backgroundSelectedColor: '#777' };
 };
 
-/**
- * Рассчитать общую длительность проекта
- * @param {Array} tasks - массив задач
- * @returns {object} - информация о сроках
- */
-export const getProjectDuration = (tasks: any) => {
+interface GanttTask {
+    id: string;
+    name: string;
+    start: Date;
+    end: Date;
+    progress?: number;
+    type?: string;
+    styles?: StageColor;
+    dependencies?: string[];
+}
+
+export const getProjectDuration = (tasks: GanttTask[]) => {
     if (!tasks || tasks.length === 0) {
         return { days: 0, start: null, end: null };
     }
 
-    const start = new Date(Math.min(...tasks.map(t => t.start)));
-    const end = new Date(Math.max(...tasks.map(t => t.end)));
+    const start = new Date(Math.min(...tasks.map((t: GanttTask) => t.start.getTime())));
+    const end = new Date(Math.max(...tasks.map((t: GanttTask) => t.end.getTime())));
 
     // Считаем рабочие дни между датами
     let workingDays = 0;
@@ -170,19 +192,19 @@ export const getProjectDuration = (tasks: any) => {
     };
 };
 
-/**
- * Автоматически определить этапы на основе выбранных работ в смете
- * @param {Array} items - позиции сметы
- * @returns {Array} - адаптированные этапы
- */
-export const detectStagesFromItems = (items: any) => {
+export interface EstimateItem {
+    name?: string;
+    category?: string;
+}
+
+export const detectStagesFromItems = (items: EstimateItem[]) => {
     // Базовые этапы всегда присутствуют
     const stages = [...STANDARD_STAGES];
 
     // Можно добавить логику для адаптации этапов на основе конкретных работ
     // Например, если в смете есть "SPA" - добавить этап "Монтаж SPA"
 
-    const hasHammam = items.some(item =>
+    const hasHammam = items.some((item: EstimateItem) =>
         item.name?.toLowerCase().includes('хаммам') ||
         item.category?.toLowerCase().includes('хаммам')
     );
@@ -200,12 +222,19 @@ export const detectStagesFromItems = (items: any) => {
     return stages;
 };
 
+interface ScheduleTask {
+    id: string;
+    name: string;
+    start: Date;
+    end: Date;
+}
+
 /**
  * Экспортировать график в текстовый формат для PDF
  * @param {Array} tasks - массив задач
  * @returns {string} - текстовое представление
  */
-export const exportScheduleToText = (tasks: any) => {
+export const exportScheduleToText = (tasks: ScheduleTask[]) => {
     const duration = getProjectDuration(tasks);
 
     let text = `ГРАФИК ВЫПОЛНЕНИЯ РАБОТ\n\n`;
@@ -214,7 +243,7 @@ export const exportScheduleToText = (tasks: any) => {
     text += `Длительность: ${duration.days} рабочих дней (${duration.calendarDays} календарных)\n\n`;
     text += `ЭТАПЫ:\n\n`;
 
-    tasks.forEach((task: any, index: number) => {
+    tasks.forEach((task: ScheduleTask, index: number) => {
         const days = Math.ceil((task.end.getTime() - task.start.getTime()) / (1000 * 60 * 60 * 24));
         text += `${index + 1}. ${task.name}\n`;
         text += `   Период: ${task.start.toLocaleDateString('ru-RU')} - ${task.end.toLocaleDateString('ru-RU')}\n`;

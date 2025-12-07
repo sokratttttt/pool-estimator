@@ -3,18 +3,25 @@
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import DealCard from './DealCard';
+import type { Deal } from '@/types';
 
-interface KanbanColumnProps {
-  stage?: any;
-  deals?: any;
+interface Stage {
+    id: string;
+    label: string;
+    icon: string;
 }
 
-export default function KanbanColumn({  stage, deals  }: KanbanColumnProps) {
+interface KanbanColumnProps {
+    stage: Stage;
+    deals: Deal[];
+}
+
+export default function KanbanColumn({ stage, deals }: KanbanColumnProps) {
     const { setNodeRef } = useDroppable({
         id: stage.id
     });
 
-    const totalValue = deals.reduce((sum: any, deal: any) => sum + (deal.value || 0), 0);
+    const totalValue = deals.reduce((sum: number, deal: Deal) => sum + (deal.value || 0), 0);
 
     return (
         <div className="flex flex-col w-80 h-full bg-gray-800 rounded-lg border border-gray-700">
@@ -40,10 +47,10 @@ export default function KanbanColumn({  stage, deals  }: KanbanColumnProps) {
                 className="flex-1 overflow-y-auto p-3 space-y-3"
             >
                 <SortableContext
-                    items={deals.map(d => d.id)}
+                    items={deals.map((d: Deal) => d.id)}
                     strategy={verticalListSortingStrategy}
                 >
-                    {deals.map(deal => (
+                    {deals.map((deal: Deal) => (
                         <DealCard key={deal.id} deal={deal} />
                     ))}
                 </SortableContext>
@@ -57,3 +64,4 @@ export default function KanbanColumn({  stage, deals  }: KanbanColumnProps) {
         </div>
     );
 }
+

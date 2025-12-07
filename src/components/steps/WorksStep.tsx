@@ -32,7 +32,7 @@ export default function WorksStep() {
             />
 
             {Object.entries(workCategories).map(([categoryKey, category]) => {
-                const categoryWorks = works[categoryKey];
+                const categoryWorks = (works as Record<string, unknown>)[categoryKey];
                 const categoryTotal = categoryTotals[categoryKey] || 0;
 
                 return (
@@ -40,9 +40,9 @@ export default function WorksStep() {
                         key={categoryKey}
                         categoryKey={categoryKey}
                         category={category as { name: string; description: string; icon: React.ReactNode }}
-                        categoryWorks={categoryWorks}
+                        categoryWorks={categoryWorks as unknown as Parameters<typeof WorksCategory>[0]['categoryWorks']}
                         categoryTotal={categoryTotal}
-                        selectedWorks={selectedWorks}
+                        selectedWorks={selectedWorks as unknown as Parameters<typeof WorksCategory>[0]['selectedWorks']}
                         editingWork={editingWork}
                         editValue={editValue}
                         onEditValueChange={setEditValue}

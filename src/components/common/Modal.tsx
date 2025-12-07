@@ -108,7 +108,7 @@ export default function Modal({
 
                     {/* Modal content */}
                     <motion.div
-                        ref={(node: any) => {
+                        ref={(node: HTMLDivElement | null) => {
                             modalRef.current = node;
                             outsideClickRef.current = node;
                         }}

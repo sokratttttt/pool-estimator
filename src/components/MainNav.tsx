@@ -4,7 +4,8 @@ import { usePathname } from 'next/navigation';
 import { Calculator, Package, History, Settings, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type MainNavProps = object;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface MainNavProps { }
 
 export default function MainNav({ }: MainNavProps) {
     const pathname = usePathname();
@@ -43,7 +44,7 @@ export default function MainNav({ }: MainNavProps) {
 
                     {/* Navigation */}
                     <div className="hidden md:flex gap-2">
-                        {navItems.map((item: any) => {
+                        {navItems.map((item) => {
                             const Icon = item.icon;
                             const isActive = pathname === item.href;
 
@@ -89,7 +90,7 @@ export default function MainNav({ }: MainNavProps) {
                 borderTop: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
                 <div className="flex justify-around p-2">
-                    {navItems.map((item: any) => {
+                    {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = pathname === item.href;
 

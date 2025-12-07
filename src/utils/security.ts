@@ -6,7 +6,7 @@
 /**
  * Sanitize HTML to prevent XSS
  */
-export const sanitizeHTML = (html: any) => {
+export const sanitizeHTML = (html: string) => {
     const div = document.createElement('div');
     div.textContent = html;
     return div.innerHTML;
@@ -15,8 +15,8 @@ export const sanitizeHTML = (html: any) => {
 /**
  * Escape HTML special characters
  */
-export const escapeHTML = (text: any) => {
-    const htmlEscapes = {
+export const escapeHTML = (text: string): string => {
+    const htmlEscapes: Record<string, string> = {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
@@ -25,13 +25,13 @@ export const escapeHTML = (text: any) => {
         '/': '&#x2F;'
     };
 
-    return String(text).replace(/[&<>"'/]/g, char => htmlEscapes[char]);
+    return String(text).replace(/[&<>"'/]/g, (char: string) => htmlEscapes[char] || char);
 };
 
 /**
  * Sanitize string for SQL (basic - use parameterized queries in production!)
  */
-export const sanitizeSQL = (input: any) => {
+export const sanitizeSQL = (input: unknown) => {
     if (typeof input !== 'string') return input;
 
     return input
@@ -45,7 +45,7 @@ export const sanitizeSQL = (input: any) => {
 /**
  * Sanitize user input (remove dangerous characters)
  */
-export const sanitizeInput = (input: any) => {
+export const sanitizeInput = (input: unknown) => {
     if (typeof input !== 'string') return input;
 
     return input
@@ -59,7 +59,7 @@ export const sanitizeInput = (input: any) => {
 /**
  * Validate and sanitize URL
  */
-export const sanitizeURL = (url: any) => {
+export const sanitizeURL = (url: string) => {
     try {
         const urlObj = new URL(url);
 
@@ -86,7 +86,7 @@ export const generateCSRFToken = () => {
 /**
  * Validate CSRF token
  */
-export const validateCSRFToken = (token: any, storedToken: any) => {
+export const validateCSRFToken = (token: string, storedToken: string) => {
     if (!token || !storedToken) return false;
     if (token.length !== storedToken.length) return false;
 
@@ -102,7 +102,7 @@ export const validateCSRFToken = (token: any, storedToken: any) => {
 /**
  * Sanitize filename
  */
-export const sanitizeFilename = (filename: any) => {
+export const sanitizeFilename = (filename: string) => {
     return filename
         .replace(/[^a-zA-Z0-9._-]/g, '_')
         .replace(/\.+/g, '.')
@@ -113,7 +113,7 @@ export const sanitizeFilename = (filename: any) => {
 /**
  * Check if string contains XSS patterns
  */
-export const containsXSS = (input: any) => {
+export const containsXSS = (input: string) => {
     const xssPatterns = [
         /<script/i,
         /javascript:/i,
@@ -131,7 +131,7 @@ export const containsXSS = (input: any) => {
 /**
  * Validate email format (basic)
  */
-export const isValidEmail = (email: any) => {
+export const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email) && !containsXSS(email);
 };
@@ -139,15 +139,15 @@ export const isValidEmail = (email: any) => {
 /**
  * Rate limiting helper (client-side)
  */
-export const createRateLimiter = (maxAttempts: any, windowMs: any) => {
-    const attempts = new Map();
+export const createRateLimiter = (maxAttempts: number, windowMs: number): ((key: string) => boolean) => {
+    const attempts = new Map<string, number[]>();
 
-    return (key: any) => {
+    return (key: string): boolean => {
         const now = Date.now();
         const userAttempts = attempts.get(key) || [];
 
         // Remove old attempts outside the window
-        const recentAttempts = userAttempts.filter(time => now - time < windowMs);
+        const recentAttempts = userAttempts.filter((time: number) => now - time < windowMs);
 
         if (recentAttempts.length >= maxAttempts) {
             return false; // Rate limit exceeded
@@ -163,7 +163,7 @@ export const createRateLimiter = (maxAttempts: any, windowMs: any) => {
 /**
  * Content Security Policy helper
  */
-export const getCSPHeader = (options: any = {}) => {
+export const getCSPHeader = (options: Record<string, string[] | string> = {}) => {
     const {
         defaultSrc = ["'self'"],
         scriptSrc = ["'self'"],
@@ -178,15 +178,15 @@ export const getCSPHeader = (options: any = {}) => {
 
     return {
         'Content-Security-Policy': [
-            `default-src ${defaultSrc.join(' ')}`,
-            `script-src ${scriptSrc.join(' ')}`,
-            `style-src ${styleSrc.join(' ')}`,
-            `img-src ${imgSrc.join(' ')}`,
-            `connect-src ${connectSrc.join(' ')}`,
-            `font-src ${fontSrc.join(' ')}`,
-            `object-src ${objectSrc.join(' ')}`,
-            `media-src ${mediaSrc.join(' ')}`,
-            `frame-src ${frameSrc.join(' ')}`
+            `default-src ${Array.isArray(defaultSrc) ? defaultSrc.join(' ') : defaultSrc}`,
+            `script-src ${Array.isArray(scriptSrc) ? scriptSrc.join(' ') : scriptSrc}`,
+            `style-src ${Array.isArray(styleSrc) ? styleSrc.join(' ') : styleSrc}`,
+            `img-src ${Array.isArray(imgSrc) ? imgSrc.join(' ') : imgSrc}`,
+            `connect-src ${Array.isArray(connectSrc) ? connectSrc.join(' ') : connectSrc}`,
+            `font-src ${Array.isArray(fontSrc) ? fontSrc.join(' ') : fontSrc}`,
+            `object-src ${Array.isArray(objectSrc) ? objectSrc.join(' ') : objectSrc}`,
+            `media-src ${Array.isArray(mediaSrc) ? mediaSrc.join(' ') : mediaSrc}`,
+            `frame-src ${Array.isArray(frameSrc) ? frameSrc.join(' ') : frameSrc}`
         ].join('; ')
     };
 };

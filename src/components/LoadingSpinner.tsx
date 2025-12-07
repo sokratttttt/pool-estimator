@@ -1,10 +1,10 @@
 import { Sparkles } from 'lucide-react';
 
 interface LoadingSpinnerProps {
-  fullScreen?: any;
+    fullScreen?: boolean;
 }
 
-export default function LoadingSpinner({  fullScreen = true  }: LoadingSpinnerProps) {
+export default function LoadingSpinner({ fullScreen = true }: LoadingSpinnerProps) {
     const content = (
         <div className="flex flex-col items-center justify-center gap-4">
             <div className="relative">

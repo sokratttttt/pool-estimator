@@ -83,6 +83,10 @@ export function generateManagerInsights(deals: Deal[], requests: ClientRequest[]
     return insights;
 }
 
+interface StuckDeal extends Deal {
+    daysStuck: number;
+}
+
 function findStuckDeals(deals: Deal[]) {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -91,12 +95,11 @@ function findStuckDeals(deals: Deal[]) {
             const updated = new Date(deal.updated_at || deal.created_at);
             return updated < sevenDaysAgo && deal.stage !== 'completed';
         })
-        .map((deal: Deal) => ({
+        .map((deal: Deal): StuckDeal => ({
             ...deal,
             daysStuck: Math.floor((Date.now() - new Date(deal.updated_at || deal.created_at).getTime()) / (1000 * 60 * 60 * 24))
         }))
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .sort((a: any, b: any) => b.daysStuck - a.daysStuck);
+        .sort((a, b) => b.daysStuck - a.daysStuck);
 }
 
 function analyzeBestContactTimes(deals: Deal[], _requests: ClientRequest[]): ManagerInsight | null {
@@ -114,7 +117,7 @@ function analyzeBestContactTimes(deals: Deal[], _requests: ClientRequest[]): Man
     const peakHours = hourCounts
         .map((count: number, hour: number) => ({ hour, count }))
         .filter(h => h.count > 0)
-        .sort((a: any, b: any) => b.count - a.count)
+        .sort((a, b) => b.count - a.count)
         .slice(0, 3);
 
     if (peakHours.length > 0) {

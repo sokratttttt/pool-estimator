@@ -107,7 +107,7 @@ export default function MapFilters({ filters, setFilters, projectCount }: MapFil
                                             min="2020"
                                             max="2024"
                                             value={filters.yearRange[0]}
-                                            onChange={(e: React.ChangeEvent<any>) => setFilters({
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters({
                                                 ...filters,
                                                 yearRange: [parseInt(e.target.value), filters.yearRange[1]]
                                             })}
@@ -119,7 +119,7 @@ export default function MapFilters({ filters, setFilters, projectCount }: MapFil
                                             min="2020"
                                             max="2024"
                                             value={filters.yearRange[1]}
-                                            onChange={(e: React.ChangeEvent<any>) => setFilters({
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters({
                                                 ...filters,
                                                 yearRange: [filters.yearRange[0], parseInt(e.target.value)]
                                             })}
@@ -138,7 +138,7 @@ export default function MapFilters({ filters, setFilters, projectCount }: MapFil
                                             max="15"
                                             step="0.5"
                                             value={filters.budgetRange[0] / 1000000}
-                                            onChange={(e: React.ChangeEvent<any>) => setFilters({
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters({
                                                 ...filters,
                                                 budgetRange: [parseFloat(e.target.value) * 1000000, filters.budgetRange[1]]
                                             })}
@@ -151,7 +151,7 @@ export default function MapFilters({ filters, setFilters, projectCount }: MapFil
                                             max="15"
                                             step="0.5"
                                             value={filters.budgetRange[1] / 1000000}
-                                            onChange={(e: React.ChangeEvent<any>) => setFilters({
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilters({
                                                 ...filters,
                                                 budgetRange: [filters.budgetRange[0], parseFloat(e.target.value) * 1000000]
                                             })}

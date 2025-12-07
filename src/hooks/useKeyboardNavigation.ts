@@ -1,5 +1,16 @@
 import { useEffect } from 'react';
 
+interface KeyboardNavigationProps {
+    handleNext: () => void;
+    handleBack: () => void;
+    undo: () => void;
+    redo: () => void;
+    canUndo: boolean;
+    canRedo: boolean;
+    canGoNext: boolean;
+    canGoBack: boolean;
+}
+
 export const useKeyboardNavigation = ({
     handleNext,
     handleBack,
@@ -9,7 +20,7 @@ export const useKeyboardNavigation = ({
     canRedo,
     canGoNext,
     canGoBack
-}: any) => {
+}: KeyboardNavigationProps) => {
     useEffect(() => {
         const handleKeyPress = (e: KeyboardEvent) => {
             // Undo/Redo shortcuts

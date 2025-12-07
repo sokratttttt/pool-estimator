@@ -2,8 +2,25 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { works, workCategories, calculateAutoWorks } from '@/data/works';
 
-export function useWorksLogic(selection: any, updateSelection: (key: string, value: any) => void): any {
-    const [selectedWorks, setSelectedWorks] = useState<Record<string, any>>(selection.works || {});
+interface WorkItem {
+    id: string;
+    name: string;
+    description?: string;
+    price?: number;
+    pricePerM3?: number;
+    pricePerM2?: number;
+    pricePerHour?: number;
+    pricePerM?: number;
+    unit?: string;
+    category?: string;
+    autoCalculate?: boolean;
+    formula?: (dimensions: Record<string, number>, selection?: unknown) => number;
+    quantity?: number;
+    total?: number;
+}
+
+export function useWorksLogic(selection: Record<string, unknown>, updateSelection: (key: string, value: unknown) => void) {
+    const [selectedWorks, setSelectedWorks] = useState<Record<string, WorkItem>>((selection.works as Record<string, WorkItem>) || {});
     const [editingWork, setEditingWork] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
 
@@ -13,11 +30,11 @@ export function useWorksLogic(selection: any, updateSelection: (key: string, val
         const merged = { ...autoWorks, ...selectedWorks };
         // Only update if there are changes to avoid infinite loop
         if (JSON.stringify(merged) !== JSON.stringify(selectedWorks)) {
-            setSelectedWorks(merged);
+            setSelectedWorks(merged as Record<string, WorkItem>);
         }
-    }, [selection.dimensions, selection.bowl, selection]);
+    }, [selection.dimensions, selection.bowl, selection, selectedWorks]);
 
-    const calculateWorkTotal = useCallback((work: any, quantity: any) => {
+    const calculateWorkTotal = useCallback((work: WorkItem, quantity: number) => {
         if (work.pricePerM3) return Math.ceil(quantity * work.pricePerM3);
         if (work.pricePerM2) return Math.ceil(quantity * work.pricePerM2);
         if (work.pricePerHour) return Math.ceil(quantity * work.pricePerHour);
@@ -25,7 +42,7 @@ export function useWorksLogic(selection: any, updateSelection: (key: string, val
         return work.price || 0;
     }, []);
 
-    const toggleWork = useCallback((workId: string, work: any) => {
+    const toggleWork = useCallback((workId: string, work: WorkItem) => {
         setSelectedWorks(prev => {
             const newWorks = { ...prev };
             if (newWorks[workId]) {
@@ -33,7 +50,7 @@ export function useWorksLogic(selection: any, updateSelection: (key: string, val
             } else {
                 // Add work with calculated or default values
                 if (work.autoCalculate && work.formula) {
-                    const dimensions = selection.dimensions || selection.bowl;
+                    const dimensions = (selection.dimensions || selection.bowl) as Record<string, number>;
                     const quantity = work.formula(dimensions, selection);
                     newWorks[workId] = {
                         ...work,
@@ -53,7 +70,7 @@ export function useWorksLogic(selection: any, updateSelection: (key: string, val
         });
     }, [selection, updateSelection, calculateWorkTotal]);
 
-    const startEdit = useCallback((workId: string, currentQuantity: any) => {
+    const startEdit = useCallback((workId: string, currentQuantity: number) => {
         setEditingWork(workId);
         setEditValue(currentQuantity.toString());
     }, []);
@@ -82,15 +99,15 @@ export function useWorksLogic(selection: any, updateSelection: (key: string, val
 
     // Memoize totals
     const grandTotal = useMemo(() => {
-        return Object.values(selectedWorks).reduce((sum: any, w: any) => sum + (w.total || 0), 0);
+        return Object.values(selectedWorks).reduce((sum: number, w: WorkItem) => sum + (w.total || 0), 0);
     }, [selectedWorks]);
 
     const categoryTotals = useMemo(() => {
         const totals: Record<string, number> = {};
         Object.keys(workCategories).forEach(cat => {
             totals[cat] = Object.values(selectedWorks)
-                .filter((w: any) => w.category === cat)
-                .reduce((sum: any, w: any) => sum + (w.total || 0), 0);
+                .filter((w: WorkItem) => w.category === cat)
+                .reduce((sum: number, w: WorkItem) => sum + (w.total || 0), 0);
         });
         return totals;
     }, [selectedWorks]);

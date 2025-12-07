@@ -3,16 +3,24 @@ import { motion } from 'framer-motion';
 import { CheckCircle2, Layers, Sparkles } from 'lucide-react';
 import AppleCard from '../../apple/AppleCard';
 
+interface MaterialOption {
+    id: string;
+    name: string;
+    description?: string;
+    features?: string[];
+    priceRange?: string;
+}
+
 interface MaterialGridProps {
-    materials?: any[];
-    selection?: any;
-    onSelect?: (item: any) => void;
+    materials?: MaterialOption[];
+    selection?: MaterialOption;
+    onSelect?: (item: MaterialOption) => void;
 }
 
 export default function MaterialGrid({ materials = [], selection, onSelect }: MaterialGridProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {materials.map((material: any, index: number) => (
+            {materials.map((material: MaterialOption, index: number) => (
                 <motion.div
                     key={material.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -55,7 +63,7 @@ export default function MaterialGrid({ materials = [], selection, onSelect }: Ma
 
                         {/* Features */}
                         <div className="space-y-2 mb-4">
-                            {material.features?.map((feature: any, idx: number) => (
+                            {material.features?.map((feature: string, idx: number) => (
                                 <div key={idx} className="flex items-start gap-2">
                                     <CheckCircle2 size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
                                     <span className="apple-caption">{feature}</span>

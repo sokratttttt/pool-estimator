@@ -15,5 +15,6 @@ CREATE POLICY "Public read access" ON app_version FOR SELECT USING (true);
 
 -- Вставляем текущую версию, если таблица пустая
 INSERT INTO app_version (version, release_notes)
-SELECT '1.1.5', 'Initial version check'
+SELECT '2.2.0', 'Professional desktop UI, AI assistant, CRM, Analytics'
 WHERE NOT EXISTS (SELECT 1 FROM app_version);
+

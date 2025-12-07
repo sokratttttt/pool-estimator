@@ -14,19 +14,35 @@ import {
  * @param {string} props.type - Тип skeleton ('card' | 'list' | 'table' | 'chart' | 'grid' | 'text' | 'image')
  * @param {number} props.count - Количество элементов (для list, table)
  * @param {object} props.gridConfig - Конфигурация для grid (columns, rows)
+'use client';
+import {
+    Skeleton,
+    SkeletonCard,
+    SkeletonListItem,
+    SkeletonTableRow,
+    SkeletonChart,
+    SkeletonGrid
+} from '../Skeleton';
+
+/**
+ * LoadingSkeleton - универсальный wrapper для skeleton states
+ * @param {object} props
+ * @param {string} props.type - Тип skeleton ('card' | 'list' | 'table' | 'chart' | 'grid' | 'text' | 'image')
+ * @param {number} props.count - Количество элементов (для list, table)
+ * @param {object} props.gridConfig - Конфигурация для grid (columns, rows)
  * @param {string} props.chartType - Тип chart ('bar' | 'donut')
  * @param {string | number} props.height - Высота для text/image
  * @param {string | number} props.width - Ширина для text/image
  * @param {string} props.className - Дополнительные CSS классы
  */
 interface LoadingSkeletonProps {
-  type?: any;
-  count?: any;
-  gridConfig?: any;
-  chartType?: any;
-  height?: any;
-  width?: any;
-  className?: string;
+    type?: 'card' | 'list' | 'table' | 'chart' | 'grid' | 'image' | 'text';
+    count?: number;
+    gridConfig?: { columns: number; rows: number };
+    chartType?: 'bar' | 'donut' | 'line' | 'area';
+    height?: string | number;
+    width?: string | number;
+    className?: string;
 }
 
 export default function LoadingSkeleton({
@@ -62,7 +78,7 @@ export default function LoadingSkeleton({
     if (type === 'card') {
         return (
             <div className={`space-y-4 ${className}`}>
-                {[...Array(count)].map((_: any, i: number) => (
+                {[...Array(count)].map((_, i: number) => (
                     <SkeletonCard key={i} />
                 ))}
             </div>
@@ -73,7 +89,7 @@ export default function LoadingSkeleton({
     if (type === 'list') {
         return (
             <div className={`space-y-3 ${className}`}>
-                {[...Array(count)].map((_: any, i: number) => (
+                {[...Array(count)].map((_, i: number) => (
                     <SkeletonListItem key={i} />
                 ))}
             </div>
@@ -84,7 +100,7 @@ export default function LoadingSkeleton({
     if (type === 'table') {
         return (
             <div className={className}>
-                {[...Array(count)].map((_: any, i: number) => (
+                {[...Array(count)].map((_, i: number) => (
                     <SkeletonTableRow key={i} />
                 ))}
             </div>

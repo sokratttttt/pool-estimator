@@ -13,9 +13,9 @@ export default function AdditionalStep() {
             <AdditionalHeader />
             <AdditionalGrid
                 categories={categories}
-                optionsByCategory={optionsByCategory}
+                optionsByCategory={optionsByCategory as Record<string, import('@/types').Product[]>}
                 selectedIds={selectedIds}
-                onToggle={toggleOption}
+                onToggle={toggleOption as (option: import('@/types').Product) => void}
             />
         </div>
     );

@@ -1,26 +1,15 @@
 'use client';
 import { useEstimate } from '@/context/EstimateContext';
 import { generateEstimateItems, calculateTotal } from '@/utils/estimateUtils';
+import type { EstimateItem } from '@/types';
 import { FileText, FileSpreadsheet, X, ChevronLeft, Loader2 } from 'lucide-react';
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
-interface EstimateItem {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    section: string;
-    [key: string]: any;
-}
-
 interface LiveSummaryProps {
     onExportPDF?: (items: EstimateItem[], total: number) => Promise<void>;
     onExportExcel?: (items: EstimateItem[], total: number) => Promise<void>;
-    value?: any;
-    title?: any;
-    sectionItems?: any;
 }
 
 export default function LiveSummary({ onExportPDF, onExportExcel }: LiveSummaryProps) {
@@ -38,15 +27,7 @@ export default function LiveSummary({ onExportPDF, onExportExcel }: LiveSummaryP
     }, [items]);
 
     // Animated price counter
-    interface AnimatedPriceProps {
-        onExportPDF?: () => void;
-        onExportExcel?: () => void;
-        value?: any;
-        title?: any;
-        sectionItems?: any;
-    }
-
-    const AnimatedPrice = ({ value }: AnimatedPriceProps) => {
+    const AnimatedPrice = ({ value }: { value: number }) => {
         return (
             <motion.span
                 key={value}
@@ -61,19 +42,18 @@ export default function LiveSummary({ onExportPDF, onExportExcel }: LiveSummaryP
         );
     };
 
-
     // Мемоизация callback функций
     const handleExportPDF = useCallback(async () => {
         setIsExporting(prev => ({ ...prev, pdf: true }));
         try {
-            if (onExportPDF) await onExportPDF(items, total);
+            if (onExportPDF) await onExportPDF(items as EstimateItem[], total);
             toast.success('✅ PDF успешно экспортирован!', {
                 description: `Смета на ${(total || 0).toLocaleString('ru-RU')} ₽ сохранена`,
                 duration: 3000,
             });
         } catch (error) {
             toast.error('❌ Ошибка экспорта PDF', {
-                description: (error as any).message || 'Попробуйте еще раз',
+                description: (error instanceof Error ? error.message : 'Unknown error'),
                 duration: 5000,
             });
         } finally {
@@ -84,14 +64,14 @@ export default function LiveSummary({ onExportPDF, onExportExcel }: LiveSummaryP
     const handleExportExcel = useCallback(async () => {
         setIsExporting(prev => ({ ...prev, excel: true }));
         try {
-            if (onExportExcel) await onExportExcel(items, total);
+            if (onExportExcel) await onExportExcel(items as EstimateItem[], total);
             toast.success('✅ Excel успешно экспортирован!', {
                 description: `Смета на ${(total || 0).toLocaleString('ru-RU')} ₽ сохранена`,
                 duration: 3000,
             });
         } catch (error) {
             toast.error('❌ Ошибка экспорта Excel', {
-                description: (error as any).message || 'Попробуйте еще раз',
+                description: (error instanceof Error ? error.message : 'Unknown error'),
                 duration: 5000,
             });
         } finally {
@@ -100,15 +80,12 @@ export default function LiveSummary({ onExportPDF, onExportExcel }: LiveSummaryP
     }, [items, total, onExportExcel]);
 
     // Helper to render section if items exist
-    interface renderSectionProps {
-        onExportPDF?: () => void;
-        onExportExcel?: () => void;
-        value?: any;
-        title?: any;
-        sectionItems?: any;
+    interface RenderSectionProps {
+        title: string;
+        sectionItems?: EstimateItem[];
     }
 
-    const renderSection = ({ title, sectionItems }: renderSectionProps) => {
+    const renderSection = ({ title, sectionItems }: RenderSectionProps) => {
         if (!sectionItems || sectionItems.length === 0) return null;
         return (
             <motion.div
@@ -118,7 +95,7 @@ export default function LiveSummary({ onExportPDF, onExportExcel }: LiveSummaryP
             >
                 <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{title}</h4>
                 <div className="text-sm font-medium text-slate-800 dark:text-slate-200">
-                    {sectionItems.map((item: any, idx: number) => (
+                    {sectionItems.map((item: EstimateItem, idx: number) => (
                         <motion.div
                             key={idx}
                             initial={{ opacity: 0, x: -10 }}
@@ -224,9 +201,9 @@ export default function LiveSummary({ onExportPDF, onExportExcel }: LiveSummaryP
                         )}
                     </div>
 
-                    {renderSection({ title: 'Подогрев', sectionItems: items.filter((i: any) => i.section === 'Подогрев') })}
-                    {renderSection({ title: 'Закладные', sectionItems: items.filter((i: any) => i.section === 'Оборудование' && i.id.startsWith('part')) })}
-                    {renderSection({ title: 'Доп. опции', sectionItems: items.filter((i: any) => i.section === 'Дополнительное оборудование') })}
+                    {renderSection({ title: 'Подогрев', sectionItems: items.filter((i: EstimateItem) => i.section === 'Подогрев') })}
+                    {renderSection({ title: 'Закладные', sectionItems: items.filter((i: EstimateItem) => i.section === 'Оборудование' && i.id.startsWith('part')) })}
+                    {renderSection({ title: 'Доп. опции', sectionItems: items.filter((i: EstimateItem) => i.section === 'Дополнительное оборудование') })}
                 </div>
 
                 {/* Footer */}

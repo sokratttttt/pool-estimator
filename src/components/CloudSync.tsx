@@ -1,12 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { User } from '@supabase/supabase-js';
+import type { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { useEstimate } from '@/context/EstimateContext';
 import { Cloud, LogIn, LogOut, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
-type CloudSyncProps = object;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface CloudSyncProps { }
 
 export default function CloudSync({ }: CloudSyncProps) {
     const { selection } = useEstimate();
@@ -21,7 +22,7 @@ export default function CloudSync({ }: CloudSyncProps) {
             setUser(session?.user ?? null);
         });
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
             setUser(session?.user ?? null);
         });
 
@@ -84,7 +85,7 @@ export default function CloudSync({ }: CloudSyncProps) {
             });
         } catch (error) {
             toast.error('❌ Ошибка синхронизации', {
-                description: (error as any).message || 'Попробуйте еще раз',
+                description: (error instanceof Error ? error.message : 'Unknown error'),
                 duration: 5000,
             });
         } finally {

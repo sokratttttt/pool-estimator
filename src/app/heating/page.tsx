@@ -3,12 +3,13 @@ import { heatingOptions } from '../../data/heating';
 import { useEstimate } from '../../context/EstimateContext';
 import StepLayout from '../../components/StepLayout';
 import { useRouter } from 'next/navigation';
+import type { HeatingSelection, HeatingItem } from '@/types';
 
 export default function HeatingSelection() {
     const { selection, updateSelection } = useEstimate();
     const router = useRouter();
 
-    const handleSelect = (option: any) => {
+    const handleSelect = (option: HeatingSelection) => {
         updateSelection('heating', option);
         router.push('/parts');
     };
@@ -16,7 +17,7 @@ export default function HeatingSelection() {
     return (
         <StepLayout title="Выберите тип подогрева">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {heatingOptions.map((option: any) => (
+                {heatingOptions.map((option: HeatingSelection) => (
                     <div
                         key={option.id}
                         className={`border rounded-lg p-6 cursor-pointer transition-all hover:shadow-lg flex flex-col justify-between
@@ -27,7 +28,7 @@ export default function HeatingSelection() {
                         <div>
                             <h3 className="text-xl font-semibold mb-4">{option.name}</h3>
                             <div className="space-y-2 text-sm text-gray-600">
-                                {option.items.map((item: any, idx: number) => (
+                                {option.items?.map((item: HeatingItem, idx: number) => (
                                     <div key={idx} className="flex justify-between border-b border-gray-50 py-1 last:border-0">
                                         <span className="truncate pr-2">{item.name}</span>
                                         <span className="font-medium whitespace-nowrap">{item.quantity} шт</span>
@@ -46,7 +47,7 @@ export default function HeatingSelection() {
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-gray-500">Монтаж:</span>
                                 <span className="font-medium">
-                                    {option.installationPrice.toLocaleString('ru-RU')} ₽
+                                    {(option.installationPrice || 0).toLocaleString('ru-RU')} ₽
                                 </span>
                             </div>
                         </div>

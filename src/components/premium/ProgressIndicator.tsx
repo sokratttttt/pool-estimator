@@ -2,9 +2,9 @@
 import { motion } from 'framer-motion';
 
 interface ProgressIndicatorProps {
-    current?: any;
-    total?: any;
-    steps?: any;
+    current: number;
+    total: number;
+    steps?: string[];
 }
 
 export default function ProgressIndicator({ current, total, steps: _steps }: ProgressIndicatorProps) {
@@ -38,7 +38,7 @@ export default function ProgressIndicator({ current, total, steps: _steps }: Pro
 
             {/* Step dots */}
             <div className="flex items-center gap-2">
-                {Array.from({ length: total }).map((_: any, index: number) => {
+                {Array.from({ length: total }).map((_, index: number) => {
                     const stepNumber = index + 1;
                     const isCompleted = stepNumber < current;
                     const isCurrent = stepNumber === current;

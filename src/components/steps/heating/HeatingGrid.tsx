@@ -1,17 +1,27 @@
 'use client';
 import { Flame, Ban } from 'lucide-react';
 import OptionCard from '../../premium/OptionCard';
+import { EstimateItem } from '@/types';
+
+interface HeatingOption {
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    type: string;
+    items?: EstimateItem[];
+}
 
 interface HeatingGridProps {
-    options?: any[];
-    selection?: any;
-    onSelect?: (item: any) => void;
+    options?: HeatingOption[];
+    selection?: HeatingOption;
+    onSelect?: (item: HeatingOption) => void;
 }
 
 export default function HeatingGrid({ options = [], selection, onSelect }: HeatingGridProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {options.map((option: any, index: number) => (
+            {options.map((option: HeatingOption, index: number) => (
                 <OptionCard
                     key={option.id}
                     title={option.name}
@@ -21,7 +31,7 @@ export default function HeatingGrid({ options = [], selection, onSelect }: Heati
                     selected={selection?.id === option.id}
                     onClick={() => onSelect?.(option)}
                     delay={index * 0.05}
-                    badge={option.type === 'heat_pump' ? 'Энергоэффективно' : null}
+                    badge={option.type === 'heat_pump' ? 'Энергоэффективно' : undefined}
                 />
             ))}
         </div>

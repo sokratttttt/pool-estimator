@@ -109,7 +109,7 @@ export default function DeliveryCalculator({ onCalculate }: DeliveryCalculatorPr
         }
     };
 
-    const handleMapClick = useCallback((coords: any) => {
+    const handleMapClick = useCallback((coords: { lat: number; lng: number }) => {
         const dist = calculateDistance(
             BASE_LOCATION.lat,
             BASE_LOCATION.lng,
@@ -151,7 +151,7 @@ export default function DeliveryCalculator({ onCalculate }: DeliveryCalculatorPr
                             label="Адрес доставки"
                             placeholder="Москва, ул. Примерная, 123"
                             value={address}
-                            onChange={(e: React.ChangeEvent<any>) => setAddress(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
                             icon={<MapPin size={18} />}
                             onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                                 if (e.key === 'Enter') geocodeAddress();
@@ -192,7 +192,7 @@ export default function DeliveryCalculator({ onCalculate }: DeliveryCalculatorPr
                         label="Расстояние (км)"
                         placeholder="0"
                         value={distance}
-                        onChange={(e: React.ChangeEvent<any>) => setDistance(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDistance(e.target.value)}
                         icon={<Calculator size={18} />}
                         disabled
                     />

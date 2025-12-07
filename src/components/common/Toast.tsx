@@ -1,8 +1,40 @@
 'use client';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+
+type ToastType = 'info' | 'success' | 'warning' | 'error';
+
+interface ToastAction {
+    label: string;
+    onClick: () => void;
+}
+
+interface ToastProps {
+    message: string;
+    type?: ToastType;
+    duration?: number;
+    onClose: () => void;
+    action?: ToastAction;
+}
+
+interface ToastData extends Omit<ToastProps, 'onClose'> {
+    id: string;
+}
+
+interface ToastContainerProps {
+    toasts: ToastData[];
+    removeToast: (id: string) => void;
+}
+
+const variants: Record<ToastType, string> = {
+    info: 'bg-blue-500',
+    success: 'bg-green-500',
+    warning: 'bg-yellow-500',
+    error: 'bg-red-500'
+};
 
 /**
  * Toast notification component
@@ -14,7 +46,7 @@ export function Toast({
     duration = 5000,
     onClose,
     action
-}) {
+}: ToastProps) {
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
@@ -27,13 +59,6 @@ export function Toast({
         }
         return undefined;
     }, [duration, onClose]);
-
-    const variants = {
-        info: 'bg-blue-500',
-        success: 'bg-green-500',
-        warning: 'bg-yellow-500',
-        error: 'bg-red-500'
-    };
 
     if (!isVisible) return null;
 
@@ -76,7 +101,7 @@ export function Toast({
 /**
  * Toast Container
  */
-export function ToastContainer({ toasts, removeToast }) {
+export function ToastContainer({ toasts, removeToast }: ToastContainerProps) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -88,7 +113,7 @@ export function ToastContainer({ toasts, removeToast }) {
     return createPortal(
         <div className="fixed top-4 right-4 z-[10000] flex flex-col gap-2">
             <AnimatePresence>
-                {toasts.map(toast => (
+                {toasts.map((toast: ToastData) => (
                     <Toast
                         key={toast.id}
                         {...toast}

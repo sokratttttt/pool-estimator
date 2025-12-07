@@ -140,7 +140,7 @@ export default function WorksCategory({
                                                         <input
                                                             type="number"
                                                             value={editValue}
-                                                            onChange={(e: React.ChangeEvent<any>) => onEditValueChange(e.target.value)}
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEditValueChange(e.target.value)}
                                                             className="w-24 px-2 py-1 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                                                             step="0.1"
                                                             autoFocus

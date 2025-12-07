@@ -3,6 +3,7 @@ import { exportToExcel, exportToPDF } from '@/utils/exportUtils';
 import { generateContract } from '@/utils/contractUtils';
 import { generateProposal } from '@/utils/proposalUtils';
 import { sendToWhatsApp } from '@/utils/whatsappUtils';
+import type { WhatsAppItem } from '@/utils/whatsappUtils';
 import { toast } from 'sonner';
 import type {
     UseEstimateExportReturn,
@@ -62,18 +63,18 @@ export const useEstimateExport = (): UseEstimateExportReturn => {
 
             try {
                 // Mock data fetching
-                const mockItems: any[] = [];
+                const mockItems: unknown[] = [];
                 const mockTotal = 100000;
                 const mockClient = { name: 'Client', phone: '123' };
 
                 let resultData;
                 switch (options.format) {
                     case 'excel':
-                        await exportToExcel(mockItems, mockTotal, mockClient);
+                        await exportToExcel(mockItems as Parameters<typeof exportToExcel>[0], mockTotal, mockClient);
                         resultData = { filename: `estimate-${id}.xlsx`, mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 1024 };
                         break;
                     case 'pdf':
-                        await exportToPDF(mockItems, mockTotal, mockClient);
+                        await exportToPDF(mockItems as Parameters<typeof exportToPDF>[0], mockTotal, mockClient);
                         resultData = { filename: `estimate-${id}.pdf`, mimeType: 'application/pdf', size: 2048 };
                         break;
                     // Add other cases using existing utils or mocks
@@ -98,14 +99,15 @@ export const useEstimateExport = (): UseEstimateExportReturn => {
                     result
                 }, ...prev]);
 
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(`Export failed for ${id}:`, error);
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
                 const result: ExportResult = {
                     success: false,
-                    error: error.message
+                    error: errorMessage
                 };
                 results.push(result);
-                toast.error(`Ошибка экспорта: ${error.message}`);
+                toast.error(`Ошибка экспорта: ${errorMessage}`);
             } finally {
                 setExportQueue(prev => prev.filter(p => !(p.estimateId === id && p.format === options.format)));
             }
@@ -202,12 +204,12 @@ export const useEstimateExport = (): UseEstimateExportReturn => {
         return { isValid: true, errors: [], warnings: [] };
     }, []);
 
-    const exportContract = useCallback(async (clientInfo: any, total: number, items: any[]) => {
+    const exportContract = useCallback(async (clientInfo: Record<string, unknown>, total: number, items: unknown[]) => {
         setIsExporting(true);
         try {
-            await generateContract(clientInfo, total, items);
+            await generateContract(clientInfo, total, items as unknown as Parameters<typeof generateContract>[2]);
             toast.success('Договор скачан');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error exporting contract:', error);
             toast.error('Ошибка при скачивании договора');
         } finally {
@@ -215,12 +217,12 @@ export const useEstimateExport = (): UseEstimateExportReturn => {
         }
     }, []);
 
-    const exportProposal = useCallback(async (items: any[], total: number, clientInfo: any, estimateId?: string) => {
+    const exportProposal = useCallback(async (items: unknown[], total: number, clientInfo: unknown, estimateId?: string) => {
         setIsExporting(true);
         try {
-            await generateProposal(items, total, clientInfo, estimateId || 'temp-id');
+            await generateProposal(items as unknown as Parameters<typeof generateProposal>[0], total, clientInfo as Parameters<typeof generateProposal>[2], estimateId || 'temp-id');
             toast.success('Коммерческое предложение скачано');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error exporting proposal:', error);
             toast.error('Ошибка при скачивании КП');
         } finally {
@@ -228,7 +230,7 @@ export const useEstimateExport = (): UseEstimateExportReturn => {
         }
     }, []);
 
-    const shareViaWhatsApp = useCallback(async (clientInfo: any, total: number, items: any[]) => {
+    const shareViaWhatsApp = useCallback(async (clientInfo: { phone?: string; name?: string; managerName?: string; managerPhone?: string }, total: number, items: WhatsAppItem[]) => {
         try {
             if (!clientInfo.phone) {
                 toast.error('Укажите номер телефона клиента');
@@ -236,9 +238,10 @@ export const useEstimateExport = (): UseEstimateExportReturn => {
             }
             sendToWhatsApp(clientInfo.phone, clientInfo, total, items);
             toast.success('WhatsApp открыт');
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error sending to WhatsApp:', error);
-            toast.error(error.message || 'Ошибка при открытии WhatsApp');
+            const errorMessage = error instanceof Error ? error.message : 'Ошибка при открытии WhatsApp';
+            toast.error(errorMessage);
         }
     }, []);
 

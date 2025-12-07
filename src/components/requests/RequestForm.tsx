@@ -38,16 +38,43 @@ const STATUSES = [
 
 const MANAGERS = ['Платон', 'Другой менеджер'];
 
+export interface RequestData {
+    id?: string; // Optional for new requests
+    created_at?: string;
+    estimate_id?: string;
+    client_name: string;
+    phone: string;
+    email: string;
+    request_type: string;
+    pool_type: string;
+    dimensions: string;
+    location: string;
+    manager: string;
+    forecast_status: string;
+    status: string;
+    notes: string;
+    client_id: string | null;
+    [key: string]: unknown;
+}
+
 interface RequestFormProps {
-    request?: any;
-    onSave: (data: any) => Promise<void> | void;
+    request?: RequestData;
+    onSave: (data: RequestData) => Promise<void> | void;
     onClose: () => void;
     loading?: boolean;
 }
 
+interface ClientData {
+    id: string;
+    name: string;
+    phone?: string;
+    email?: string;
+}
+
 export default function RequestForm({ request, onSave, onClose, loading }: RequestFormProps) {
     const { clients, loadClients } = useClients();
-    const [formData, setFormData] = useState<any>({
+    const [formData, setFormData] = useState<RequestData>({
+        // id will be undefined for new requests
         client_name: '',
         phone: '',
         email: '',
@@ -64,7 +91,7 @@ export default function RequestForm({ request, onSave, onClose, loading }: Reque
 
     const [errors, setErrors] = useState<Record<string, string | null>>({});
     const [showClientSuggestions, setShowClientSuggestions] = useState(false);
-    const [filteredClients, setFilteredClients] = useState<any[]>([]);
+    const [filteredClients, setFilteredClients] = useState<ClientData[]>([]);
     const autocompleteRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -80,7 +107,7 @@ export default function RequestForm({ request, onSave, onClose, loading }: Reque
     // Filter clients based on input
     useEffect(() => {
         if (formData.client_name && formData.client_name.length > 0) {
-            const filtered = clients.filter((client: any) =>
+            const filtered = clients.filter((client: ClientData) =>
                 client.name.toLowerCase().includes(formData.client_name.toLowerCase())
             );
             setFilteredClients(filtered);
@@ -103,16 +130,16 @@ export default function RequestForm({ request, onSave, onClose, loading }: Reque
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const handleChange = (field: string, value: any) => {
-        setFormData((prev: any) => ({ ...prev, [field]: value }));
+    const handleChange = (field: string, value: unknown) => {
+        setFormData((prev) => ({ ...prev, [field]: value }));
         // Clear error when user starts typing
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: null }));
         }
     };
 
-    const handleClientSelect = (client: any) => {
-        setFormData((prev: any) => ({
+    const handleClientSelect = (client: ClientData) => {
+        setFormData((prev) => ({
             ...prev,
             client_name: client.name,
             phone: client.phone || '',
@@ -209,7 +236,7 @@ export default function RequestForm({ request, onSave, onClose, loading }: Reque
                                         exit={{ opacity: 0, y: -10 }}
                                         className="absolute z-50 w-full mt-2 bg-apple-bg-secondary border border-apple-border rounded-xl shadow-2xl max-h-60 overflow-y-auto"
                                     >
-                                        {filteredClients.map((client: any) => (
+                                        {filteredClients.map((client: ClientData) => (
                                             <button
                                                 key={client.id}
                                                 type="button"

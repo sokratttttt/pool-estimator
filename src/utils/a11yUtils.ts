@@ -3,8 +3,12 @@
  * Add this to tailwind.config.js plugins or use as utility
  */
 
+interface TailwindPluginAPI {
+    addUtilities: (utilities: Record<string, Record<string, unknown>>) => void;
+}
+
 // Custom Tailwind plugin for focus-visible
-export const focusVisiblePlugin = ({ addUtilities }) => {
+export const focusVisiblePlugin = ({ addUtilities }: TailwindPluginAPI): void => {
     addUtilities({
         '.focus-ring': {
             '@apply focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900': {}
@@ -133,7 +137,7 @@ export const trapFocus = (container: any) => {
 /**
  * Announce to screen readers
  */
-export const announceToScreenReader = (message, priority = 'polite') => {
+export const announceToScreenReader = (message: string, priority: 'polite' | 'assertive' = 'polite'): void => {
     const announcement = document.createElement('div');
     announcement.setAttribute('aria-live', priority);
     announcement.setAttribute('aria-atomic', 'true');

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useChat } from '@/context/ChatContext';
+import type { ChatMessage, ChannelParticipant } from '@/types/chat';
 import { Send, Paperclip, Smile, MoreVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import FileMessage from './FileMessage';
@@ -76,7 +77,7 @@ export default function ChatWindow({ }: ChatWindowProps) {
                 isOnline: false
             };
         }
-        const otherParticipant = activeChannel.channel_participants?.find((p: any) => p.user_id !== currentUser?.id);
+        const otherParticipant = activeChannel.channel_participants?.find((p: ChannelParticipant) => p.user_id !== currentUser?.id);
         const profile = otherParticipant ? profiles[otherParticipant.user_id] : null;
         return {
             name: profile?.full_name || profile?.email || 'Личное сообщение',
@@ -106,7 +107,7 @@ export default function ChatWindow({ }: ChatWindowProps) {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                {messages.map((msg: any, index: number) => {
+                {messages.map((msg: ChatMessage, index: number) => {
                     const isMe = msg.user_id === currentUser?.id;
                     const showAvatar = !isMe && (index === 0 || messages[index - 1].user_id !== msg.user_id);
                     const profile = profiles[msg.user_id];

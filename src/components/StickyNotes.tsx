@@ -14,10 +14,18 @@ const COLORS = [
     '#FFE57F', // Песочный
 ];
 
+interface StickyNote {
+    id: string;
+    author_name: string;
+    content: string;
+    color: string;
+    created_at: string;
+}
+
 type StickyNotesProps = object;
 
 export default function StickyNotes({ }: StickyNotesProps) {
-    const [notes, setNotes] = useState<any[]>([]);
+    const [notes, setNotes] = useState<StickyNote[]>([]);
     const [showForm, setShowForm] = useState(false);
     const [newNote, setNewNote] = useState({ author: '', content: '', color: COLORS[0] });
 
@@ -60,7 +68,7 @@ export default function StickyNotes({ }: StickyNotesProps) {
         }
     };
 
-    const handleSubmit = async (e: React.ChangeEvent<any>) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!newNote.author.trim() || !newNote.content.trim()) {
@@ -132,13 +140,13 @@ export default function StickyNotes({ }: StickyNotesProps) {
                                 type="text"
                                 placeholder="Ваше имя"
                                 value={newNote.author}
-                                onChange={(e: React.ChangeEvent<any>) => setNewNote({ ...newNote, author: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewNote({ ...newNote, author: e.target.value })}
                                 className="w-full px-3 py-2 bg-gray-700 text-white rounded mb-3 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
                             />
                             <textarea
                                 placeholder="Текст заметки..."
                                 value={newNote.content}
-                                onChange={(e: React.ChangeEvent<any>) => setNewNote({ ...newNote, content: e.target.value })}
+                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewNote({ ...newNote, content: e.target.value })}
                                 rows={3}
                                 className="w-full px-3 py-2 bg-gray-700 text-white rounded mb-3 focus:ring-2 focus:ring-yellow-500 focus:outline-none resize-none"
                             />
@@ -170,7 +178,7 @@ export default function StickyNotes({ }: StickyNotesProps) {
             {/* Notes Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <AnimatePresence>
-                    {notes.map((note: any) => (
+                    {notes.map((note: StickyNote) => (
                         <motion.div
                             key={note.id}
                             initial={{ opacity: 0, scale: 0.8, rotate: -5 }}

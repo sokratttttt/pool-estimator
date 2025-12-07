@@ -34,6 +34,7 @@ interface CategoryData {
     name: string;
     value: number;
     count: number;
+    [key: string]: unknown; // Index signature for recharts compatibility
 }
 
 /**

@@ -1,5 +1,12 @@
 // TODO: Add proper TypeScript types for state
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, RefObject } from 'react';
+
+interface IntersectionObserverOptions {
+    threshold?: number | number[];
+    root?: Element | Document | null;
+    rootMargin?: string;
+    freezeOnceVisible?: boolean;
+}
 
 /**
  * Hook to detect when an element enters/exits the viewport
@@ -16,10 +23,10 @@ export function useIntersectionObserver({
     root = null,
     rootMargin = '0px',
     freezeOnceVisible = false
-} = {}): any {
+}: IntersectionObserverOptions = {}): [RefObject<HTMLElement | null>, boolean, IntersectionObserverEntry | null] {
     const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
     const [isIntersecting, setIsIntersecting] = useState(false);
-    const elementRef = useRef(null);
+    const elementRef = useRef<HTMLElement | null>(null);
     const frozen = useRef(false);
 
     useEffect(() => {

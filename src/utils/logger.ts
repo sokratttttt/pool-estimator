@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Logger utilities
  * Advanced logging with levels and formatting
@@ -21,7 +22,7 @@ interface LogEntry {
     level: string;
     message: string;
     timestamp: string;
-    args: any[];
+    args: unknown[];
 }
 
 class Logger {
@@ -37,12 +38,12 @@ class Logger {
         this.maxHistorySize = options.maxHistorySize || 100;
     }
 
-    _log(level: number, levelName: string, color: string, ...args: any[]) {
+    _log(level: number, levelName: string, color: string, ...args: unknown[]) {
         if (level < this.level) return;
 
         const timestamp = new Date().toISOString();
         const message = args.map(arg =>
-            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
         ).join(' ');
 
         // Add to history
@@ -70,19 +71,19 @@ class Logger {
         }
     }
 
-    debug(...args: any[]) {
+    debug(...args: unknown[]) {
         this._log(LOG_LEVELS.DEBUG, 'DEBUG', '#888', ...args);
     }
 
-    info(...args: any[]) {
+    info(...args: unknown[]) {
         this._log(LOG_LEVELS.INFO, 'INFO', '#06b6d4', ...args);
     }
 
-    warn(...args: any[]) {
+    warn(...args: unknown[]) {
         this._log(LOG_LEVELS.WARN, 'WARN', '#f59e0b', ...args);
     }
 
-    error(...args: any[]) {
+    error(...args: unknown[]) {
         this._log(LOG_LEVELS.ERROR, 'ERROR', '#ef4444', ...args);
     }
 
@@ -98,7 +99,7 @@ class Logger {
         }
     }
 
-    table(data: any) {
+    table(data: unknown) {
         if (typeof console !== 'undefined' && console.table) {
             console.table(data);
         }
@@ -146,3 +147,4 @@ export const logger = createLogger({
 });
 
 export { LOG_LEVELS };
+

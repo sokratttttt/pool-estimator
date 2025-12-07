@@ -13,8 +13,8 @@ export default function PartsStep() {
             <PartsHeader />
             <PartsGrid
                 options={partsOptions}
-                selection={selection.parts}
-                onSelect={handleSelect}
+                selection={selection.parts as unknown as Parameters<typeof PartsGrid>[0]['selection']}
+                onSelect={handleSelect as unknown as Parameters<typeof PartsGrid>[0]['onSelect']}
             />
         </div>
     );

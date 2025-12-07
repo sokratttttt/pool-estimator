@@ -15,7 +15,7 @@ type EstimateUpdate = Database['public']['Tables']['estimates']['Update'];
 const ESTIMATE_KEYS = {
     all: ['estimates'] as const,
     lists: () => [...ESTIMATE_KEYS.all, 'list'] as const,
-    list: (filters?: any) => [...ESTIMATE_KEYS.lists(), { filters }] as const,
+    list: (filters?: Record<string, unknown>) => [...ESTIMATE_KEYS.lists(), { filters }] as const,
     details: () => [...ESTIMATE_KEYS.all, 'detail'] as const,
     detail: (id: string) => [...ESTIMATE_KEYS.details(), id] as const,
 };
@@ -50,14 +50,13 @@ export const useEstimate = (id: string | undefined) => {
 export const useCreateEstimate = () => {
     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (estimate: Omit<EstimateInsert, 'id' | 'created_at'>) =>
-            estimateApi.create(estimate),
-        onSuccess: (newEstimate: any) => {
+    return useMutation<Estimate, unknown, Omit<EstimateInsert, 'id' | 'created_at'>>({
+        mutationFn: (estimate) => estimateApi.create(estimate),
+        onSuccess: (newEstimate) => {
             // Add to cache
             queryClient.setQueryData<Estimate[]>(
                 ESTIMATE_KEYS.lists(),
-                (old: any) => old ? [newEstimate, ...old] : [newEstimate]
+                (old) => old ? [newEstimate, ...old] : [newEstimate]
             );
 
             // Invalidate list to refetch
@@ -72,9 +71,8 @@ export const useCreateEstimate = () => {
 export const useUpdateEstimate = () => {
     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: ({ id, updates }: { id: string; updates: EstimateUpdate }) =>
-            estimateApi.update(id, updates),
+    return useMutation<Estimate, unknown, { id: string; updates: EstimateUpdate }, { previousEstimate?: Estimate; id: string }>({
+        mutationFn: ({ id, updates }) => estimateApi.update(id, updates),
         onMutate: async ({ id, updates }) => {
             // Cancel outgoing refetches
             await queryClient.cancelQueries({ queryKey: ESTIMATE_KEYS.detail(id) });
@@ -85,12 +83,12 @@ export const useUpdateEstimate = () => {
             // Optimistically update cache
             queryClient.setQueryData<Estimate>(
                 ESTIMATE_KEYS.detail(id),
-                (old: any) => old ? { ...old, ...updates } : old
+                (old: Estimate | undefined) => old ? { ...old, ...updates } : undefined
             );
 
             return { previousEstimate, id };
         },
-        onError: (_err: any, _variables: any, context: any) => {
+        onError: (_err, _variables, context) => {
             // Rollback on error
             if (context?.previousEstimate) {
                 queryClient.setQueryData(
@@ -99,9 +97,9 @@ export const useUpdateEstimate = () => {
                 );
             }
         },
-        onSettled: (_data, _error, { id }) => {
+        onSettled: (_data, _error, variables) => {
             // Refetch after error or success
-            queryClient.invalidateQueries({ queryKey: ESTIMATE_KEYS.detail(id) });
+            queryClient.invalidateQueries({ queryKey: ESTIMATE_KEYS.detail(variables.id) });
             queryClient.invalidateQueries({ queryKey: ESTIMATE_KEYS.lists() });
         },
     });
@@ -113,13 +111,13 @@ export const useUpdateEstimate = () => {
 export const useDeleteEstimate = () => {
     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (id: string) => estimateApi.delete(id),
-        onSuccess: (_data: any, id: string) => {
+    return useMutation<void, unknown, string>({
+        mutationFn: (id) => estimateApi.delete(id),
+        onSuccess: (_data, id) => {
             // Remove from lists cache
             queryClient.setQueryData<Estimate[]>(
                 ESTIMATE_KEYS.lists(),
-                (old: Estimate[] | undefined) => old ? old.filter((e) => e.id !== id) : []
+                (old) => old ? old.filter((e) => e.id !== id) : []
             );
 
             // Remove detail cache

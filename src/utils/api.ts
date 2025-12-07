@@ -6,10 +6,14 @@
 /**
  * Create fetch with timeout
  */
-export const fetchWithTimeout = (url, options = {}, timeout = 30000) => {
+export const fetchWithTimeout = (
+    url: string,
+    options: RequestInit = {},
+    timeout: number = 30000
+): Promise<Response> => {
     return Promise.race([
         fetch(url, options),
-        new Promise((_, reject) =>
+        new Promise<Response>((_, reject) =>
             setTimeout(() => reject(new Error('Request timeout')), timeout)
         )
     ]);
@@ -18,7 +22,12 @@ export const fetchWithTimeout = (url, options = {}, timeout = 30000) => {
 /**
  * Fetch with retry logic
  */
-export const fetchWithRetry = async (url, options = {}, retries = 3, delay = 1000) => {
+export const fetchWithRetry = async (
+    url: string,
+    options: RequestInit = {},
+    retries: number = 3,
+    delay: number = 1000
+): Promise<Response> => {
     for (let i = 0; i < retries; i++) {
         try {
             const response = await fetch(url, options);

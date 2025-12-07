@@ -10,11 +10,11 @@ interface FilterRange {
 interface BowlFiltersProps {
     searchTerm: string;
     onSearchChange: (value: string) => void;
-    selectedCategory: string | number;
-    onCategoryChange: (value: string | number) => void;
+    selectedCategory: string;
+    onCategoryChange: (value: string) => void;
     manufacturers: { value: string | number; label: string }[];
     sortBy: string;
-    onSortChange: (value: string | number) => void;
+    onSortChange: (value: string) => void;
     viewMode: 'grid' | 'list';
     onViewModeChange: (mode: 'grid' | 'list') => void;
     priceRange: FilterRange;
@@ -72,7 +72,7 @@ export default function BowlFilters({
                     <div className="flex-1 min-w-[200px]">
                         <Select
                             value={selectedCategory}
-                            onChange={onCategoryChange}
+                            onChange={(v: string | number) => onCategoryChange(String(v))}
                             options={manufacturers}
                             placeholder="Производитель"
                         />
@@ -82,7 +82,7 @@ export default function BowlFilters({
                     <div className="flex-1 min-w-[200px]">
                         <Select
                             value={sortBy}
-                            onChange={onSortChange}
+                            onChange={(v: string | number) => onSortChange(String(v))}
                             options={sortOptions}
                             placeholder="Сортировка"
                         />

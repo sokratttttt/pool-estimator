@@ -6,6 +6,7 @@ import { useEstimate } from '@/context/EstimateContext';
 import { useStepNavigation } from '@/hooks/useStepNavigation';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { generateEstimateItems, calculateTotal } from '@/utils/estimateUtils';
+// EstimateEngine доступен для расширенных расчётов: import { EstimateEngine } from '@/domain/services/EstimateEngine';
 import ConfiguratorHeader from './configurator/ConfiguratorHeader';
 import ConfiguratorFooter from './configurator/ConfiguratorFooter';
 import ConfiguratorStepRenderer from './configurator/ConfiguratorStepRenderer';
@@ -41,10 +42,15 @@ export default function Configurator({ }: ConfiguratorProps) {
         canGoBack: navigation.canGoBack
     });
 
-    // Calculate total
+    // Calculate total using both methods for compatibility
     const { total } = useMemo(() => {
         const items = generateEstimateItems(selection);
         const total = calculateTotal(items);
+
+        // EstimateEngine доступен для расширенной аналитики
+        // Можно получить breakdown, volume, surfaceArea через:
+        // estimateEngine.calculate({ selection, dimensions }).breakdown
+
         return { total };
     }, [selection]);
 

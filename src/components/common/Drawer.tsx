@@ -33,7 +33,7 @@ export default function Drawer({
         lg: 'w-[32rem]'
     };
 
-    const slideVariants: Record<string, any> = {
+    const slideVariants: Record<string, { initial: { x: string }; animate: { x: number }; exit: { x: string } }> = {
         right: {
             initial: { x: '100%' },
             animate: { x: 0 },

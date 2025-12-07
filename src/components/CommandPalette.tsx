@@ -9,10 +9,9 @@ import ThemeSelector from './ThemeSelector';
 import { useRequests } from '@/context/RequestsContext';
 import { useClients } from '@/context/ClientContext';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface CommandPaletteProps {
-
-    e?: any;
-    command?: any;
+    // No props needed currently
 }
 
 export default function CommandPalette({ }: CommandPaletteProps) {
@@ -24,21 +23,15 @@ export default function CommandPalette({ }: CommandPaletteProps) {
 
     // Toggle on Ctrl+K or Cmd+K
     useEffect(() => {
-        interface downProps {
-
-            e?: any;
-            command?: any;
-        }
-
-        const down = ({ e }: downProps) => {
+        const down = (e: KeyboardEvent) => {
             if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 setOpen((open: boolean) => !open);
             }
         };
 
-        document.addEventListener('keydown', down as any);
-        return () => document.removeEventListener('keydown', down as any);
+        document.addEventListener('keydown', down);
+        return () => document.removeEventListener('keydown', down);
     }, []);
 
     // Fetch data when palette opens
@@ -197,7 +190,7 @@ export default function CommandPalette({ }: CommandPaletteProps) {
                                 {/* Requests Search */}
                                 {requests && requests.length > 0 && (
                                     <Command.Group heading="Заявки" className="px-2 py-2 text-xs font-semibold text-gray-500">
-                                        {requests.slice(0, 5).map((request: any) => (
+                                        {requests.slice(0, 5).map((request: { id: string; client_name: string; phone?: string }) => (
                                             <CommandItem
                                                 key={request.id}
                                                 icon={<ClipboardList className="w-4 h-4" />}
@@ -215,7 +208,7 @@ export default function CommandPalette({ }: CommandPaletteProps) {
                                 {/* Clients Search */}
                                 {clients && clients.length > 0 && (
                                     <Command.Group heading="Клиенты" className="px-2 py-2 text-xs font-semibold text-gray-500">
-                                        {clients.slice(0, 5).map((client: any) => (
+                                        {clients.slice(0, 5).map((client: { id: string; name: string; phone?: string }) => (
                                             <CommandItem
                                                 key={client.id}
                                                 icon={<Users className="w-4 h-4" />}

@@ -1,16 +1,16 @@
 // TODO: Add proper TypeScript types for state
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { useAnimation } from 'framer-motion';
+import { useAnimation, AnimationControls, AnimationDefinition } from 'framer-motion';
 
 /**
  * useAnimationFrame hook
  * Request animation frame loop
  */
-export function useAnimationFrame(callback: (deltaTime: number) => void): any {
-    const requestRef = useRef<any>(null);
-    const previousTimeRef = useRef<any>(null);
+export function useAnimationFrame(callback: (deltaTime: number) => void): void {
+    const requestRef = useRef<number | null>(null);
+    const previousTimeRef = useRef<number | undefined>(undefined);
 
-    const animate = useCallback((time: any) => {
+    const animate = useCallback((time: number) => {
         if (previousTimeRef.current !== undefined) {
             const deltaTime = time - previousTimeRef.current;
             callback(deltaTime);
@@ -21,7 +21,11 @@ export function useAnimationFrame(callback: (deltaTime: number) => void): any {
 
     useEffect(() => {
         requestRef.current = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(requestRef.current);
+        return () => {
+            if (requestRef.current !== null) {
+                cancelAnimationFrame(requestRef.current);
+            }
+        };
     }, [animate]);
 }
 
@@ -29,7 +33,7 @@ export function useAnimationFrame(callback: (deltaTime: number) => void): any {
  * useSpring hook
  * Spring animation value
  */
-export function useSpring({ from = 0, to = 1, stiffness = 100, damping = 10 }): any {
+export function useSpring({ from = 0, to = 1, stiffness = 100, damping = 10 }): number {
     const [value, setValue] = useState(from);
     const velocity = useRef(0);
 
@@ -45,11 +49,21 @@ export function useSpring({ from = 0, to = 1, stiffness = 100, damping = 10 }): 
     return value;
 }
 
+interface SequenceReturn {
+    controls: AnimationControls;
+    currentIndex: number;
+    next: () => Promise<void>;
+    previous: () => Promise<void>;
+    goto: (index: number) => Promise<void>;
+    isFirst: boolean;
+    isLast: boolean;
+}
+
 /**
  * useSequence hook
  * Sequence animations
  */
-export function useSequence(animations: any[]): any {
+export function useSequence(animations: AnimationDefinition[]): SequenceReturn {
     const controls = useAnimation();
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -89,12 +103,14 @@ export function useSequence(animations: any[]): any {
  * useParallax hook
  * Parallax scroll effect
  */
-export function useParallax(speed = 0.5): any {
+export function useParallax(speed = 0.5): number {
     const [offset, setOffset] = useState(0);
 
     useEffect(() => {
         const handleScroll = () => {
-            setOffset(window.pageYOffset * speed);
+            if (typeof window !== 'undefined') {
+                setOffset(window.pageYOffset * speed);
+            }
         };
 
         window.addEventListener('scroll', handleScroll);

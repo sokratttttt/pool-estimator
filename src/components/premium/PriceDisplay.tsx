@@ -3,23 +3,24 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 interface PriceDisplayProps {
-  value?: any;
+    value?: number;
 }
 
-export default function PriceDisplay({  value  }: PriceDisplayProps) {
+export default function PriceDisplay({ value = 0 }: PriceDisplayProps) {
     const [displayValue, setDisplayValue] = useState(0);
 
     // Animate price changes
     useEffect(() => {
+        const safeValue = value ?? 0;
         const duration = 800;
         const steps = 60;
-        const increment = (value - displayValue) / steps;
+        const increment = (safeValue - displayValue) / steps;
         let currentStep = 0;
 
         const timer = setInterval(() => {
             currentStep++;
             if (currentStep >= steps) {
-                setDisplayValue(value);
+                setDisplayValue(safeValue);
                 clearInterval(timer);
             } else {
                 setDisplayValue(prev => prev + increment);

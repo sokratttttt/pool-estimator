@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Loader2, Calendar, Eye, EyeOff, Download, Edit, Copy, Trash2, CheckCircle, XCircle, FileText, User, Building, Phone, Mail, Globe, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
 import { HistoryEstimate as Estimate, EstimateStatus, Customer } from '@/types';
 import { formatCurrency } from '@/utils/formatting';
-import { deleteEstimate, getEstimates, updateEstimate } from '@/services/estimates';
+import { updateEstimate } from '@/services/estimates';
+import { useEstimatesQuery, useDeleteEstimate } from '@/hooks/queries/useEstimatesQuery';
 import { toast } from 'sonner';
 // import { useAuth } from '@/context/AuthContext'; // Закомментировано - проверь существует ли файл
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import VirtualizedList from '@/components/VirtualizedList';
 
 // Заглушка для AuthContext если файла нет
 const useAuth = () => ({
@@ -17,29 +19,40 @@ const useAuth = () => ({
 });
 
 // Базовые компоненты UI
-const Card = ({ children, className = '' }: any) => (
+interface BaseProps {
+    children?: React.ReactNode;
+    className?: string;
+    [key: string]: unknown;
+}
+
+const Card = ({ children, className = '' }: BaseProps) => (
     <div className={`border rounded-lg bg-white ${className}`}>{children}</div>
 );
 
-const CardContent = ({ children, className = '' }: any) => (
+const CardContent = ({ children, className = '' }: BaseProps) => (
     <div className={`p-6 ${className}`}>{children}</div>
 );
 
-const CardHeader = ({ children, className = '' }: any) => (
+const CardHeader = ({ children, className = '' }: BaseProps) => (
     <div className={`p-6 pb-2 ${className}`}>{children}</div>
 );
 
-const CardTitle = ({ children, className = '' }: any) => (
+const CardTitle = ({ children, className = '' }: BaseProps) => (
     <h3 className={`text-xl font-semibold ${className}`}>{children}</h3>
 );
 
-const Button = ({ children, onClick, variant = 'default', size = 'default', className = '', disabled = false, ...props }: any) => {
-    const variants: any = {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: 'default' | 'outline' | 'destructive';
+    size?: 'default' | 'sm' | 'icon';
+}
+
+const Button = ({ children, onClick, variant = 'default', size = 'default', className = '', disabled = false, ...props }: ButtonProps) => {
+    const variants: Record<string, string> = {
         default: 'bg-blue-600 text-white hover:bg-blue-700',
         outline: 'border border-gray-300 bg-white hover:bg-gray-50',
         destructive: 'bg-red-600 text-white hover:bg-red-700'
     };
-    const sizes: any = {
+    const sizes: Record<string, string> = {
         default: 'px-4 py-2 text-sm',
         sm: 'px-3 py-1 text-xs',
         icon: 'p-2'
@@ -56,25 +69,36 @@ const Button = ({ children, onClick, variant = 'default', size = 'default', clas
     );
 };
 
-const Badge = ({ children, className = '' }: any) => (
+const Badge = ({ children, className = '' }: BaseProps) => (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${className}`}>
         {children}
     </span>
 );
 
-const Input = ({ className = '', ...props }: any) => (
+const Input = ({ className = '', ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
     <input className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ${className}`} {...props} />
 );
 
-const Label = ({ children, htmlFor }: any) => (
+interface LabelProps {
+    children: React.ReactNode;
+    htmlFor?: string;
+}
+
+const Label = ({ children, htmlFor }: LabelProps) => (
     <label htmlFor={htmlFor} className="text-sm font-medium leading-none">
         {children}
     </label>
 );
 
-const Select = ({ value, onValueChange, children }: any) => (
+interface SelectProps {
+    value?: string;
+    onValueChange: (value: string) => void;
+    children: React.ReactNode;
+}
+
+const Select = ({ value, onValueChange, children }: SelectProps) => (
     <select
-        value={value}
+        value={value || ''}
         onChange={(e) => onValueChange(e.target.value)}
         className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
     >
@@ -82,7 +106,13 @@ const Select = ({ value, onValueChange, children }: any) => (
     </select>
 );
 
-const Dialog = ({ children, open, onOpenChange }: any) => {
+interface DialogProps {
+    children: React.ReactNode;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
+const Dialog = ({ children, open, onOpenChange }: DialogProps) => {
     if (!open) return null;
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -94,17 +124,23 @@ const Dialog = ({ children, open, onOpenChange }: any) => {
     );
 };
 
-const DialogHeader = ({ children }: any) => <div className="p-6 pb-0">{children}</div>;
-const DialogTitle = ({ children }: any) => <h3 className="text-lg font-semibold">{children}</h3>;
-const DialogDescription = ({ children }: any) => <p className="text-sm text-gray-500">{children}</p>;
+const DialogHeader = ({ children }: { children: React.ReactNode }) => <div className="p-6 pb-0">{children}</div>;
+const DialogTitle = ({ children }: { children: React.ReactNode }) => <h3 className="text-lg font-semibold">{children}</h3>;
+const DialogDescription = ({ children }: { children: React.ReactNode }) => <p className="text-sm text-gray-500">{children}</p>;
 
-const Textarea = ({ className = '', ...props }: any) => (
+const Textarea = ({ className = '', ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
     <textarea className={`flex min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ${className}`} {...props} />
 );
 
 const Separator = () => <div className="h-px bg-gray-200" />;
-const Switch = ({ checked, onCheckedChange }: any) => (
+interface SwitchProps {
+    checked: boolean;
+    onCheckedChange: (checked: boolean) => void;
+}
+
+const Switch = ({ checked, onCheckedChange }: SwitchProps) => (
     <button
+        type="button"
         className={`relative inline-flex h-6 w-11 items-center rounded-full ${checked ? 'bg-blue-600' : 'bg-gray-300'}`}
         onClick={() => onCheckedChange(!checked)}
     >
@@ -113,8 +149,9 @@ const Switch = ({ checked, onCheckedChange }: any) => (
 );
 
 // Константы
-const ITEMS_PER_PAGE = 10;
-const STATUS_CONFIG: Record<EstimateStatus, { color: string; icon: any; text: string }> = {
+// Константы
+// const ITEMS_PER_PAGE = 10; // Удалено в пользу виртуализации
+const STATUS_CONFIG: Record<EstimateStatus, { color: string; icon: React.ElementType; text: string }> = {
     draft: { color: 'bg-gray-100 text-gray-800', icon: FileText, text: 'Черновик' },
     sent: { color: 'bg-blue-100 text-blue-800', icon: Mail, text: 'Отправлено' },
     viewed: { color: 'bg-purple-100 text-purple-800', icon: Eye, text: 'Просмотрено' },
@@ -122,14 +159,130 @@ const STATUS_CONFIG: Record<EstimateStatus, { color: string; icon: any; text: st
     rejected: { color: 'bg-red-100 text-red-800', icon: XCircle, text: 'Отклонено' }
 };
 
+interface EstimateRowProps {
+    estimate: Estimate;
+    isExpanded: boolean;
+    onToggleExpand: (id: string) => void;
+    onEdit: (estimate: Estimate) => void;
+    onDuplicate: () => void;
+    onDelete: (id: string) => void;
+}
+
+const EstimateRow = ({ estimate, isExpanded, onToggleExpand, onEdit, onDuplicate, onDelete }: EstimateRowProps) => {
+    const statusConfig = STATUS_CONFIG[estimate.status as keyof typeof STATUS_CONFIG];
+    const IconComponent = statusConfig?.icon as React.ComponentType<{ className?: string }> | undefined;
+    const items = estimate.items || estimate.selection?.items || [];
+
+    return (
+        <Card>
+            <CardContent className="p-0">
+                <div className="p-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="space-y-1 flex-1">
+                            <div className="flex items-center gap-2">
+                                <h3 className="font-semibold text-lg">{estimate.title}</h3>
+                                <Badge className={statusConfig?.color || ''}>
+                                    <span className="flex items-center gap-1">
+                                        {IconComponent && <IconComponent className="w-4 h-4" />}
+                                        {statusConfig?.text || estimate.status}
+                                    </span>
+                                </Badge>
+                            </div>
+                            <p className="text-sm text-gray-500">
+                                ID: {estimate.id} • Клиент: {estimate.customer?.name || 'Не указан'}
+                            </p>
+                            <div className="flex items-center gap-4 text-sm">
+                                <p className="flex items-center">
+                                    <Calendar size={12} className="inline mr-1" />
+                                    {format(new Date(estimate.createdAt), 'dd MMMM yyyy', { locale: ru })}
+                                </p>
+                                <p>Позиций: {items.length}</p>
+                                <p className="font-semibold">Итого: {formatCurrency(estimate.total || 0)}</p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm" onClick={() => onToggleExpand(estimate.id)}>
+                                {isExpanded ? <><EyeOff className="w-4 h-4 mr-2" />Свернуть</> : <><Eye className="w-4 h-4 mr-2" />Подробнее</>}
+                            </Button>
+                            <Button variant="outline" size="sm"><Download className="w-4 h-4 mr-2" />PDF</Button>
+                            <Button variant="outline" size="sm" onClick={() => onEdit(estimate)}>
+                                <Edit className="w-4 h-4 mr-2" />Изменить
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={onDuplicate}>
+                                <Copy className="w-4 h-4 mr-2" />Копия
+                            </Button>
+                            <Button variant="destructive" size="sm" onClick={() => onDelete(estimate.id)}>
+                                <Trash2 className="w-4 h-4 mr-2" />Удалить
+                            </Button>
+                        </div>
+                    </div>
+
+                    {isExpanded && (
+                        <div className="mt-6 pt-6 border-t">
+                            <div className="space-y-4">
+                                <div>
+                                    <h4 className="font-medium mb-2">Позиции</h4>
+                                    <div className="border rounded">
+                                        <div className="grid grid-cols-12 gap-4 p-4 font-medium border-b">
+                                            <div className="col-span-6">Наименование</div>
+                                            <div className="col-span-2">Количество</div>
+                                            <div className="col-span-2">Цена</div>
+                                            <div className="col-span-2">Сумма</div>
+                                        </div>
+                                        {items.map((item, index) => (
+                                            <div key={index} className="grid grid-cols-12 gap-4 p-4 border-b last:border-0">
+                                                <div className="col-span-6">{item.name}</div>
+                                                <div className="col-span-2">{item.quantity} {item.unit}</div>
+                                                <div className="col-span-2">{formatCurrency(item.price)}</div>
+                                                <div className="col-span-2 font-medium">{formatCurrency(item.quantity * item.price)}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {estimate.customer && (
+                                    <div>
+                                        <h4 className="font-medium mb-2">Клиент</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500" /><span className="font-medium">Имя:</span>{estimate.customer.name}</div>
+                                                {estimate.customer.company && <div className="flex items-center gap-2"><Building className="w-4 h-4 text-gray-500" /><span className="font-medium">Компания:</span>{estimate.customer.company}</div>}
+                                                {estimate.customer.phone && <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-gray-500" /><span className="font-medium">Телефон:</span>{estimate.customer.phone}</div>}
+                                            </div>
+                                            <div className="space-y-2">
+                                                {estimate.customer.email && <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-gray-500" /><span className="font-medium">Email:</span>{estimate.customer.email}</div>}
+                                                {estimate.customer.website && <div className="flex items-center gap-2"><Globe className="w-4 h-4 text-gray-500" /><span className="font-medium">Сайт:</span>{estimate.customer.website}</div>}
+                                                {estimate.customer.address && <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-500" /><span className="font-medium">Адрес:</span>{estimate.customer.address}</div>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {estimate.notes && (
+                                    <div>
+                                        <h4 className="font-medium mb-2">Примечания</h4>
+                                        <div className="border rounded p-4">
+                                            <p className="whitespace-pre-wrap">{estimate.notes}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
 export default function HistoryPage() {
     const { user } = useAuth();
-    const [estimates, setEstimates] = useState<Estimate[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [dateFilter, setDateFilter] = useState<string>('all');
-    const [currentPage, setCurrentPage] = useState(1);
+
+    // const [currentPage, setCurrentPage] = useState(1); // Удалено в пользу виртуализации
     const [selectedEstimate, setSelectedEstimate] = useState<Estimate | null>(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -141,23 +294,20 @@ export default function HistoryPage() {
     const [editForm, setEditForm] = useState<Partial<Estimate>>({});
     const [editCustomer, setEditCustomer] = useState<Partial<Customer>>({});
 
-    // Загрузка данных
-    useEffect(() => {
-        loadEstimates();
-    }, []);
+    // React Query для загрузки данных с кешированием
+    const {
+        data: estimates = [],
+        isLoading: loading,
+        refetch: loadEstimates
+    } = useEstimatesQuery({
+        status: statusFilter as EstimateStatus | 'all',
+        search: searchTerm,
+        sortBy,
+        sortOrder
+    });
 
-    const loadEstimates = async () => {
-        try {
-            setLoading(true);
-            const data = await getEstimates();
-            setEstimates(data);
-        } catch (_error) {
-            console.error('Ошибка загрузки смет:', _error);
-            toast.error('Не удалось загрузить историю смет');
-        } finally {
-            setLoading(false);
-        }
-    };
+    // React Query mutation для удаления
+    const deleteEstimateMutation = useDeleteEstimate();
 
     // Фильтрация и сортировка
     const filteredEstimates = useMemo(() => {
@@ -201,7 +351,7 @@ export default function HistoryPage() {
 
         // Сортировка
         filtered.sort((a, b) => {
-            let aValue: any, bValue: any;
+            let aValue: number | string = 0, bValue: number | string = 0;
 
             switch (sortBy) {
                 case 'date': aValue = new Date(a.createdAt).getTime(); bValue = new Date(b.createdAt).getTime(); break;
@@ -215,12 +365,12 @@ export default function HistoryPage() {
         return filtered;
     }, [estimates, searchTerm, statusFilter, dateFilter, showOnlyMy, sortBy, sortOrder, user]);
 
-    // Пагинация
-    const totalPages = Math.ceil(filteredEstimates.length / ITEMS_PER_PAGE);
+    // Пагинация удалена в пользу виртуализации
+    /* const totalPages = Math.ceil(filteredEstimates.length / ITEMS_PER_PAGE);
     const paginatedEstimates = useMemo(() => {
         const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
         return filteredEstimates.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-    }, [filteredEstimates, currentPage]);
+    }, [filteredEstimates, currentPage]); */
 
     // Обработчики
     const toggleEstimateExpand = useCallback((id: string) => {
@@ -240,11 +390,10 @@ export default function HistoryPage() {
         if (!estimateToDelete) return;
 
         try {
-            await deleteEstimate(estimateToDelete);
-            setEstimates(prev => prev.filter(e => e.id !== estimateToDelete));
-            toast.success('Смета успешно удалена');
+            await deleteEstimateMutation.mutateAsync(estimateToDelete);
+            // Данные автоматически обновятся через React Query
         } catch (_error) {
-            toast.error('Не удалось удалить смету');
+            // Ошибка уже обработана в mutation
         } finally {
             setIsDeleteConfirmOpen(false);
             setEstimateToDelete(null);
@@ -262,11 +411,12 @@ export default function HistoryPage() {
         if (!selectedEstimate) return;
 
         try {
-            const updated = await updateEstimate(selectedEstimate.id, {
+            await updateEstimate(selectedEstimate.id, {
                 ...editForm,
                 customer: editCustomer
             });
-            setEstimates(prev => prev.map(e => e.id === selectedEstimate.id ? updated : e));
+            // Перезагружаем данные через React Query
+            await loadEstimates();
             setIsEditOpen(false);
             toast.success('Смета успешно обновлена');
         } catch (_error) {
@@ -278,115 +428,7 @@ export default function HistoryPage() {
         toast.success('Смета скопирована');
     };
 
-    // Компонент строки сметы
-    const EstimateRow = ({ estimate }: { estimate: Estimate }) => {
-        const isExpanded = expandedEstimates.has(estimate.id);
-        const statusConfig = STATUS_CONFIG[estimate.status];
-        const Icon = statusConfig.icon;
-        const items = estimate.items || estimate.selection?.items || [];
-
-        return (
-            <Card>
-                <CardContent className="p-0">
-                    <div className="p-6">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div className="space-y-1 flex-1">
-                                <div className="flex items-center gap-2">
-                                    <h3 className="font-semibold text-lg">{estimate.title}</h3>
-                                    <Badge className={statusConfig.color}>
-                                        <span className="flex items-center gap-1">
-                                            <Icon className="w-4 h-4" />
-                                            {statusConfig.text}
-                                        </span>
-                                    </Badge>
-                                </div>
-                                <p className="text-sm text-gray-500">
-                                    ID: {estimate.id} • Клиент: {estimate.customer?.name || 'Не указан'}
-                                </p>
-                                <div className="flex items-center gap-4 text-sm">
-                                    <p className="flex items-center">
-                                        <Calendar size={12} className="inline mr-1" />
-                                        {format(new Date(estimate.createdAt), 'dd MMMM yyyy', { locale: ru })}
-                                    </p>
-                                    <p>Позиций: {items.length}</p>
-                                    <p className="font-semibold">Итого: {formatCurrency(estimate.total || 0)}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                                <Button variant="outline" size="sm" onClick={() => toggleEstimateExpand(estimate.id)}>
-                                    {isExpanded ? <><EyeOff className="w-4 h-4 mr-2" />Свернуть</> : <><Eye className="w-4 h-4 mr-2" />Подробнее</>}
-                                </Button>
-                                <Button variant="outline" size="sm"><Download className="w-4 h-4 mr-2" />PDF</Button>
-                                <Button variant="outline" size="sm" onClick={() => handleEditClick(estimate)}>
-                                    <Edit className="w-4 h-4 mr-2" />Изменить
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={duplicateEstimate}>
-                                    <Copy className="w-4 h-4 mr-2" />Копия
-                                </Button>
-                                <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(estimate.id)}>
-                                    <Trash2 className="w-4 h-4 mr-2" />Удалить
-                                </Button>
-                            </div>
-                        </div>
-
-                        {isExpanded && (
-                            <div className="mt-6 pt-6 border-t">
-                                <div className="space-y-4">
-                                    <div>
-                                        <h4 className="font-medium mb-2">Позиции</h4>
-                                        <div className="border rounded">
-                                            <div className="grid grid-cols-12 gap-4 p-4 font-medium border-b">
-                                                <div className="col-span-6">Наименование</div>
-                                                <div className="col-span-2">Количество</div>
-                                                <div className="col-span-2">Цена</div>
-                                                <div className="col-span-2">Сумма</div>
-                                            </div>
-                                            {items.map((item, index) => (
-                                                <div key={index} className="grid grid-cols-12 gap-4 p-4 border-b last:border-0">
-                                                    <div className="col-span-6">{item.name}</div>
-                                                    <div className="col-span-2">{item.quantity} {item.unit}</div>
-                                                    <div className="col-span-2">{formatCurrency(item.price)}</div>
-                                                    <div className="col-span-2 font-medium">{formatCurrency(item.quantity * item.price)}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {estimate.customer && (
-                                        <div>
-                                            <h4 className="font-medium mb-2">Клиент</h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2"><User className="w-4 h-4 text-gray-500" /><span className="font-medium">Имя:</span>{estimate.customer.name}</div>
-                                                    {estimate.customer.company && <div className="flex items-center gap-2"><Building className="w-4 h-4 text-gray-500" /><span className="font-medium">Компания:</span>{estimate.customer.company}</div>}
-                                                    {estimate.customer.phone && <div className="flex items-center gap-2"><Phone className="w-4 h-4 text-gray-500" /><span className="font-medium">Телефон:</span>{estimate.customer.phone}</div>}
-                                                </div>
-                                                <div className="space-y-2">
-                                                    {estimate.customer.email && <div className="flex items-center gap-2"><Mail className="w-4 h-4 text-gray-500" /><span className="font-medium">Email:</span>{estimate.customer.email}</div>}
-                                                    {estimate.customer.website && <div className="flex items-center gap-2"><Globe className="w-4 h-4 text-gray-500" /><span className="font-medium">Сайт:</span>{estimate.customer.website}</div>}
-                                                    {estimate.customer.address && <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-500" /><span className="font-medium">Адрес:</span>{estimate.customer.address}</div>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {estimate.notes && (
-                                        <div>
-                                            <h4 className="font-medium mb-2">Примечания</h4>
-                                            <div className="border rounded p-4">
-                                                <p className="whitespace-pre-wrap">{estimate.notes}</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
-        );
-    };
+    // EstimateRow перемещен за пределы компонента
 
     if (loading) {
         return (
@@ -403,7 +445,7 @@ export default function HistoryPage() {
                     <h1 className="text-3xl font-bold tracking-tight">История смет</h1>
                     <p className="text-gray-500">Всего смет: {estimates.length} • Отфильтровано: {filteredEstimates.length}</p>
                 </div>
-                <Button onClick={loadEstimates} variant="outline">
+                <Button onClick={() => loadEstimates()} variant="outline">
                     <Loader2 className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                     Обновить
                 </Button>
@@ -417,7 +459,7 @@ export default function HistoryPage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="search">Поиск</Label>
-                            <Input id="search" placeholder="Название, клиент, ID..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                            <Input id="search" placeholder="Название, клиент, ID..." value={searchTerm} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)} />
                         </div>
 
                         <div className="space-y-2">
@@ -445,7 +487,7 @@ export default function HistoryPage() {
                         <div className="space-y-2">
                             <Label htmlFor="sort">Сортировка</Label>
                             <div className="flex gap-2">
-                                <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                                <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as 'date' | 'total' | 'name')}>
                                     <option value="date">Дате</option>
                                     <option value="total">Сумме</option>
                                     <option value="name">Названию</option>
@@ -464,8 +506,8 @@ export default function HistoryPage() {
                 </CardContent>
             </Card>
 
-            <div className="space-y-4">
-                {paginatedEstimates.length === 0 ? (
+            <div className="space-y-4 h-[calc(100vh-300px)] min-h-[400px]">
+                {filteredEstimates.length === 0 ? (
                     <Card>
                         <CardContent className="flex flex-col items-center justify-center py-12">
                             <FileText className="w-12 h-12 text-gray-400 mb-4" />
@@ -474,21 +516,26 @@ export default function HistoryPage() {
                         </CardContent>
                     </Card>
                 ) : (
-                    paginatedEstimates.map((estimate) => <EstimateRow key={estimate.id} estimate={estimate} />)
+                    <VirtualizedList
+                        items={filteredEstimates}
+                        renderItem={(estimate) => (
+                            <div className="pb-4">
+                                <EstimateRow
+                                    key={estimate.id}
+                                    estimate={estimate}
+                                    isExpanded={expandedEstimates.has(estimate.id)}
+                                    onToggleExpand={toggleEstimateExpand}
+                                    onEdit={handleEditClick}
+                                    onDuplicate={duplicateEstimate}
+                                    onDelete={handleDeleteClick}
+                                />
+                            </div>
+                        )}
+                        itemHeight={180}
+                        className="h-full pr-2"
+                    />
                 )}
             </div>
-
-            {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
-                        Назад
-                    </Button>
-                    <span className="text-sm">Страница {currentPage} из {totalPages}</span>
-                    <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
-                        Вперед
-                    </Button>
-                </div>
-            )}
 
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <div className="max-w-2xl">
@@ -503,11 +550,11 @@ export default function HistoryPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="edit-title">Название сметы</Label>
-                                    <Input id="edit-title" value={editForm.title || ''} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} />
+                                    <Input id="edit-title" value={editForm.title || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditForm({ ...editForm, title: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="edit-status">Статус</Label>
-                                    <Select value={editForm.status} onValueChange={(value: any) => setEditForm({ ...editForm, status: value })}>
+                                    <Select value={editForm.status} onValueChange={(value: string) => setEditForm({ ...editForm, status: value as EstimateStatus })}>
                                         <option value="draft">Черновик</option>
                                         <option value="sent">Отправлено</option>
                                         <option value="viewed">Просмотрено</option>
@@ -519,7 +566,7 @@ export default function HistoryPage() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="edit-notes">Примечания</Label>
-                                <Textarea id="edit-notes" value={editForm.notes || ''} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} rows={3} />
+                                <Textarea id="edit-notes" value={editForm.notes || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditForm({ ...editForm, notes: e.target.value })} rows={3} />
                             </div>
                         </div>
 
@@ -530,27 +577,27 @@ export default function HistoryPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="customer-name">Имя</Label>
-                                    <Input id="customer-name" value={editCustomer.name || ''} onChange={(e) => setEditCustomer({ ...editCustomer, name: e.target.value })} />
+                                    <Input id="customer-name" value={editCustomer.name || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditCustomer({ ...editCustomer, name: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="customer-company">Компания</Label>
-                                    <Input id="customer-company" value={editCustomer.company || ''} onChange={(e) => setEditCustomer({ ...editCustomer, company: e.target.value })} />
+                                    <Input id="customer-company" value={editCustomer.company || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditCustomer({ ...editCustomer, company: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="customer-phone">Телефон</Label>
-                                    <Input id="customer-phone" value={editCustomer.phone || ''} onChange={(e) => setEditCustomer({ ...editCustomer, phone: e.target.value })} />
+                                    <Input id="customer-phone" value={editCustomer.phone || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditCustomer({ ...editCustomer, phone: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="customer-email">Email</Label>
-                                    <Input id="customer-email" type="email" value={editCustomer.email || ''} onChange={(e) => setEditCustomer({ ...editCustomer, email: e.target.value })} />
+                                    <Input id="customer-email" type="email" value={editCustomer.email || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditCustomer({ ...editCustomer, email: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="customer-website">Сайт</Label>
-                                    <Input id="customer-website" value={editCustomer.website || ''} onChange={(e) => setEditCustomer({ ...editCustomer, website: e.target.value })} />
+                                    <Input id="customer-website" value={editCustomer.website || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditCustomer({ ...editCustomer, website: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="customer-address">Адрес</Label>
-                                    <Input id="customer-address" value={editCustomer.address || ''} onChange={(e) => setEditCustomer({ ...editCustomer, address: e.target.value })} />
+                                    <Input id="customer-address" value={editCustomer.address || ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditCustomer({ ...editCustomer, address: e.target.value })} />
                                 </div>
                             </div>
                         </div>

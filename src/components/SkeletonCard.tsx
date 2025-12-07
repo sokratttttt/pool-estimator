@@ -1,9 +1,9 @@
 // Skeleton loader component for loading states
 interface SkeletonCardProps {
-  className?: string;
+    className?: string;
 }
 
-export default function SkeletonCard({  className = ''  }: SkeletonCardProps) {
+export default function SkeletonCard({ className = '' }: SkeletonCardProps) {
     return (
         <div className={`bg-white/10 backdrop-blur-xl rounded-xl p-6 animate-pulse ${className}`}>
             <div className="h-4 bg-white/20 rounded w-3/4 mb-4"></div>
@@ -17,7 +17,7 @@ export default function SkeletonCard({  className = ''  }: SkeletonCardProps) {
 export function SkeletonList({ count = 3 }) {
     return (
         <div className="space-y-4">
-            {[...Array(count)].map((_: any, i: number) => (
+            {[...Array(count)].map((_: unknown, i: number) => (
                 <SkeletonCard key={i} />
             ))}
         </div>

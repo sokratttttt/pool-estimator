@@ -4,8 +4,21 @@ import { useState, useEffect, useCallback } from 'react';
  * useGeolocation hook
  * Get user's geolocation
  */
-export function useGeolocation(options: PositionOptions = {}): any {
-    const [location, setLocation] = useState<any>({
+interface LocationState {
+    loading: boolean;
+    accuracy: number | null;
+    altitude: number | null;
+    altitudeAccuracy: number | null;
+    heading: number | null;
+    latitude: number | null;
+    longitude: number | null;
+    speed: number | null;
+    timestamp: number | null;
+    error: GeolocationPositionError | { code: number; message: string } | null;
+}
+
+export function useGeolocation(options: PositionOptions = {}): LocationState {
+    const [location, setLocation] = useState<LocationState>({
         loading: true,
         accuracy: null,
         altitude: null,
@@ -20,7 +33,7 @@ export function useGeolocation(options: PositionOptions = {}): any {
 
     useEffect(() => {
         if (!navigator.geolocation) {
-            setLocation((prev: any) => ({
+            setLocation((prev) => ({
                 ...prev,
                 loading: false,
                 error: { code: 0, message: 'Geolocation not supported' }
@@ -44,7 +57,7 @@ export function useGeolocation(options: PositionOptions = {}): any {
         };
 
         const onError = (error: GeolocationPositionError) => {
-            setLocation((prev: any) => ({
+            setLocation((prev) => ({
                 ...prev,
                 loading: false,
                 error
@@ -57,8 +70,13 @@ export function useGeolocation(options: PositionOptions = {}): any {
     return location;
 }
 
-export function usePermission(permissionName: PermissionName): any {
-    const [state, setState] = useState<any>({
+interface PermissionState {
+    status: 'granted' | 'denied' | 'prompt' | 'pending' | 'unsupported' | 'error';
+    error: unknown;
+}
+
+export function usePermission(permissionName: PermissionName): PermissionState {
+    const [state, setState] = useState<PermissionState>({
         status: 'pending',
         error: null
     });
@@ -77,7 +95,7 @@ export function usePermission(permissionName: PermissionName): any {
                     setState({ status: permission.state, error: null });
                 };
             })
-            .catch((error: any) => {
+            .catch((error: unknown) => {
                 setState({ status: 'error', error });
             });
     }, [permissionName]);
@@ -89,12 +107,24 @@ export function usePermission(permissionName: PermissionName): any {
  * useShare hook
  * Web Share API
  */
-export function useShare(): any {
+interface ShareOptions {
+    title?: string;
+    text?: string;
+    url?: string;
+    files?: File[];
+}
+
+interface ShareReturn {
+    share: (options: ShareOptions) => Promise<{ success: boolean; error?: string }>;
+    isSupported: boolean;
+}
+
+export function useShare(): ShareReturn {
     const [isSupported] = useState(() =>
         typeof navigator !== 'undefined' && !!navigator.share
     );
 
-    const share = useCallback(async ({ title, text, url, files }: any) => {
+    const share = useCallback(async ({ title, text, url, files }: ShareOptions) => {
         if (!isSupported) {
             throw new Error('Web Share API not supported');
         }
@@ -102,8 +132,8 @@ export function useShare(): any {
         try {
             await navigator.share({ title, text, url, files });
             return { success: true };
-        } catch (error: any) {
-            if (error.name === 'AbortError') {
+        } catch (error: unknown) {
+            if (error instanceof Error && error.name === 'AbortError') {
                 return { success: false, error: 'Share canceled' };
             }
             throw error;
@@ -116,7 +146,13 @@ export function useShare(): any {
 /**
  * useClipboard hook (enhanced)
  */
-export function useClipboard({ timeout = 2000 } = {}): any {
+interface ClipboardReturn {
+    isCopied: boolean;
+    copy: (text: string) => Promise<boolean>;
+    read: () => Promise<string | null>;
+}
+
+export function useClipboard({ timeout = 2000 } = {}): ClipboardReturn {
     const [isCopied, setIsCopied] = useState(false);
 
     const copy = useCallback(async (text: string) => {

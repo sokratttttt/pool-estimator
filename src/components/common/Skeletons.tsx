@@ -54,7 +54,7 @@ export function CardSkeleton({ className = '' }) {
 export function ListSkeleton({ count = 5, className = '' }) {
     return (
         <div className={`space-y-3 ${className}`}>
-            {Array.from({ length: count }).map((_: any, i: number) => (
+            {Array.from({ length: count }).map((_: unknown, i: number) => (
                 <div key={i} className="flex items-center gap-4">
                     <Skeleton width="40px" height="40px" borderRadius="50%" />
                     <div className="flex-1">
@@ -74,13 +74,13 @@ export function TableSkeleton({ rows = 5, cols = 4, className = '' }) {
     return (
         <div className={`space-y-2 ${className}`}>
             <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-                {Array.from({ length: cols }).map((_: any, i: number) => (
+                {Array.from({ length: cols }).map((_: unknown, i: number) => (
                     <Skeleton key={i} height="24px" />
                 ))}
             </div>
-            {Array.from({ length: rows }).map((_: any, rowIndex: any) => (
+            {Array.from({ length: rows }).map((_: unknown, rowIndex: number) => (
                 <div key={rowIndex} className="grid gap-4" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-                    {Array.from({ length: cols }).map((_: any, colIndex: any) => (
+                    {Array.from({ length: cols }).map((_: unknown, colIndex: number) => (
                         <Skeleton key={colIndex} height="20px" />
                     ))}
                 </div>

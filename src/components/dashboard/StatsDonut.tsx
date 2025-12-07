@@ -1,39 +1,42 @@
 'use client';
+import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { motion } from 'framer-motion';
 
-interface StatsDonutProps {
-    data?: any;
-    active?: any;
-    payload?: any;
-    cx?: any;
-    cy?: any;
-    midAngle?: any;
-    innerRadius?: any;
-    outerRadius?: any;
-    percent?: any;
+type StatusLabel = 'Черновик' | 'Завершена' | 'Отправлена' | 'В работе';
+
+interface DataItem {
+    label: string;
+    value: number;
+    color?: string;
+    [key: string]: unknown; // Index signature for Recharts compatibility
 }
 
-export default function StatsDonut({ data }: StatsDonutProps) {
-    const COLORS = {
-        'Черновик': '#FFB800',
-        'Завершена': '#00E5A0',
-        'Отправлена': '#00D9FF',
-        'В работе': '#A78BFA'
+interface StatsDonutProps {
+    data: DataItem[];
+}
+
+interface TooltipPayload {
+    name: string;
+    value: number;
+    payload: {
+        fill: string;
     };
+}
 
-    interface CustomTooltipProps {
-        data?: any;
-        active?: any;
-        payload?: any;
-        cx?: any;
-        cy?: any;
-        midAngle?: any;
-        innerRadius?: any;
-        outerRadius?: any;
-        percent?: any;
-    }
+interface CustomTooltipProps {
+    active?: boolean;
+    payload?: TooltipPayload[];
+}
 
+const COLORS: Record<StatusLabel, string> = {
+    'Черновик': '#FFB800',
+    'Завершена': '#00E5A0',
+    'Отправлена': '#00D9FF',
+    'В работе': '#A78BFA'
+};
+
+export default function StatsDonut({ data }: StatsDonutProps) {
     const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
         if (active && payload && payload.length) {
             return (
@@ -48,19 +51,16 @@ export default function StatsDonut({ data }: StatsDonutProps) {
         return null;
     };
 
-    interface renderCustomLabelProps {
-        data?: any;
-        active?: any;
-        payload?: any;
-        cx?: any;
-        cy?: any;
-        midAngle?: any;
-        innerRadius?: any;
-        outerRadius?: any;
-        percent?: any;
-    }
-
-    const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: renderCustomLabelProps) => {
+    // Use Recharts' built-in label render props type
+    const renderCustomLabel = (props: {
+        cx?: number;
+        cy?: number;
+        midAngle?: number;
+        innerRadius?: number;
+        outerRadius?: number;
+        percent?: number;
+    }) => {
+        const { cx = 0, cy = 0, midAngle = 0, innerRadius = 0, outerRadius = 0, percent = 0 } = props;
         const RADIAN = Math.PI / 180;
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -104,8 +104,11 @@ export default function StatsDonut({ data }: StatsDonutProps) {
                         animationBegin={0}
                         animationDuration={800}
                     >
-                        {data.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[entry.label] || entry.color} />
+                        {data.map((entry: DataItem, index: number) => (
+                            <Cell
+                                key={`cell-${index}`}
+                                fill={COLORS[entry.label as StatusLabel] || entry.color || '#888888'}
+                            />
                         ))}
                     </Pie>
                     <Tooltip content={<CustomTooltip />} />
@@ -113,7 +116,7 @@ export default function StatsDonut({ data }: StatsDonutProps) {
                         verticalAlign="bottom"
                         height={36}
                         iconType="circle"
-                        formatter={(value: any, _entry: any) => (
+                        formatter={(value: string) => (
                             <span className="text-sm text-apple-text-primary">{value}</span>
                         )}
                     />

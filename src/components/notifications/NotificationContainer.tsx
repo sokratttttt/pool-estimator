@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { useNotifications } from '@/context/NotificationsContext';
 import Alert from '../common/Alert';
+import type { Notification } from '@/types/notifications';
 
 /**
  * Global notification container
  * Displays notifications from NotificationsContext
  */
-type NotificationContainerProps = object;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface NotificationContainerProps { }
 
 export default function NotificationContainer({ }: NotificationContainerProps) {
     const { notifications, removeNotification } = useNotifications();
@@ -16,7 +18,7 @@ export default function NotificationContainer({ }: NotificationContainerProps) {
     return (
         <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 max-w-md pointer-events-none">
             <AnimatePresence>
-                {notifications.map((notification: any) => (
+                {notifications.map((notification: Notification) => (
                     <motion.div
                         key={notification.id}
                         initial={{ opacity: 0, x: 100, scale: 0.8 }}
@@ -29,7 +31,7 @@ export default function NotificationContainer({ }: NotificationContainerProps) {
                             variant={notification.type}
                             message={notification.message}
                             onClose={() => removeNotification(notification.id)}
-                            action={notification.action}
+                            action={notification.action as React.ReactNode}
                         />
                     </motion.div>
                 ))}

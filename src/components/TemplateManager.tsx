@@ -6,13 +6,11 @@ import { useEstimate } from '@/context/EstimateContext';
 import { Save, FolderOpen, Trash2, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { Template } from '@/types/template';
+
 interface TemplateManagerProps {
     onClose?: () => void;
-    embedded?: any;
-
-    template?: any;
-    id?: any;
-    name?: any;
+    embedded?: boolean;
 }
 
 export default function TemplateManager({ onClose, embedded = false }: TemplateManagerProps) {
@@ -35,8 +33,8 @@ export default function TemplateManager({ onClose, embedded = false }: TemplateM
         setTemplateDescription('');
     };
 
-    const handleLoad = (template: any) => {
-        setSelection(template.config);
+    const handleLoad = (template: Template) => {
+        setSelection(template.config as unknown as Parameters<typeof setSelection>[0]);
         toast.success(`Загружен шаблон: ${template.name}`);
         if (onClose) onClose();
     };
@@ -83,7 +81,7 @@ export default function TemplateManager({ onClose, embedded = false }: TemplateM
                         <p className="text-sm mt-2">Создайте первый шаблон для быстрого доступа</p>
                     </div>
                 ) : (
-                    templates.map((template: any, index: number) => (
+                    templates.map((template: Template, index: number) => (
                         <motion.div
                             key={template.id}
                             initial={{ opacity: 0, x: -20 }}
@@ -160,7 +158,7 @@ export default function TemplateManager({ onClose, embedded = false }: TemplateM
                                     <input
                                         type="text"
                                         value={templateName}
-                                        onChange={(e: React.ChangeEvent<any>) => setTemplateName(e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTemplateName(e.target.value)}
                                         placeholder="Например: Бюджетный 6x3"
                                         className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b4d8] bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                                         autoFocus
@@ -172,7 +170,7 @@ export default function TemplateManager({ onClose, embedded = false }: TemplateM
                                     </label>
                                     <textarea
                                         value={templateDescription}
-                                        onChange={(e: React.ChangeEvent<any>) => setTemplateDescription(e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTemplateDescription(e.target.value)}
                                         placeholder="Краткое описание конфигурации"
                                         rows={3}
                                         className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b4d8] bg-white dark:bg-slate-700 text-slate-900 dark:text-white"

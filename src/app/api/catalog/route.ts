@@ -2,6 +2,21 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+type CategoryKey = 'bowls' | 'heating' | 'filtration' | 'parts' | 'additional';
+
+interface Product {
+    id: string;
+    name: string;
+    category: string;
+    price: number;
+    unit?: string;
+    image?: string | null;
+    description?: string | null;
+    specifications?: Record<string, unknown> | null;
+    created_at?: string;
+    updated_at?: string;
+}
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -12,6 +27,8 @@ const getSupabase = () => {
     }
     return createClient(supabaseUrl, supabaseServiceKey);
 };
+
+const validCategories: CategoryKey[] = ['bowls', 'heating', 'filtration', 'parts', 'additional'];
 
 export async function GET() {
     try {
@@ -25,7 +42,7 @@ export async function GET() {
         if (error) throw error;
 
         // Group products by category
-        const grouped = {
+        const grouped: Record<CategoryKey, Product[]> = {
             bowls: [],
             heating: [],
             filtration: [],
@@ -33,9 +50,10 @@ export async function GET() {
             additional: []
         };
 
-        products.forEach(product => {
-            if (grouped[product.category]) {
-                grouped[product.category].push(product);
+        (products as Product[]).forEach((product: Product) => {
+            const category = product.category as CategoryKey;
+            if (validCategories.includes(category)) {
+                grouped[category].push(product);
             }
         });
 

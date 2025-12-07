@@ -9,8 +9,8 @@ import { useEstimateStore } from '@/stores/estimate-store';
 import { useEffect, useState } from 'react';
 
 export function MigrationProgress() {
-    const selection = useEstimateStore((state: any) => state.selection);
-    const historyIndex = useEstimateStore((state: any) => state.historyIndex);
+    const selection = useEstimateStore((state) => state.selection);
+    const historyIndex = useEstimateStore((state) => state.historyIndex);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {

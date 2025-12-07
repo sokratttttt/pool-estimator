@@ -131,9 +131,9 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
 
             toast.success('Backup создан успешно');
             return newBackup;
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Backup error:', err);
-            const errorMessage = err.message || 'Ошибка создания backup';
+            const errorMessage = err instanceof Error ? err.message : 'Ошибка создания backup';
             setError(errorMessage);
             toast.error(errorMessage);
             return null;
@@ -202,13 +202,13 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
             }, 1000);
 
             return result;
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Restore error:', err);
             toast.error('Ошибка восстановления backup');
             return {
                 success: false,
                 restored: { estimates: 0, clients: 0, projects: 0, templates: 0 },
-                errors: [err.message || 'Unknown error'],
+                errors: [err instanceof Error ? err.message : 'Unknown error'],
                 warnings: [],
                 totalTime: (Date.now() - startTime) / 1000
             };
@@ -232,7 +232,7 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
             setBackups(prev => prev.filter(b => b.id !== backupId));
             toast.success('Backup удален');
             return true;
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Delete error:', err);
             toast.error('Ошибка удаления backup');
             return false;
@@ -276,7 +276,7 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
 
             setBackups(mappedBackups);
             return mappedBackups;
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('List backups error:', err);
             toast.error('Ошибка загрузки списка backup');
             return [];
@@ -333,7 +333,7 @@ export function BackupProvider({ children }: { children: React.ReactNode }) {
             toast.success('Backup загружен успешно');
             setTimeout(() => window.location.reload(), 1000);
             return true;
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Upload error:', err);
             toast.error('Ошибка загрузки backup');
             return false;

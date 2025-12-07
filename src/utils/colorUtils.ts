@@ -3,10 +3,22 @@
  * Color manipulation and conversion
  */
 
+interface RGB {
+    r: number;
+    g: number;
+    b: number;
+}
+
+interface HSL {
+    h: number;
+    s: number;
+    l: number;
+}
+
 /**
  * Convert hex to RGB
  */
-export const hexToRgb = (hex: any) => {
+export const hexToRgb = (hex: string): RGB | null => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
         r: parseInt(result[1], 16),
@@ -18,7 +30,7 @@ export const hexToRgb = (hex: any) => {
 /**
  * Convert RGB to hex
  */
-export const rgbToHex = (r: any, g: any, b: any) => {
+export const rgbToHex = (r: number, g: number, b: number): string => {
     return '#' + [r, g, b].map(x => {
         const hex = x.toString(16);
         return hex.length === 1 ? '0' + hex : hex;
@@ -28,7 +40,7 @@ export const rgbToHex = (r: any, g: any, b: any) => {
 /**
  * Convert hex to HSL
  */
-export const hexToHsl = (hex: any) => {
+export const hexToHsl = (hex: string): HSL | null => {
     const rgb = hexToRgb(hex);
     if (!rgb) return null;
 
@@ -38,7 +50,8 @@ export const hexToHsl = (hex: any) => {
 
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
-    let h, s;
+    let h: number = 0;
+    let s: number;
     const l = (max + min) / 2;
 
     if (max === min) {
@@ -64,7 +77,7 @@ export const hexToHsl = (hex: any) => {
 /**
  * Lighten color
  */
-export const lighten = (hex: any, amount: any) => {
+export const lighten = (hex: string, amount: number): string => {
     const hsl = hexToHsl(hex);
     if (!hsl) return hex;
 
@@ -75,7 +88,7 @@ export const lighten = (hex: any, amount: any) => {
 /**
  * Darken color
  */
-export const darken = (hex: any, amount: any) => {
+export const darken = (hex: string, amount: number): string => {
     const hsl = hexToHsl(hex);
     if (!hsl) return hex;
 
@@ -86,10 +99,10 @@ export const darken = (hex: any, amount: any) => {
 /**
  * HSL to Hex
  */
-export const hslToHex = (h: any, s: any, l: any) => {
+export const hslToHex = (h: number, s: number, l: number): string => {
     l /= 100;
     const a = s * Math.min(l, 1 - l) / 100;
-    const f = n => {
+    const f = (n: number): number => {
         const k = (n + h / 30) % 12;
         const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
         return Math.round(255 * color);
@@ -100,7 +113,7 @@ export const hslToHex = (h: any, s: any, l: any) => {
 /**
  * Generate color palette
  */
-export const generatePalette = (baseColor, count = 5) => {
+export const generatePalette = (baseColor: string, count: number = 5): string[] => {
     const hsl = hexToHsl(baseColor);
     if (!hsl) return [];
 
@@ -118,7 +131,7 @@ export const generatePalette = (baseColor, count = 5) => {
 /**
  * Get contrast color (black or white)
  */
-export const getContrastColor = (hex: any) => {
+export const getContrastColor = (hex: string): string => {
     const rgb = hexToRgb(hex);
     if (!rgb) return '#000000';
 
@@ -129,6 +142,6 @@ export const getContrastColor = (hex: any) => {
 /**
  * Check if color is valid hex
  */
-export const isValidHex = (hex: any) => {
+export const isValidHex = (hex: string): boolean => {
     return /^#?([a-f\d]{3}|[a-f\d]{6})$/i.test(hex);
 };

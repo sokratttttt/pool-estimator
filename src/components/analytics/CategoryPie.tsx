@@ -9,7 +9,7 @@ export interface CategoryData {
     value: number; // Используем value для суммы
     count?: number; // count теперь опциональный
     color?: string;
-    [key: string]: any; // Добавлено для совместимости с recharts
+    [key: string]: unknown; // Добавлено для совместимости с recharts
 }
 
 // Пропсы компонента

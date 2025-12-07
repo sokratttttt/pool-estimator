@@ -12,7 +12,7 @@ const AdditionalStep = lazy(() => import('../steps/AdditionalStep'));
 const SummaryStep = lazy(() => import('../steps/SummaryStep'));
 
 interface ConfiguratorStepRendererProps {
-    currentStep?: any;
+    currentStep?: string;
 
 }
 

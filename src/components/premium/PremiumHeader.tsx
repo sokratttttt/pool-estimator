@@ -11,15 +11,21 @@ import TemplateManager from '../TemplateManager';
 import CloudSync from '../CloudSync';
 import ThemeToggle from '../ThemeToggle';
 
+interface Step {
+    id: string;
+    label?: string;
+    [key: string]: unknown;
+}
+
 interface PremiumHeaderProps {
-    currentStep?: any;
-    totalSteps?: any;
-    totalPrice?: any;
-    steps?: any;
+    currentStep: string;
+    totalSteps: number;
+    totalPrice: number;
+    steps: Step[];
 }
 
 export default function PremiumHeader({ currentStep, totalSteps, totalPrice, steps }: PremiumHeaderProps) {
-    const currentStepNumber = steps.findIndex(s => s.id === currentStep) + 1;
+    const currentStepNumber = steps.findIndex((s: Step) => s.id === currentStep) + 1;
     const [showSettings, setShowSettings] = useState(false);
     const [activeTab, setActiveTab] = useState('templates'); // templates, cloud, theme
 
@@ -53,7 +59,7 @@ export default function PremiumHeader({ currentStep, totalSteps, totalPrice, ste
                         <ProgressIndicator
                             current={currentStepNumber}
                             total={totalSteps}
-                            steps={steps}
+                            steps={steps.map((s: Step) => s.label || s.id)}
                         />
                     </div>
 

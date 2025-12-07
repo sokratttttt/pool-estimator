@@ -6,11 +6,11 @@
 /**
  * Parse price from string
  */
-export const parsePrice = (priceString: any) => {
+export const parsePrice = (priceString: string | number) => {
     if (typeof priceString === 'number') return priceString;
 
     // Remove all non-numeric characters except dot and comma
-    const cleaned = priceString.replace(/[^\d.,]/g, '');
+    const cleaned = priceString.toString().replace(/[^\d.,]/g, '');
     // Replace comma with dot for decimal
     const normalized = cleaned.replace(',', '.');
 
@@ -20,7 +20,7 @@ export const parsePrice = (priceString: any) => {
 /**
  * Parse phone number
  */
-export const parsePhone = (phoneString: any) => {
+export const parsePhone = (phoneString: string) => {
     // Remove all non-numeric characters
     const digits = phoneString.replace(/\D/g, '');
 
@@ -41,7 +41,7 @@ export const parsePhone = (phoneString: any) => {
 /**
  * Parse date from various formats
  */
-export const parseDate = (dateString: any) => {
+export const parseDate = (dateString: string | number | Date | null) => {
     if (!dateString) return null;
 
     // Try to parse as Date
@@ -49,7 +49,7 @@ export const parseDate = (dateString: any) => {
     if (!isNaN(date.getTime())) return date;
 
     // Try DD.MM.YYYY format
-    const ddmmyyyy = dateString.match(/(\d{2})\.(\d{2})\.(\d{4})/);
+    const ddmmyyyy = dateString.toString().match(/(\d{2})\.(\d{2})\.(\d{4})/);
     if (ddmmyyyy) {
         const [, day, month, year] = ddmmyyyy;
         return new Date(Number(year), Number(month) - 1, Number(day));
@@ -61,7 +61,7 @@ export const parseDate = (dateString: any) => {
 /**
  * Parse dimensions from string (e.g., "8x4" or "8 x 4 m")
  */
-export const parseDimensions = (dimensionsString: any) => {
+export const parseDimensions = (dimensionsString: string) => {
     const match = dimensionsString.match(/(\d+\.?\d*)\s*[xх×]\s*(\d+\.?\d*)/i);
 
     if (match) {
@@ -77,7 +77,7 @@ export const parseDimensions = (dimensionsString: any) => {
 /**
  * Parse measurement with unit
  */
-export const parseMeasurement = (measurementString: any) => {
+export const parseMeasurement = (measurementString: string) => {
     const match = measurementString.match(/(\d+\.?\d*)\s*([a-zа-я]+)/i);
 
     if (match) {
@@ -96,7 +96,7 @@ export const parseMeasurement = (measurementString: any) => {
 /**
  * Parse boolean from string
  */
-export const parseBoolean = (value: any) => {
+export const parseBoolean = (value: unknown) => {
     if (typeof value === 'boolean') return value;
 
     const truthy = ['true', '1', 'yes', 'да', 'on'];
@@ -113,9 +113,12 @@ export const parseBoolean = (value: any) => {
 /**
  * Parse JSON safely
  */
-export const parseJSON = (jsonString: string, fallback: any = null) => {
+/**
+ * Parse JSON safely
+ */
+export const parseJSON = <T = unknown>(jsonString: string, fallback: T | null = null): T | null => {
     try {
-        return JSON.parse(jsonString);
+        return JSON.parse(jsonString) as T;
     } catch {
         return fallback;
     }
@@ -124,11 +127,11 @@ export const parseJSON = (jsonString: string, fallback: any = null) => {
 /**
  * Parse query parameters from URL
  */
-export const parseQueryParams = (url: any) => {
-    const params: any = {};
-    const urlObj = new URL(url, window.location.origin);
+export const parseQueryParams = (url: string | URL) => {
+    const params: Record<string, string> = {};
+    const urlObj = new URL(url.toString(), window.location.origin);
 
-    urlObj.searchParams.forEach((value: any, key: any) => {
+    urlObj.searchParams.forEach((value, key) => {
         params[key] = value;
     });
 
@@ -163,7 +166,7 @@ export const parseCSVLine = (line: string, delimiter = ',') => {
 /**
  * Parse full name into parts
  */
-export const parseFullName = (fullName: any) => {
+export const parseFullName = (fullName: string) => {
     const parts = fullName.trim().split(/\s+/);
 
     return {
@@ -176,7 +179,7 @@ export const parseFullName = (fullName: any) => {
 /**
  * Parse email domain
  */
-export const parseEmailDomain = (email: any) => {
+export const parseEmailDomain = (email: string) => {
     const match = email.match(/@(.+)$/);
     return match ? match[1] : '';
 };
@@ -184,7 +187,7 @@ export const parseEmailDomain = (email: any) => {
 /**
  * Parse file extension
  */
-export const parseFileExtension = (filename: any) => {
+export const parseFileExtension = (filename: string) => {
     const match = filename.match(/\.([^.]+)$/);
     return match ? match[1].toLowerCase() : '';
 };
@@ -192,7 +195,7 @@ export const parseFileExtension = (filename: any) => {
 /**
  * Parse color hex to RGB
  */
-export const parseHexToRGB = (hex: any) => {
+export const parseHexToRGB = (hex: string) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 
     return result ? {
@@ -205,9 +208,9 @@ export const parseHexToRGB = (hex: any) => {
 /**
  * Parse address string
  */
-export const parseAddress = (addressString: any) => {
+export const parseAddress = (addressString: string) => {
     // Simple Russian address parsing
-    const parts = addressString.split(',').map(s => s.trim());
+    const parts = addressString.split(',').map((s: string) => s.trim());
 
     return {
         city: parts[0] || '',
@@ -220,7 +223,7 @@ export const parseAddress = (addressString: any) => {
 /**
  * Parse duration string (e.g., "2h 30m" or "150m")
  */
-export const parseDuration = (durationString: any) => {
+export const parseDuration = (durationString: string) => {
     let totalMinutes = 0;
 
     const hours = durationString.match(/(\d+)\s*[hчч]/i);

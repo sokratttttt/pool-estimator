@@ -9,7 +9,7 @@ import AppleCard from '@/components/apple/AppleCard';
 import AppleInput from '@/components/apple/AppleInput';
 import ProductForm from '@/components/ProductForm';
 import { useCatalog } from '@/context/CatalogContext';
-import type { Product } from '@/context/CatalogContext';
+import type { Product } from '@/types';
 import { toast } from 'sonner';
 
 interface PriceRange {
@@ -363,7 +363,7 @@ export default function CatalogPage() {
             <AnimatePresence>
                 {showProductForm && (
                     <ProductForm
-                        product={editingProduct}
+                        product={editingProduct ?? undefined}
                         onClose={handleFormClose}
                     />
                 )}

@@ -109,7 +109,10 @@ function mapEquipmentType(typeStr: string) {
 /**
  * Apply filters to equipment list
  */
-export function applySmartFilters(equipment: EquipmentItem[], filters: SearchFilters): any {
+/**
+ * Apply filters to equipment list
+ */
+export function applySmartFilters(equipment: EquipmentItem[], filters: SearchFilters): EquipmentItem[] {
     let results = equipment;
 
     // Filter by type
@@ -183,7 +186,10 @@ function extractPower(text: string) {
 /**
  * Generate search suggestions
  */
-export function getSearchSuggestions(query: string, equipment: EquipmentItem[]): any {
+/**
+ * Generate search suggestions
+ */
+export function getSearchSuggestions(query: string, equipment: EquipmentItem[]): string[] {
     const suggestions: string[] = [];
 
     if (!query || query.length < 2) {
@@ -198,7 +204,7 @@ export function getSearchSuggestions(query: string, equipment: EquipmentItem[]):
 
     // Extract unique categories
     const categories = [...new Set(equipment.map((e: EquipmentItem) => e.category).filter((c): c is string => !!c))];
-    const matchingCategories = categories.filter((cat: any) =>
+    const matchingCategories = categories.filter((cat) =>
         cat.toLowerCase().includes(query.toLowerCase())
     );
 
@@ -222,7 +228,10 @@ export function getSearchSuggestions(query: string, equipment: EquipmentItem[]):
 /**
  * Explain what filters were applied
  */
-export function explainSearch(_query: string, filters: SearchFilters, resultsCount: number): any {
+/**
+ * Explain what filters were applied
+ */
+export function explainSearch(_query: string, filters: SearchFilters, resultsCount: number): string {
     const parts: string[] = [];
 
     if (filters.type) {

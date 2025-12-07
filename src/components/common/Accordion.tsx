@@ -6,13 +6,24 @@ import { ChevronDown } from 'lucide-react';
 /**
  * Accordion component for collapsible content
  */
+interface AccordionItemProps {
+    title: string;
+    children: React.ReactNode;
+    isOpen: boolean;
+    onToggle: () => void;
+    icon?: React.ReactNode;
+}
+
+/**
+ * Accordion component for collapsible content
+ */
 export function AccordionItem({
     title,
     children,
     isOpen,
     onToggle,
     icon
-}: any) {
+}: AccordionItemProps) {
     return (
         <div className="border-b border-white/10 last:border-0">
             <button
@@ -60,8 +71,14 @@ export function AccordionItem({
     );
 }
 
+interface AccordionItemData {
+    title: string;
+    content: React.ReactNode;
+    icon?: React.ReactNode;
+}
+
 interface AccordionProps {
-    items: any[];
+    items: AccordionItemData[];
     allowMultiple?: boolean;
     defaultOpen?: number[];
 }
@@ -89,7 +106,7 @@ export default function Accordion({
 
     return (
         <div className="bg-white/5 rounded-lg overflow-hidden">
-            {items.map((item: any, index: number) => (
+            {items.map((item: AccordionItemData, index: number) => (
                 <AccordionItem
                     key={index}
                     title={item.title}
