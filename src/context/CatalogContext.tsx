@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import type { CatalogContextType, CatalogData } from '@/types/catalog';
+import localCatalogData from '@/data/catalog.json';
 
 import type { Product } from '@/types/index';
 
@@ -18,6 +19,20 @@ const initialCatalog: CatalogData = {
     chemicals: []
 };
 
+// Load local catalog as fallback
+const loadLocalCatalog = (): CatalogData => {
+    const data = localCatalogData as Record<string, unknown[]>;
+    return {
+        bowls: (data.bowls || []) as Product[],
+        heating: (data.heating || []) as Product[],
+        filtration: (data.filtration || []) as Product[],
+        parts: (data.parts || []) as Product[],
+        additional: (data.additional || []) as Product[],
+        accessories: (data.accessories || []) as Product[],
+        chemicals: (data.chemicals || []) as Product[]
+    };
+};
+
 export function CatalogProvider({ children }: { children: React.ReactNode }) {
     const [catalog, setCatalog] = useState<CatalogData>(initialCatalog);
     const [isLoadingCatalog, setIsLoadingCatalog] = useState(true);
@@ -26,41 +41,48 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         const loadCatalog = async () => {
             setIsLoadingCatalog(true);
             try {
-                if (!supabase) {
-                    console.warn('Supabase not configured');
-                    setIsLoadingCatalog(false);
-                    return;
+                // Try Supabase first
+                if (supabase) {
+                    const { data: products, error } = await supabase
+                        .from('products')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (!error && products && products.length > 0) {
+                        const grouped: CatalogData = {
+                            bowls: [],
+                            heating: [],
+                            filtration: [],
+                            parts: [],
+                            additional: [],
+                            accessories: [],
+                            chemicals: []
+                        };
+
+                        products.forEach((product: Product) => {
+                            if (grouped[product.category]) {
+                                grouped[product.category].push(product);
+                            } else if (product.category === 'accessories') {
+                                grouped.additional.push(product);
+                            }
+                        });
+
+                        setCatalog(grouped);
+                        setIsLoadingCatalog(false);
+                        return;
+                    }
                 }
 
-                const { data: products, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                const grouped: CatalogData = {
-                    bowls: [],
-                    heating: [],
-                    filtration: [],
-                    parts: [],
-                    additional: [],
-                    accessories: [],
-                    chemicals: []
-                };
-
-                (products || []).forEach((product: Product) => {
-                    if (grouped[product.category]) {
-                        grouped[product.category].push(product);
-                    } else if (product.category === 'accessories') {
-                        grouped.additional.push(product);
-                    }
-                });
-
-                setCatalog(grouped);
+                // Fallback to local catalog
+                const localCatalog = loadLocalCatalog();
+                setCatalog(localCatalog);
+                toast.info('Загружен локальный каталог');
             } catch (err) {
-                console.error('Failed to load catalog:', err);
-                toast.error('Не удалось загрузить каталог. Попробуйте обновить страницу.');
+                console.error('Failed to load catalog from Supabase:', err);
+                // Fallback to local catalog on error
+                const localCatalog = loadLocalCatalog();
+                setCatalog(localCatalog);
+                toast.info('Загружен локальный каталог');
             } finally {
                 setIsLoadingCatalog(false);
             }

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import {
     Calculator, Users, Package, FileText,
@@ -8,21 +8,8 @@ import {
 } from 'lucide-react';
 import { ProButton } from '@/components/pro/ProButton';
 import { ProCard } from '@/components/pro/ProCard';
+import { useHistory } from '@/context/HistoryContext';
 import './home.css';
-
-// Пример данных
-const stats = [
-    { label: 'Всего проектов', value: '42', trend: '+12%', icon: FileText },
-    { label: 'Активные клиенты', value: '18', trend: '+3 новых', icon: Users },
-    { label: 'Выручка', value: '12.5 млн ₽', trend: '+8.5%', icon: BarChart3 },
-    { label: 'Средний чек', value: '850 000 ₽', trend: 'стабильно', icon: Calculator },
-];
-
-const recentEstimates = [
-    { id: 1, name: 'Бассейн 8×4м для загородного дома', client: 'Иванов А.П.', total: 1250000, date: '05.12.2024' },
-    { id: 2, name: 'СПА-зона с джакузи', client: 'Петрова М.И.', total: 680000, date: '04.12.2024' },
-    { id: 3, name: 'Бесконечный бассейн 12×5м', client: 'Сидоров К.В.', total: 2100000, date: '03.12.2024' },
-];
 
 const quickActions = [
     { label: 'Калькулятор типового бассейна', icon: Calculator, href: '/calculator' },
@@ -32,18 +19,91 @@ const quickActions = [
 ];
 
 export default function HomePage() {
+    const { estimates } = useHistory();
+
+    // Calculate real stats from estimates
+    const stats = useMemo(() => {
+        const totalProjects = estimates.length;
+
+        // Unique clients
+        const uniqueClients = new Set(
+            estimates.map(e => e.clientInfo?.name || e.clientInfo?.id).filter(Boolean)
+        );
+        const activeClients = uniqueClients.size;
+
+        // Total revenue
+        const totalRevenue = estimates.reduce((sum, e) => sum + (e.total || 0), 0);
+        const revenueFormatted = totalRevenue >= 1000000
+            ? `${(totalRevenue / 1000000).toFixed(1)} млн ₽`
+            : `${(totalRevenue / 1000).toFixed(0)} тыс ₽`;
+
+        // Average check
+        const avgCheck = totalProjects > 0 ? Math.round(totalRevenue / totalProjects) : 0;
+        const avgCheckFormatted = avgCheck >= 1000
+            ? `${(avgCheck / 1000).toFixed(0)} 000 ₽`
+            : `${avgCheck} ₽`;
+
+        return [
+            { label: 'Всего проектов', value: String(totalProjects), trend: '', icon: FileText },
+            { label: 'Активные клиенты', value: String(activeClients), trend: '', icon: Users },
+            { label: 'Выручка', value: revenueFormatted, trend: '', icon: BarChart3 },
+            { label: 'Средний чек', value: avgCheckFormatted, trend: '', icon: Calculator },
+        ];
+    }, [estimates]);
+
+    // Recent estimates (last 3)
+    const recentEstimates = useMemo(() => {
+        return estimates
+            .slice(0, 3)
+            .map((e, index) => ({
+                id: e.id || String(index + 1),
+                name: e.name || 'Без названия',
+                client: e.clientInfo?.name || 'Без клиента',
+                total: e.total || 0,
+                date: e.createdAt
+                    ? new Date(e.createdAt).toLocaleDateString('ru-RU')
+                    : new Date().toLocaleDateString('ru-RU')
+            }));
+    }, [estimates]);
+
+    // Activity from recent estimates
+    const activity = useMemo(() => {
+        return estimates.slice(0, 4).map((e, i) => {
+            const date = e.createdAt ? new Date(e.createdAt) : new Date();
+            const today = new Date();
+            const isToday = date.toDateString() === today.toDateString();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const isYesterday = date.toDateString() === yesterday.toDateString();
+
+            let timeStr = date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+            if (isToday) timeStr = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            if (isYesterday) timeStr = 'Вчера';
+
+            return {
+                id: i,
+                time: timeStr,
+                action: 'Создана смета',
+                detail: e.name || 'Без названия'
+            };
+        });
+    }, [estimates]);
 
     return (
         <div className="pro-home">
             {/* Quick Actions Bar */}
             <div className="pro-home-toolbar">
                 <div className="toolbar-left">
-                    <ProButton variant="primary" size="sm" icon={<Plus size={16} />}>
-                        Новая смета
-                    </ProButton>
-                    <ProButton variant="outline" size="sm" icon={<Zap size={16} />}>
-                        Быстрый старт
-                    </ProButton>
+                    <Link href="/calculator">
+                        <ProButton variant="primary" size="sm" icon={<Plus size={16} />}>
+                            Новая смета
+                        </ProButton>
+                    </Link>
+                    <Link href="/calculator/new">
+                        <ProButton variant="outline" size="sm" icon={<Zap size={16} />}>
+                            Быстрый старт
+                        </ProButton>
+                    </Link>
                 </div>
                 <div className="toolbar-right">
                     <span className="toolbar-hint">Ctrl+N — новая смета</span>
@@ -59,7 +119,7 @@ export default function HomePage() {
                             <span className="stat-label">{stat.label}</span>
                         </div>
                         <div className="stat-value">{stat.value}</div>
-                        <div className="stat-trend">{stat.trend}</div>
+                        {stat.trend && <div className="stat-trend">{stat.trend}</div>}
                     </div>
                 ))}
             </div>
@@ -70,31 +130,39 @@ export default function HomePage() {
                 <ProCard
                     title="Последние сметы"
                     actions={
-                        <ProButton variant="ghost" size="xs" icon={<Eye size={14} />}>
-                            Все сметы
-                        </ProButton>
+                        <Link href="/history">
+                            <ProButton variant="ghost" size="xs" icon={<Eye size={14} />}>
+                                Все сметы
+                            </ProButton>
+                        </Link>
                     }
                     className="recent-card"
                 >
                     <div className="estimates-list">
-                        {recentEstimates.map((estimate) => (
-                            <Link
-                                key={estimate.id}
-                                href={`/estimates/${estimate.id}`}
-                                className="estimate-item"
-                            >
-                                <div className="estimate-info">
-                                    <div className="estimate-name">{estimate.name}</div>
-                                    <div className="estimate-client">{estimate.client}</div>
-                                </div>
-                                <div className="estimate-meta">
-                                    <div className="estimate-total">
-                                        {estimate.total.toLocaleString('ru-RU')} ₽
+                        {recentEstimates.length > 0 ? (
+                            recentEstimates.map((estimate) => (
+                                <Link
+                                    key={estimate.id}
+                                    href={`/estimates/${estimate.id}`}
+                                    className="estimate-item"
+                                >
+                                    <div className="estimate-info">
+                                        <div className="estimate-name">{estimate.name}</div>
+                                        <div className="estimate-client">{estimate.client}</div>
                                     </div>
-                                    <div className="estimate-date">{estimate.date}</div>
-                                </div>
-                            </Link>
-                        ))}
+                                    <div className="estimate-meta">
+                                        <div className="estimate-total">
+                                            {estimate.total.toLocaleString('ru-RU')} ₽
+                                        </div>
+                                        <div className="estimate-date">{estimate.date}</div>
+                                    </div>
+                                </Link>
+                            ))
+                        ) : (
+                            <div className="text-center py-8 text-gray-400">
+                                Нет сохраненных смет
+                            </div>
+                        )}
                     </div>
 
                     <div className="card-footer">
@@ -119,33 +187,24 @@ export default function HomePage() {
                 {/* Activity Feed */}
                 <ProCard title="Активность" className="activity-card">
                     <div className="activity-list">
-                        <div className="activity-item">
-                            <div className="activity-time">10:30</div>
-                            <div className="activity-content">
-                                <strong>Создана смета</strong> — Бассейн для загородного дома
+                        {activity.length > 0 ? (
+                            activity.map((item) => (
+                                <div key={item.id} className="activity-item">
+                                    <div className="activity-time">{item.time}</div>
+                                    <div className="activity-content">
+                                        <strong>{item.action}</strong> — {item.detail}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-4 text-gray-400">
+                                Нет активности
                             </div>
-                        </div>
-                        <div className="activity-item">
-                            <div className="activity-time">09:15</div>
-                            <div className="activity-content">
-                                <strong>Экспорт PDF</strong> — Отчет для клиента Иванов
-                            </div>
-                        </div>
-                        <div className="activity-item">
-                            <div className="activity-time">Вчера</div>
-                            <div className="activity-content">
-                                <strong>Обновлены цены</strong> — 24 позиции в каталоге
-                            </div>
-                        </div>
-                        <div className="activity-item">
-                            <div className="activity-time">02.12</div>
-                            <div className="activity-content">
-                                <strong>Новый клиент</strong> — Петрова М.И. добавлена в базу
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </ProCard>
             </div>
         </div>
     );
 }
+
